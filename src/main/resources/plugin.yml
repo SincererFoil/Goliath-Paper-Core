@@ -1,0 +1,6 @@
+name: goliath-paper-core
+version: '${version}'
+
+main: ch.mcserver.goliathPaperCore.GoliathPaperCore
+api-version: '1.21.11'
+load: POSTWORLD
