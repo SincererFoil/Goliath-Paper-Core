@@ -10,7 +10,9 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
-}
+    implementation(platform("org.mongodb:mongodb-driver-bom:5.8.0"))
+    implementation("org.mongodb:mongodb-driver-sync")
+    implementation("org.spongepowered:configurate-yaml:4.2.0")}
 
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(21)
