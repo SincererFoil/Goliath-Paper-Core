@@ -1,8 +1,6 @@
 package ch.mcserver.goliathPaperCore;
 
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
@@ -23,8 +21,12 @@ public final class GoliathPaperCore extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+
         loadConfig();
+
         new PluginRegister(this).registerAll();
+
+
         getLogger().log(Level.INFO, "[Goliath] Plugin Enabled!");
 
     }

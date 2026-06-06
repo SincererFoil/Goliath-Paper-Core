@@ -1,8 +1,8 @@
 package ch.mcserver.goliathPaperCore;
 
-import ch.mcserver.goliathPaperCore.GoliathPaperCore;
 import ch.mcserver.goliathPaperCore.pluginmessenger.GmspMessenger;
 import ch.mcserver.goliathPaperCore.pluginmessenger.GoliathTeleportMessenger;
+import ch.mcserver.goliathPaperCore.pluginmessenger.HistorySnapshotMessenger;
 
 public class PluginRegister {
 
@@ -40,6 +40,12 @@ public class PluginRegister {
                 plugin,
                 "goliath:gmsp",
                 new GmspMessenger()
+        );
+
+        plugin.getServer().getMessenger().registerIncomingPluginChannel(
+                plugin,
+                "goliath:history",
+                new HistorySnapshotMessenger()
         );
     }
 }
