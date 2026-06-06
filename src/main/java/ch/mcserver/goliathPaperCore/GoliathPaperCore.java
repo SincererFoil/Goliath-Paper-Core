@@ -24,6 +24,8 @@ public final class GoliathPaperCore extends JavaPlugin {
     public void onEnable() {
         instance = this;
         loadConfig();
+        new PluginRegister(this).registerAll();
+        getLogger().log(Level.INFO, "[Goliath] Plugin Enabled!");
 
     }
 
