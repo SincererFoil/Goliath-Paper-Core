@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
@@ -48,6 +49,7 @@ public class GoliathTeleportMessenger implements PluginMessageListener {
 
         if (!gmspEnabled) {
             staff.setGameMode(GameMode.SURVIVAL);
+            staff.playSound(staff.getLocation(), Sound.ENTITY_PLAYER_TELEPORT, 1, 1);
         }  else  {
             staff.setGameMode(GameMode.SPECTATOR);
         }

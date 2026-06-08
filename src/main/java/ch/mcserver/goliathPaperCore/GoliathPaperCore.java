@@ -21,6 +21,7 @@ public final class GoliathPaperCore extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        logger = getLogger();
 
         loadConfig();
 
@@ -52,6 +53,7 @@ public final class GoliathPaperCore extends JavaPlugin {
             if(!Files.exists(configPath)) {
                 config = loader.createNode();
                 config.node("mongodb", "uri").set("YOUR_MONGO_CONNECTION_STRING");
+                config.node("server", "isSpawn").set(false);
                 loader.save(config);
                 getLogger().log(Level.INFO, "Config file has been created");
             }
