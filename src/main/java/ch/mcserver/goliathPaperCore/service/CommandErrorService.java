@@ -27,11 +27,9 @@ public class CommandErrorService implements Listener {
 
         if (!raw.startsWith("/")) return;
 
-        String label = raw.substring(1).split(" ")[0].toLowerCase(); // "gtp"
+        String label = raw.substring(1).split(" ")[0].toLowerCase();
 
-        boolean exists =
-                Bukkit.getCommandMap().getCommand(label) != null ||
-                        Bukkit.getHelpMap().getHelpTopic("/" + label) != null;
+        boolean exists = Bukkit.getCommandMap().getCommand(label) != null || Bukkit.getHelpMap().getHelpTopic("/" + label) != null;
 
         if (!exists) {
             event.setCancelled(true);
