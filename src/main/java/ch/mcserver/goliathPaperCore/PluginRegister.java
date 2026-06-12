@@ -2,21 +2,34 @@ package ch.mcserver.goliathPaperCore;
 
 import ch.mcserver.goliathPaperCore.listener.EnderchestListener;
 import ch.mcserver.goliathPaperCore.listener.SpawnListener;
+import ch.mcserver.goliathPaperCore.mongodb.MongoDBManager;
+import ch.mcserver.goliathPaperCore.mongodb.repository.PlayerEnderchestRepository;
 import ch.mcserver.goliathPaperCore.pluginmessenger.CommandUpdateMessenger;
 import ch.mcserver.goliathPaperCore.pluginmessenger.GmspMessenger;
 import ch.mcserver.goliathPaperCore.pluginmessenger.GoliathTeleportMessenger;
 import ch.mcserver.goliathPaperCore.pluginmessenger.HistorySnapshotMessenger;
 import ch.mcserver.goliathPaperCore.service.CommandErrorService;
 import ch.mcserver.goliathPaperCore.service.EnderchestService;
-
-import static org.bukkit.Bukkit.getServer;
+import com.mongodb.client.MongoCollection;
+import org.bson.Document;
 
 public class PluginRegister {
 
     private final GoliathPaperCore plugin;
+    private final MongoDBManager mongoManager;
+    private final MongoCollection<Document> enderchestCollection;
+    private final PlayerEnderchestRepository enderchestRepository;
+    private final EnderchestService enderchestService;
 
-    public PluginRegister(GoliathPaperCore plugin) {
+    public PluginRegister(GoliathPaperCore plugin, MongoDBManager mongoManager) {
         this.plugin = plugin;
+
+        this.mongoManager = new MongoDBManager();
+        this.mongoManager.connect();
+
+        this.enderchestCollection = this.mongoManager.getMongoCollection("player_enderchest");
+        this.enderchestRepository = new PlayerEnderchestRepository(enderchestCollection);
+        this.enderchestService = new EnderchestService(enderchestRepository);
     }
 
     public void registerAll() {
@@ -27,26 +40,29 @@ public class PluginRegister {
     }
 
     private void registerListeners() {
-        boolean isSpawn = GoliathPaperCore.config.node("server", "isSpawn").getBoolean(false);
-        EnderchestService enderchestService = new EnderchestService();
+        boolean isSpawn = GoliathPaperCore.config
+                .node("server", "isSpawn")
+                .getBoolean(false);
 
         if (isSpawn) {
-            getServer().getPluginManager().registerEvents(new SpawnListener(), plugin);
+            plugin.getServer().getPluginManager()
+                    .registerEvents(new SpawnListener(), plugin);
         }
-        getServer().getPluginManager().registerEvents(new CommandErrorService(), plugin);
-        getServer().getPluginManager().registerEvents(new EnderchestListener(enderchestService), plugin);
 
+        plugin.getServer().getPluginManager()
+                .registerEvents(new CommandErrorService(), plugin);
+
+        plugin.getServer().getPluginManager()
+                .registerEvents(new EnderchestListener(enderchestService, enderchestRepository), plugin);
     }
 
     private void registerCommands() {
-
     }
 
     private void registerManagers() {
     }
 
     private void registerPluginMessaging() {
-
         plugin.getServer().getMessenger().registerIncomingPluginChannel(
                 plugin,
                 "goliath:gtp",

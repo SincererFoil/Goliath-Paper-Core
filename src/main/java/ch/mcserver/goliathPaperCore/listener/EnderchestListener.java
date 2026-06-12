@@ -1,6 +1,8 @@
 package ch.mcserver.goliathPaperCore.listener;
 
 import ch.mcserver.goliathPaperCore.GoliathPaperCore;
+import ch.mcserver.goliathPaperCore.mongodb.repository.PlayerEnderchestRepository;
+import ch.mcserver.goliathPaperCore.service.EnderchestHolder;
 import ch.mcserver.goliathPaperCore.service.EnderchestService;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -12,13 +14,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.InventoryHolder;
 
 public class EnderchestListener implements Listener {
     private final EnderchestService enderchestService;
+    private PlayerEnderchestRepository enderchestRepository;
 
 
-    public EnderchestListener(EnderchestService enderchestService) {
+    public EnderchestListener(EnderchestService enderchestService, PlayerEnderchestRepository enderchestRepository) {
         this.enderchestService = enderchestService;
+        this.enderchestRepository = enderchestRepository;
     }
 
 
@@ -26,7 +31,7 @@ public class EnderchestListener implements Listener {
     public void onEnderChestOpen(PlayerInteractEvent event) {
         Block block = event.getClickedBlock();
 
-        if(event.getClickedBlock() == null ) {
+        if (event.getClickedBlock() == null) {
             return;
         }
 
@@ -40,36 +45,25 @@ public class EnderchestListener implements Listener {
 
         event.setCancelled(true);
 
-        if(block.getState() instanceof EnderChest enderchest) {
+        if (block.getState() instanceof EnderChest enderchest) {
             enderchest.open();
         }
         Player player = event.getPlayer();
-        player.playSound(block.getLocation(), Sound.BLOCK_ENDER_CHEST_OPEN, 1.0f, 1.0f);
+        player.playSound(block.getLocation(), Sound.BLOCK_ENDER_CHEST_OPEN, 0.5f, 1.0f);
+
 
         enderchestService.openEnderchest(player);
     }
 
     @EventHandler
-    public void onClose(InventoryCloseEvent event) {
+    public void onInventoryClose(InventoryCloseEvent event) {
 
-        if (!(event.getPlayer() instanceof Player player)) {
+        if (!(event.getInventory().getHolder() instanceof EnderchestHolder holder)) {
             return;
         }
-
-        if (!event.getView().getTitle().equals("Ender Chest")) {
-            return;
-        }
-
-        Block block = player.getTargetBlockExact(6);
-
-        if (block != null && block.getType() == Material.ENDER_CHEST) {
-            if (block.getState() instanceof EnderChest enderchest) {
-                enderchest.close();
-            }
-            player.playSound(block.getLocation(), Sound.BLOCK_ENDER_CHEST_CLOSE, 1.0f, 1.0f);
-        }
-
+        InventoryHolder invHolder = event.getInventory().getHolder();
+        Player player = (Player) invHolder;
+        enderchestRepository.saveEnderchest(player.getUniqueId(), event.getInventory().getContents());
     }
-
 
 }

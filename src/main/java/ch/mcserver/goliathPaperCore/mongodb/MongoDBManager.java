@@ -17,7 +17,7 @@ public class MongoDBManager {
     private Logger logger = GoliathPaperCore.getInstance().getLogger();
     public void connect() {
         try {
-            String uri = GoliathPaperCore.config.node("mongodb", "uri").toString();
+            String uri = GoliathPaperCore.config.node("mongodb", "uri").getString();
 
             mongoClient = MongoClients.create(uri);
             mongoDatabase = mongoClient.getDatabase("goliath");
