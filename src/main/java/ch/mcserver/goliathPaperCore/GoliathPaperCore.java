@@ -1,6 +1,7 @@
 package ch.mcserver.goliathPaperCore;
 
 import ch.mcserver.goliathPaperCore.mongodb.MongoDBManager;
+import ch.mcserver.goliathPaperCore.service.EnderchestService;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
@@ -16,6 +17,7 @@ public final class GoliathPaperCore extends JavaPlugin {
     public Logger logger;
 
     private static GoliathPaperCore instance;
+    EnderchestService enderchestService;
 
     private MongoDBManager mongoManager;
 
@@ -36,6 +38,9 @@ public final class GoliathPaperCore extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (enderchestService != null) {
+            enderchestService.saveAllOpenEnderchests();
+        }
         if (mongoManager != null) {
             mongoManager.disconnect();
         }
@@ -43,6 +48,9 @@ public final class GoliathPaperCore extends JavaPlugin {
 
     public static GoliathPaperCore getInstance() {
         return instance;
+    }
+    public void setEnderchestService(EnderchestService enderchestService) {
+        this.enderchestService = enderchestService;
     }
 
     private void loadConfig() {

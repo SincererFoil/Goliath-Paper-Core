@@ -23,13 +23,13 @@ public class PluginRegister {
 
     public PluginRegister(GoliathPaperCore plugin, MongoDBManager mongoManager) {
         this.plugin = plugin;
-
-        this.mongoManager = new MongoDBManager();
-        this.mongoManager.connect();
+        this.mongoManager = mongoManager;
 
         this.enderchestCollection = this.mongoManager.getMongoCollection("player_enderchest");
         this.enderchestRepository = new PlayerEnderchestRepository(enderchestCollection);
         this.enderchestService = new EnderchestService(enderchestRepository);
+
+        plugin.setEnderchestService(enderchestService);
     }
 
     public void registerAll() {

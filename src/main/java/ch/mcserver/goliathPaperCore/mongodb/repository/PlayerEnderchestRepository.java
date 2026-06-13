@@ -29,7 +29,7 @@ public class PlayerEnderchestRepository {
         Document playerEnderChest = new Document()
                 .append("uuid", playerUUID.toString())
                 .append("created_at", System.currentTimeMillis())
-                .append("enderchest", toBase64(new ItemStack[55]));
+                .append("enderchest", toBase64(new ItemStack[54]));
 
         collection.insertOne(playerEnderChest);
     }
@@ -48,7 +48,7 @@ public class PlayerEnderchestRepository {
         Document document = collection.find(Filters.eq("uuid", uuid.toString())).first();
 
         if (document == null || !document.containsKey("enderchest")) {
-            return new ItemStack[55];
+            return new ItemStack[54];
         }
 
         return fromBase64(document.getString("enderchest"));
