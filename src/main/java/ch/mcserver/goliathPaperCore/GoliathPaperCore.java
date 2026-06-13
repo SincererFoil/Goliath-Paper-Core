@@ -1,7 +1,6 @@
 package ch.mcserver.goliathPaperCore;
 
 import ch.mcserver.goliathPaperCore.mongodb.MongoDBManager;
-import ch.mcserver.goliathPaperCore.service.EnderchestService;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
@@ -14,12 +13,12 @@ import java.util.logging.Logger;
 public final class GoliathPaperCore extends JavaPlugin {
 
     public static ConfigurationNode config;
-    public Logger logger;
 
     private static GoliathPaperCore instance;
-    EnderchestService enderchestService;
 
+    public Logger logger;
     private MongoDBManager mongoManager;
+    private PluginRegister pluginRegister;
 
     @Override
     public void onEnable() {
@@ -31,26 +30,23 @@ public final class GoliathPaperCore extends JavaPlugin {
         mongoManager = new MongoDBManager();
         mongoManager.connect();
 
-        new PluginRegister(this, mongoManager).registerAll();
+        pluginRegister = new PluginRegister(this, mongoManager);
+        pluginRegister.registerAll();
 
-        getLogger().log(Level.INFO, "[Goliath] Plugin Enabled!");
+        logger.info("[Goliath] Plugin Enabled!");
     }
 
     @Override
     public void onDisable() {
-        if (enderchestService != null) {
-            enderchestService.saveAllOpenEnderchests();
+        if (pluginRegister != null && pluginRegister.getShutdownService() != null) {
+            pluginRegister.getShutdownService().shutdown();
         }
-        if (mongoManager != null) {
-            mongoManager.disconnect();
-        }
+
+        logger.info("[Goliath] Plugin Disabled!");
     }
 
     public static GoliathPaperCore getInstance() {
         return instance;
-    }
-    public void setEnderchestService(EnderchestService enderchestService) {
-        this.enderchestService = enderchestService;
     }
 
     private void loadConfig() {
@@ -59,20 +55,24 @@ public final class GoliathPaperCore extends JavaPlugin {
             Files.createDirectories(dataDirectory);
 
             Path configPath = dataDirectory.resolve("config.yml");
-            YamlConfigurationLoader loader = YamlConfigurationLoader.builder().path(configPath).build();
+            YamlConfigurationLoader loader = YamlConfigurationLoader.builder()
+                    .path(configPath)
+                    .build();
 
             if (!Files.exists(configPath)) {
                 config = loader.createNode();
+
                 config.node("mongodb", "uri").set("YOUR_MONGO_CONNECTION_STRING");
                 config.node("server", "isSpawn").set(false);
+
                 loader.save(config);
-                getLogger().log(Level.INFO, "Config file has been created");
+                logger.info("Config file has been created");
             }
 
             config = loader.load();
 
         } catch (Exception e) {
-            getLogger().log(Level.SEVERE, "Failed to load config.yml!", e);
+            logger.log(Level.SEVERE, "Failed to load config.yml!", e);
         }
     }
 }
