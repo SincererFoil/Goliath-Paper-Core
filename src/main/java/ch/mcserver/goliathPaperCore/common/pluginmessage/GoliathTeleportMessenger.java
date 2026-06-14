@@ -1,4 +1,4 @@
-package ch.mcserver.goliathPaperCore.pluginmessenger;
+package ch.mcserver.goliathPaperCore.common.pluginmessage;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;

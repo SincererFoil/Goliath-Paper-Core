@@ -1,7 +1,7 @@
 package ch.mcserver.goliathPaperCore;
 
-import ch.mcserver.goliathPaperCore.database.mongodb.MongoDBManager;
-import ch.mcserver.goliathPaperCore.database.mysql.MySQLManager;
+import ch.mcserver.goliathPaperCore.common.database.mongodb.MongoDBManager;
+import ch.mcserver.goliathPaperCore.common.database.mysql.MySQLManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;

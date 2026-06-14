@@ -1,26 +1,25 @@
-package ch.mcserver.goliathPaperCore.pluginmessenger;
+package ch.mcserver.goliathPaperCore.common.pluginmessage;
 
-import ch.mcserver.goliathPaperCore.GoliathPaperCore;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
-import java.util.logging.Level;
 
-public class HistorySnapshotMessenger implements PluginMessageListener {
+public class GmspMessenger implements PluginMessageListener {
 
     @Override
     public void onPluginMessageReceived(
             @NotNull String channel,
-            @NotNull Player source,
-            @NotNull byte[] message
+            @NotNull Player receiver,
+            byte @NotNull [] message
     ) {
 
-        if (!channel.equalsIgnoreCase("goliath:history")) {
+        if (!channel.equalsIgnoreCase("goliath:gmsp")) {
             return;
         }
 
@@ -28,21 +27,27 @@ public class HistorySnapshotMessenger implements PluginMessageListener {
 
         String subChannel = input.readUTF();
 
-        if (!subChannel.equalsIgnoreCase("HISTORY")) {
+        if (!subChannel.equalsIgnoreCase("GMSP")) {
             return;
         }
 
         UUID uuid = UUID.fromString(input.readUTF());
-        String historyId = input.readUTF();
-        String type = input.readUTF();
+
+        boolean enabled = input.readBoolean();
 
         Player player = Bukkit.getPlayer(uuid);
 
         if (player == null) {
             return;
         }
-        GoliathPaperCore.getInstance().logger.log(Level.FINE, "[Goliath] Snapshot is not finished yet!");
 
+        if (enabled) {
 
+            player.setGameMode(GameMode.SPECTATOR);
+
+        } else {
+
+            player.setGameMode(GameMode.SURVIVAL);
+        }
     }
 }

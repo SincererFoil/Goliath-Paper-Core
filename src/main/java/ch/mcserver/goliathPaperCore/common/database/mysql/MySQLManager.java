@@ -1,4 +1,4 @@
-package ch.mcserver.goliathPaperCore.database.mysql;
+package ch.mcserver.goliathPaperCore.common.database.mysql;
 
 import ch.mcserver.goliathPaperCore.GoliathPaperCore;
 

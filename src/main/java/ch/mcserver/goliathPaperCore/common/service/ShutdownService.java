@@ -1,7 +1,8 @@
-package ch.mcserver.goliathPaperCore.service;
+package ch.mcserver.goliathPaperCore.common.service;
 
-import ch.mcserver.goliathPaperCore.database.mongodb.MongoDBManager;
-import ch.mcserver.goliathPaperCore.database.mongodb.repository.PlayerInventoryRepository;
+import ch.mcserver.goliathPaperCore.common.database.mongodb.MongoDBManager;
+import ch.mcserver.goliathPaperCore.module.inventory.PlayerInventoryRepository;
+import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestService;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 

@@ -1,4 +1,4 @@
-package ch.mcserver.goliathPaperCore.service;
+package ch.mcserver.goliathPaperCore.common.service;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

@@ -1,39 +1,30 @@
-package ch.mcserver.goliathPaperCore.pluginmessenger;
+package ch.mcserver.goliathPaperCore.common.pluginmessage;
 
+import ch.mcserver.goliathPaperCore.GoliathPaperCore;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
-public class GmspMessenger implements PluginMessageListener {
+public class CommandUpdateMessenger implements PluginMessageListener {
 
     @Override
     public void onPluginMessageReceived(
             @NotNull String channel,
-            @NotNull Player receiver,
-            byte @NotNull [] message
+            @NotNull Player source,
+            @NotNull byte[] message
     ) {
 
-        if (!channel.equalsIgnoreCase("goliath:gmsp")) {
+        if (!channel.equalsIgnoreCase("goliath:updatecommands")) {
             return;
         }
 
         ByteArrayDataInput input = ByteStreams.newDataInput(message);
-
-        String subChannel = input.readUTF();
-
-        if (!subChannel.equalsIgnoreCase("GMSP")) {
-            return;
-        }
-
         UUID uuid = UUID.fromString(input.readUTF());
-
-        boolean enabled = input.readBoolean();
 
         Player player = Bukkit.getPlayer(uuid);
 
@@ -41,13 +32,6 @@ public class GmspMessenger implements PluginMessageListener {
             return;
         }
 
-        if (enabled) {
-
-            player.setGameMode(GameMode.SPECTATOR);
-
-        } else {
-
-            player.setGameMode(GameMode.SURVIVAL);
-        }
+        Bukkit.getScheduler().runTask(GoliathPaperCore.getInstance(), player::updateCommands);
     }
 }

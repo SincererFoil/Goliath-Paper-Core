@@ -7,6 +7,7 @@ plugins {
 repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
+    maven("https://repo.dmulloy2.net/repository/public/")
 }
 
 dependencies {
@@ -15,6 +16,7 @@ dependencies {
     implementation(platform("org.mongodb:mongodb-driver-bom:5.8.0"))
     implementation("org.mongodb:mongodb-driver-sync")
     implementation("org.spongepowered:configurate-yaml:4.2.0")
+    compileOnly("com.comphenix.protocol:ProtocolLib:5.3.0")
 }
 
 java {

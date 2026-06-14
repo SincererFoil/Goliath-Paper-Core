@@ -1,8 +1,5 @@
-package ch.mcserver.goliathPaperCore.listener;
+package ch.mcserver.goliathPaperCore.module.enderchest;
 
-import ch.mcserver.goliathPaperCore.database.mongodb.repository.PlayerEnderchestRepository;
-import ch.mcserver.goliathPaperCore.service.EnderchestHolder;
-import ch.mcserver.goliathPaperCore.service.EnderchestService;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -15,7 +12,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import static ch.mcserver.goliathPaperCore.service.EnderchestHolder.openedEnderChests;
+import static ch.mcserver.goliathPaperCore.module.enderchest.EnderchestHolder.openedEnderChests;
 
 public class EnderchestListener implements Listener {
     private final EnderchestService enderchestService;

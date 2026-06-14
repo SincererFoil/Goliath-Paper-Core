@@ -1,6 +1,5 @@
-package ch.mcserver.goliathPaperCore.listener;
+package ch.mcserver.goliathPaperCore.module.inventory;
 
-import ch.mcserver.goliathPaperCore.database.mongodb.repository.PlayerInventoryRepository;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

@@ -1,4 +1,4 @@
-package ch.mcserver.goliathPaperCore.service;
+package ch.mcserver.goliathPaperCore.module.enderchest;
 
 import org.bukkit.block.EnderChest;
 import org.bukkit.inventory.Inventory;

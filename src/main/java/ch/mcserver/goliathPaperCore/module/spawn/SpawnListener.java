@@ -1,4 +1,4 @@
-package ch.mcserver.goliathPaperCore.listener;
+package ch.mcserver.goliathPaperCore.module.spawn;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
