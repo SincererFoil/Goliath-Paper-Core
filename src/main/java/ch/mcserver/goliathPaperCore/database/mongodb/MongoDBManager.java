@@ -1,4 +1,4 @@
-package ch.mcserver.goliathPaperCore.mongodb;
+package ch.mcserver.goliathPaperCore.database.mongodb;
 
 import ch.mcserver.goliathPaperCore.GoliathPaperCore;
 import com.mongodb.client.MongoClient;

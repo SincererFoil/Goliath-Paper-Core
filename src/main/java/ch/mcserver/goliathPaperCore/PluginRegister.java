@@ -1,11 +1,12 @@
 package ch.mcserver.goliathPaperCore;
 
+import ch.mcserver.goliathPaperCore.database.mongodb.MongoDBManager;
+import ch.mcserver.goliathPaperCore.database.mongodb.repository.PlayerEnderchestRepository;
+import ch.mcserver.goliathPaperCore.database.mongodb.repository.PlayerInventoryRepository;
+import ch.mcserver.goliathPaperCore.database.mysql.MySQLManager;
 import ch.mcserver.goliathPaperCore.listener.EnderchestListener;
 import ch.mcserver.goliathPaperCore.listener.InventoryListener;
 import ch.mcserver.goliathPaperCore.listener.SpawnListener;
-import ch.mcserver.goliathPaperCore.mongodb.MongoDBManager;
-import ch.mcserver.goliathPaperCore.mongodb.repository.PlayerEnderchestRepository;
-import ch.mcserver.goliathPaperCore.mongodb.repository.PlayerInventoryRepository;
 import ch.mcserver.goliathPaperCore.pluginmessenger.CommandUpdateMessenger;
 import ch.mcserver.goliathPaperCore.pluginmessenger.GmspMessenger;
 import ch.mcserver.goliathPaperCore.pluginmessenger.GoliathTeleportMessenger;
@@ -21,17 +22,23 @@ import org.bukkit.entity.Player;
 public class PluginRegister {
 
     private final GoliathPaperCore plugin;
+
     private final MongoDBManager mongoManager;
+    private final MySQLManager mySQLManager;
+
     private final MongoCollection<Document> enderchestCollection;
     private final PlayerEnderchestRepository enderchestRepository;
     private final EnderchestService enderchestService;
+
     private final MongoCollection<Document> inventoryCollection;
     private final PlayerInventoryRepository playerInventoryRepository;
+
     private final ShutdownService shutdownService;
 
-    public PluginRegister(GoliathPaperCore plugin, MongoDBManager mongoManager) {
+    public PluginRegister(GoliathPaperCore plugin, MongoDBManager mongoManager, MySQLManager mySQLManager) {
         this.plugin = plugin;
         this.mongoManager = mongoManager;
+        this.mySQLManager = mySQLManager;
 
         this.inventoryCollection = this.mongoManager.getMongoCollection("player_inventory");
         this.playerInventoryRepository = new PlayerInventoryRepository(inventoryCollection);
@@ -39,7 +46,9 @@ public class PluginRegister {
         this.enderchestCollection = this.mongoManager.getMongoCollection("player_enderchest");
         this.enderchestRepository = new PlayerEnderchestRepository(enderchestCollection);
         this.enderchestService = new EnderchestService(enderchestRepository);
-        this.shutdownService = new ShutdownService(plugin.getLogger(), mongoManager, enderchestService, playerInventoryRepository);
+
+        this.shutdownService = new ShutdownService(
+                this.plugin.logger, this.mongoManager, this.enderchestService, this.playerInventoryRepository);
     }
 
     public void registerAll() {

@@ -1,4 +1,4 @@
-package ch.mcserver.goliathPaperCore.mongodb.repository;
+package ch.mcserver.goliathPaperCore.database.mongodb.repository;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;

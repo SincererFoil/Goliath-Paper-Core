@@ -1,6 +1,7 @@
 package ch.mcserver.goliathPaperCore;
 
-import ch.mcserver.goliathPaperCore.mongodb.MongoDBManager;
+import ch.mcserver.goliathPaperCore.database.mongodb.MongoDBManager;
+import ch.mcserver.goliathPaperCore.database.mysql.MySQLManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
@@ -18,6 +19,7 @@ public final class GoliathPaperCore extends JavaPlugin {
 
     public Logger logger;
     private MongoDBManager mongoManager;
+    private MySQLManager mySQLManager;
     private PluginRegister pluginRegister;
 
     @Override
@@ -30,7 +32,10 @@ public final class GoliathPaperCore extends JavaPlugin {
         mongoManager = new MongoDBManager();
         mongoManager.connect();
 
-        pluginRegister = new PluginRegister(this, mongoManager);
+        mySQLManager = new MySQLManager();
+        mySQLManager.connect();
+
+        pluginRegister = new PluginRegister(this, mongoManager, mySQLManager);
         pluginRegister.registerAll();
 
         logger.info("[Goliath] Plugin Enabled!");
@@ -63,6 +68,12 @@ public final class GoliathPaperCore extends JavaPlugin {
                 config = loader.createNode();
 
                 config.node("mongodb", "uri").set("YOUR_MONGO_CONNECTION_STRING");
+                config.node("mysql", "host").set("127.0.0.1");
+                config.node("mysql", "port").set(3306);
+                config.node("mysql", "database").set("goliath");
+                config.node("mysql", "username").set("goliath");
+                config.node("mysql", "password").set("");
+
                 config.node("server", "isSpawn").set(false);
 
                 loader.save(config);

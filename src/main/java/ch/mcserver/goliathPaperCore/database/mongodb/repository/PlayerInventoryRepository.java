@@ -1,4 +1,4 @@
-package ch.mcserver.goliathPaperCore.mongodb.repository;
+package ch.mcserver.goliathPaperCore.database.mongodb.repository;
 
 import ch.mcserver.goliathPaperCore.GoliathPaperCore;
 import com.mongodb.client.MongoCollection;
@@ -12,8 +12,8 @@ import org.bukkit.inventory.ItemStack;
 import java.util.UUID;
 import java.util.logging.Level;
 
-import static ch.mcserver.goliathPaperCore.mongodb.repository.PlayerEnderchestRepository.fromBase64;
-import static ch.mcserver.goliathPaperCore.mongodb.repository.PlayerEnderchestRepository.toBase64;
+import static ch.mcserver.goliathPaperCore.database.mongodb.repository.PlayerEnderchestRepository.fromBase64;
+import static ch.mcserver.goliathPaperCore.database.mongodb.repository.PlayerEnderchestRepository.toBase64;
 
 public class PlayerInventoryRepository {
 

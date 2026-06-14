@@ -1,6 +1,6 @@
 package ch.mcserver.goliathPaperCore.listener;
 
-import ch.mcserver.goliathPaperCore.mongodb.repository.PlayerEnderchestRepository;
+import ch.mcserver.goliathPaperCore.database.mongodb.repository.PlayerEnderchestRepository;
 import ch.mcserver.goliathPaperCore.service.EnderchestHolder;
 import ch.mcserver.goliathPaperCore.service.EnderchestService;
 import org.bukkit.Bukkit;

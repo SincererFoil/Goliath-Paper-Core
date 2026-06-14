@@ -1,7 +1,7 @@
 package ch.mcserver.goliathPaperCore.service;
 
-import ch.mcserver.goliathPaperCore.mongodb.MongoDBManager;
-import ch.mcserver.goliathPaperCore.mongodb.repository.PlayerInventoryRepository;
+import ch.mcserver.goliathPaperCore.database.mongodb.MongoDBManager;
+import ch.mcserver.goliathPaperCore.database.mongodb.repository.PlayerInventoryRepository;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -15,12 +15,9 @@ public class ShutdownService {
     private final EnderchestService enderchestService;
     private final PlayerInventoryRepository playerInventoryRepository;
 
-    public ShutdownService(
-            Logger logger,
-            MongoDBManager mongoManager,
-            EnderchestService enderchestService,
-            PlayerInventoryRepository playerInventoryRepository
-    ) {
+
+    public ShutdownService(Logger logger, MongoDBManager mongoManager, EnderchestService enderchestService, PlayerInventoryRepository playerInventoryRepository) {
+
         this.logger = logger;
         this.mongoManager = mongoManager;
         this.enderchestService = enderchestService;
