@@ -1,19 +1,21 @@
 package ch.mcserver.goliathPaperCore;
 
 import ch.mcserver.goliathPaperCore.common.database.mongodb.MongoDBManager;
-import ch.mcserver.goliathPaperCore.module.enderchest.PlayerEnderchestRepository;
-import ch.mcserver.goliathPaperCore.module.inventory.PlayerInventoryRepository;
 import ch.mcserver.goliathPaperCore.common.database.mysql.MySQLManager;
-import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestListener;
-import ch.mcserver.goliathPaperCore.module.inventory.InventoryListener;
-import ch.mcserver.goliathPaperCore.module.spawn.SpawnListener;
+import ch.mcserver.goliathPaperCore.common.packet.GoliathPacket;
+import ch.mcserver.goliathPaperCore.common.packet.ProtocolLibHook;
 import ch.mcserver.goliathPaperCore.common.pluginmessage.CommandUpdateMessenger;
 import ch.mcserver.goliathPaperCore.common.pluginmessage.GmspMessenger;
 import ch.mcserver.goliathPaperCore.common.pluginmessage.GoliathTeleportMessenger;
 import ch.mcserver.goliathPaperCore.common.pluginmessage.HistorySnapshotMessenger;
 import ch.mcserver.goliathPaperCore.common.service.CommandErrorService;
-import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestService;
 import ch.mcserver.goliathPaperCore.common.service.ShutdownService;
+import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestListener;
+import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestService;
+import ch.mcserver.goliathPaperCore.module.enderchest.PlayerEnderchestRepository;
+import ch.mcserver.goliathPaperCore.module.inventory.InventoryListener;
+import ch.mcserver.goliathPaperCore.module.inventory.PlayerInventoryRepository;
+import ch.mcserver.goliathPaperCore.module.spawn.SpawnListener;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 import org.bukkit.Bukkit;
@@ -22,37 +24,30 @@ import org.bukkit.entity.Player;
 public class PluginRegister {
 
     private final GoliathPaperCore plugin;
-
     private final MongoDBManager mongoManager;
     private final MySQLManager mySQLManager;
 
-    private final MongoCollection<Document> enderchestCollection;
-    private final PlayerEnderchestRepository enderchestRepository;
-    private final EnderchestService enderchestService;
+    private MongoCollection<Document> enderchestCollection;
+    private PlayerEnderchestRepository enderchestRepository;
+    private EnderchestService enderchestService;
 
-    private final MongoCollection<Document> inventoryCollection;
-    private final PlayerInventoryRepository playerInventoryRepository;
+    private MongoCollection<Document> inventoryCollection;
+    private PlayerInventoryRepository playerInventoryRepository;
 
-    private final ShutdownService shutdownService;
+    private ShutdownService shutdownService;
+
+    private ProtocolLibHook protocolLibHook;
+    private GoliathPacket goliathPacket;
 
     public PluginRegister(GoliathPaperCore plugin, MongoDBManager mongoManager, MySQLManager mySQLManager) {
         this.plugin = plugin;
         this.mongoManager = mongoManager;
         this.mySQLManager = mySQLManager;
-
-        this.inventoryCollection = this.mongoManager.getMongoCollection("player_inventory");
-        this.playerInventoryRepository = new PlayerInventoryRepository(inventoryCollection);
-
-        this.enderchestCollection = this.mongoManager.getMongoCollection("player_enderchest");
-        this.enderchestRepository = new PlayerEnderchestRepository(enderchestCollection);
-        this.enderchestService = new EnderchestService(enderchestRepository);
-
-        this.shutdownService = new ShutdownService(
-                this.plugin.logger, this.mongoManager, this.enderchestService, this.playerInventoryRepository);
     }
 
     public void registerAll() {
         registerManagers();
+        registerPacketSystems();
         registerCommands();
         registerListeners();
         registerPluginMessaging();
@@ -63,17 +58,45 @@ public class PluginRegister {
         return shutdownService;
     }
 
-    private void registerSchedulers() {
-        Bukkit.getScheduler().runTaskTimer(
-                plugin,
-                () -> {
-                    for (Player player : Bukkit.getOnlinePlayers()) {
-                        playerInventoryRepository.saveInventory(player.getUniqueId());
-                    }
-                },
-                20L * 60 * 5,
-                20L * 60 * 5
+    public ProtocolLibHook getProtocolLibHook() {
+        return protocolLibHook;
+    }
+
+    public GoliathPacket getGoliathPacket() {
+        return goliathPacket;
+    }
+
+    private void registerManagers() {
+        this.inventoryCollection = this.mongoManager.getMongoCollection("player_inventory");
+        this.playerInventoryRepository = new PlayerInventoryRepository(inventoryCollection);
+
+        this.enderchestCollection = this.mongoManager.getMongoCollection("player_enderchest");
+        this.enderchestRepository = new PlayerEnderchestRepository(enderchestCollection);
+        this.enderchestService = new EnderchestService(enderchestRepository);
+
+        this.shutdownService = new ShutdownService(
+                this.plugin.logger,
+                this.mongoManager,
+                this.enderchestService,
+                this.playerInventoryRepository
         );
+    }
+
+    private void registerPacketSystems() {
+        this.protocolLibHook = new ProtocolLibHook(plugin);
+        this.protocolLibHook.init();
+
+        this.goliathPacket = new GoliathPacket(protocolLibHook);
+
+        if (!this.goliathPacket.isEnabled()) {
+            plugin.getLogger().warning("[Goliath] Packet systems disabled because ProtocolLib is missing.");
+            return;
+        }
+
+        plugin.getLogger().info("[Goliath] Packet systems enabled.");
+    }
+
+    private void registerCommands() {
     }
 
     private void registerListeners() {
@@ -94,12 +117,6 @@ public class PluginRegister {
 
         plugin.getServer().getPluginManager()
                 .registerEvents(new InventoryListener(playerInventoryRepository), plugin);
-    }
-
-    private void registerCommands() {
-    }
-
-    private void registerManagers() {
     }
 
     private void registerPluginMessaging() {
@@ -125,6 +142,23 @@ public class PluginRegister {
                 plugin,
                 "goliath:history",
                 new HistorySnapshotMessenger()
+        );
+    }
+
+    private void registerSchedulers() {
+        Bukkit.getScheduler().runTaskTimer(
+                plugin,
+                () -> {
+                    if (playerInventoryRepository == null) {
+                        return;
+                    }
+
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        playerInventoryRepository.saveInventory(player.getUniqueId());
+                    }
+                },
+                20L * 60 * 5,
+                20L * 60 * 5
         );
     }
 }
