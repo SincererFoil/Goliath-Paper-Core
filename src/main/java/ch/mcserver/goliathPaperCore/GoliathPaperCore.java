@@ -2,6 +2,7 @@ package ch.mcserver.goliathPaperCore;
 
 import ch.mcserver.goliathPaperCore.common.database.mongodb.MongoDBManager;
 import ch.mcserver.goliathPaperCore.common.database.mysql.MySQLManager;
+import ch.mcserver.goliathPaperCore.common.database.mysql.PlayerRepository;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
@@ -14,10 +15,12 @@ import java.util.logging.Logger;
 public final class GoliathPaperCore extends JavaPlugin {
 
     public static ConfigurationNode config;
+    public static PlayerRepository playerRepository;
 
     private static GoliathPaperCore instance;
 
     public Logger logger;
+
     private MongoDBManager mongoManager;
     private MySQLManager mySQLManager;
     private PluginRegister pluginRegister;
@@ -35,6 +38,8 @@ public final class GoliathPaperCore extends JavaPlugin {
         mySQLManager = new MySQLManager();
         mySQLManager.connect();
 
+        playerRepository = new PlayerRepository(mySQLManager);
+
         pluginRegister = new PluginRegister(this, mongoManager, mySQLManager);
         pluginRegister.registerAll();
 
@@ -47,11 +52,23 @@ public final class GoliathPaperCore extends JavaPlugin {
             pluginRegister.getShutdownService().shutdown();
         }
 
+        if (mongoManager != null) {
+            mongoManager.disconnect();
+        }
+
+        if (mySQLManager != null) {
+            mySQLManager.disconnect();
+        }
+
         logger.info("[Goliath] Plugin Disabled!");
     }
 
     public static GoliathPaperCore getInstance() {
         return instance;
+    }
+
+    public static PlayerRepository getPlayerRepository() {
+        return playerRepository;
     }
 
     private void loadConfig() {

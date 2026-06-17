@@ -10,12 +10,15 @@ import ch.mcserver.goliathPaperCore.common.pluginmessage.GoliathTeleportMessenge
 import ch.mcserver.goliathPaperCore.common.pluginmessage.HistorySnapshotMessenger;
 import ch.mcserver.goliathPaperCore.common.service.CommandErrorService;
 import ch.mcserver.goliathPaperCore.common.service.ShutdownService;
+import ch.mcserver.goliathPaperCore.common.service.SpawnerService;
 import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestListener;
 import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestService;
 import ch.mcserver.goliathPaperCore.module.enderchest.PlayerEnderchestRepository;
 import ch.mcserver.goliathPaperCore.module.inventory.InventoryListener;
 import ch.mcserver.goliathPaperCore.module.inventory.PlayerInventoryRepository;
 import ch.mcserver.goliathPaperCore.module.spawn.SpawnListener;
+import ch.mcserver.goliathPaperCore.module.spawnstash.SpawnStashCommand;
+import ch.mcserver.goliathPaperCore.module.spawnstash.SpawnStashTabCompleter;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 import org.bukkit.Bukkit;
@@ -97,7 +100,8 @@ public class PluginRegister {
     }
 
     private void registerCommands() {
-    }
+        plugin.getCommand("spawnstash").setExecutor(new SpawnStashCommand());
+        plugin.getCommand("spawnstash").setTabCompleter(new SpawnStashTabCompleter());    }
 
     private void registerListeners() {
         boolean isSpawn = GoliathPaperCore.config
@@ -117,6 +121,9 @@ public class PluginRegister {
 
         plugin.getServer().getPluginManager()
                 .registerEvents(new InventoryListener(playerInventoryRepository), plugin);
+
+        plugin.getServer().getPluginManager()
+                .registerEvents(new SpawnerService(), plugin);
     }
 
     private void registerPluginMessaging() {
