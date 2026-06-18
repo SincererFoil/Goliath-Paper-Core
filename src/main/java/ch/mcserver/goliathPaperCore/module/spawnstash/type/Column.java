@@ -137,7 +137,7 @@ public class Column implements SpawnStash {
         TemporaryBlocks temp = new TemporaryBlocks();
 
         Block spawnerBlock = location.clone().add(0, 0, 0).getBlock();
-        Block amethystBlock = location.clone().add(1, 0, 0).getBlock();
+        Block amethystBlock = location.clone().add(1, 1, 0).getBlock();
         Block amethystBlock2 = location.clone().add(1, 2, 0).getBlock();
         Block chest = location.clone().add(1, 3, 0).getBlock();
 
