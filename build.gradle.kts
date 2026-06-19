@@ -16,6 +16,7 @@ dependencies {
     implementation(platform("org.mongodb:mongodb-driver-bom:5.8.0"))
     implementation("org.mongodb:mongodb-driver-sync")
     implementation("org.spongepowered:configurate-yaml:4.2.0")
+
     compileOnly("com.comphenix.protocol:ProtocolLib:5.3.0")
 }
 
@@ -24,18 +25,20 @@ java {
 }
 
 tasks {
-    shadowJar {
-        archiveClassifier.set("")
+    processResources {
+        val props = mapOf("version" to version)
+        filesMatching("plugin.yml") {
+            expand(props)
+        }
     }
 
-    register<Exec>("uploadJar") {
-        dependsOn(shadowJar)
+    shadowJar {
+        archiveClassifier.set("")
+        mergeServiceFiles()
+    }
 
-        commandLine(
-            "scp",
-            "build/libs/goliath-paper-core-1.0.jar",
-            "server@mcserver.ch:/data/download"
-        )
+    jar {
+        enabled = false
     }
 
     build {
@@ -43,15 +46,18 @@ tasks {
         finalizedBy("uploadJar")
     }
 
+    register<Exec>("uploadJar") {
+        dependsOn(shadowJar)
+
+        commandLine(
+            "scp",
+            "${layout.buildDirectory.get()}/libs/goliath-paper-core-1.0.jar",
+            "server@mcserver.ch:/data/download/goliath-paper-core-1.0.jar"
+        )
+    }
+
     runServer {
         minecraftVersion("1.21.11")
         jvmArgs("-Xms2G", "-Xmx2G")
-    }
-
-    processResources {
-        val props = mapOf("version" to version)
-        filesMatching("plugin.yml") {
-            expand(props)
-        }
     }
 }

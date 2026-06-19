@@ -46,10 +46,11 @@ public class GoliathTeleportMessenger implements PluginMessageListener {
 
         staff.setGameMode(GameMode.SPECTATOR);
         staff.teleport(target.getLocation());
+        staff.playSound(staff.getLocation(), Sound.ENTITY_PLAYER_TELEPORT, 1, 1);
+
 
         if (!gmspEnabled) {
             staff.setGameMode(GameMode.SURVIVAL);
-            staff.playSound(staff.getLocation(), Sound.ENTITY_PLAYER_TELEPORT, 1, 1);
         }  else  {
             staff.setGameMode(GameMode.SPECTATOR);
         }

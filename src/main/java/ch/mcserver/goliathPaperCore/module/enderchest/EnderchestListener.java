@@ -29,30 +29,24 @@ public class EnderchestListener implements Listener {
     public void onEnderChestOpen(PlayerInteractEvent event) {
         Block block = event.getClickedBlock();
         Player player = event.getPlayer();
-        if (event.getClickedBlock() == null) {
+        if (block == null) {
             return;
         }
-
+        if (player.isSneaking()) {
+            return;
+        }
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
-
-        if (event.getClickedBlock().getType() != Material.ENDER_CHEST) {
+        if (block.getType() != Material.ENDER_CHEST) {
             return;
         }
-
         event.setCancelled(true);
-
-
-        if (block.getState() instanceof EnderChest enderchest && !enderchest.isOpen()) {
-            enderchest.open();
-            openedEnderChests.put(player.getUniqueId(), enderchest);
+        if (block.getState() instanceof EnderChest enderChest && !enderChest.isOpen()) {
+            enderChest.open();
+            openedEnderChests.put(player.getUniqueId(), enderChest);
         }
-
         player.playSound(block.getLocation(), Sound.BLOCK_ENDER_CHEST_OPEN, 0.5f, 1.0f);
-
-
-
         enderchestService.openEnderchest(player);
     }
 
