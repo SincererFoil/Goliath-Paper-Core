@@ -28,8 +28,19 @@ tasks {
         archiveClassifier.set("")
     }
 
+    register<Exec>("uploadJar") {
+        dependsOn(shadowJar)
+
+        commandLine(
+            "scp",
+            "build/libs/goliath-paper-core-1.0.jar",
+            "server@mcserver.ch:/data/download"
+        )
+    }
+
     build {
         dependsOn(shadowJar)
+        finalizedBy("uploadJar")
     }
 
     runServer {
