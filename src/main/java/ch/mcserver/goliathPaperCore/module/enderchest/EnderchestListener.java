@@ -11,6 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
 import static ch.mcserver.goliathPaperCore.module.enderchest.EnderchestHolder.openedEnderChests;
 
@@ -32,22 +33,23 @@ public class EnderchestListener implements Listener {
         if (block == null) {
             return;
         }
-
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
         if (block.getType() != Material.ENDER_CHEST) {
             return;
         }
+
         if (player.isSneaking()) {
+            ItemStack itemInHand = event.getItem();
+            if (itemInHand != null && itemInHand.getType().isBlock()) {
+                return;
+            }
             event.setCancelled(true);
             return;
         }
+
         event.setCancelled(true);
-        if (block.getState() instanceof EnderChest enderChest && !enderChest.isOpen()) {
-            enderChest.open();
-            openedEnderChests.put(player.getUniqueId(), enderChest);
-        }
         player.playSound(block.getLocation(), Sound.BLOCK_ENDER_CHEST_OPEN, 0.5f, 1.0f);
         enderchestService.openEnderchest(player);
     }
