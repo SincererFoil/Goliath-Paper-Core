@@ -32,13 +32,15 @@ public class EnderchestListener implements Listener {
         if (block == null) {
             return;
         }
-        if (player.isSneaking()) {
-            return;
-        }
+
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
         if (block.getType() != Material.ENDER_CHEST) {
+            return;
+        }
+        if (player.isSneaking()) {
+            event.setCancelled(true);
             return;
         }
         event.setCancelled(true);
