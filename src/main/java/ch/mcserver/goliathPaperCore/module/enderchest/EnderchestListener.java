@@ -48,6 +48,10 @@ public class EnderchestListener implements Listener {
             event.setCancelled(true);
             return;
         }
+        if (block.getState() instanceof EnderChest enderChest) {
+            openedEnderChests.put(player.getUniqueId(), enderChest);
+            enderChest.open();
+        }
 
         event.setCancelled(true);
         player.playSound(block.getLocation(), Sound.BLOCK_ENDER_CHEST_OPEN, 0.5f, 1.0f);
