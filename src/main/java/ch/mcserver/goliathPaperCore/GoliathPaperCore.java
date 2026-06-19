@@ -2,6 +2,8 @@ package ch.mcserver.goliathPaperCore;
 
 import ch.mcserver.goliathPaperCore.common.database.mongodb.MongoDBManager;
 import ch.mcserver.goliathPaperCore.common.database.mysql.MySQLManager;
+import ch.mcserver.goliathPaperCore.common.database.mysql.PlayerLocationManager;
+import ch.mcserver.goliathPaperCore.common.database.mysql.PlayerLocationRepository;
 import ch.mcserver.goliathPaperCore.common.database.mysql.PlayerRepository;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.spongepowered.configurate.ConfigurationNode;
@@ -42,6 +44,9 @@ public final class GoliathPaperCore extends JavaPlugin {
 
         pluginRegister = new PluginRegister(this, mongoManager, mySQLManager);
         pluginRegister.registerAll();
+        PlayerLocationRepository repository = new PlayerLocationRepository(mySQLManager);
+        String serverName = config.node("server", "name").getString("goliath-unknown");
+        new PlayerLocationManager(this, repository, serverName);
 
         logger.info("[Goliath] Plugin Enabled!");
     }
@@ -92,6 +97,7 @@ public final class GoliathPaperCore extends JavaPlugin {
                 config.node("mysql", "password").set("");
 
                 config.node("server", "isSpawn").set(false);
+                config.node("server", "name").set("goliath-unknown");
 
                 loader.save(config);
                 logger.info("Config file has been created");

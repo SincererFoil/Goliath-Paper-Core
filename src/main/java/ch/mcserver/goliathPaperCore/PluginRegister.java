@@ -2,12 +2,15 @@ package ch.mcserver.goliathPaperCore;
 
 import ch.mcserver.goliathPaperCore.common.database.mongodb.MongoDBManager;
 import ch.mcserver.goliathPaperCore.common.database.mysql.MySQLManager;
+import ch.mcserver.goliathPaperCore.common.database.mysql.PlayerLocationManager;
+import ch.mcserver.goliathPaperCore.common.database.mysql.PlayerLocationRepository;
 import ch.mcserver.goliathPaperCore.common.packet.GoliathPacket;
 import ch.mcserver.goliathPaperCore.common.packet.ProtocolLibHook;
 import ch.mcserver.goliathPaperCore.common.pluginmessage.CommandUpdateMessenger;
 import ch.mcserver.goliathPaperCore.common.pluginmessage.GmspMessenger;
 import ch.mcserver.goliathPaperCore.common.pluginmessage.GoliathTeleportMessenger;
 import ch.mcserver.goliathPaperCore.common.pluginmessage.HistorySnapshotMessenger;
+import ch.mcserver.goliathPaperCore.common.pluginmessage.LocationPluginMessageListener;
 import ch.mcserver.goliathPaperCore.common.service.CommandErrorService;
 import ch.mcserver.goliathPaperCore.common.service.ShutdownService;
 import ch.mcserver.goliathPaperCore.common.service.SpawnerService;
@@ -36,6 +39,9 @@ public class PluginRegister {
 
     private MongoCollection<Document> inventoryCollection;
     private PlayerInventoryRepository playerInventoryRepository;
+
+    private PlayerLocationRepository playerLocationRepository;
+    private PlayerLocationManager playerLocationManager;
 
     private ShutdownService shutdownService;
 
@@ -77,6 +83,18 @@ public class PluginRegister {
         this.enderchestRepository = new PlayerEnderchestRepository(enderchestCollection);
         this.enderchestService = new EnderchestService(enderchestRepository);
 
+        this.playerLocationRepository = new PlayerLocationRepository(mySQLManager);
+
+        String serverName = GoliathPaperCore.config
+                .node("server", "name")
+                .getString("unknown");
+
+        this.playerLocationManager = new PlayerLocationManager(
+                plugin,
+                playerLocationRepository,
+                serverName
+        );
+
         this.shutdownService = new ShutdownService(
                 this.plugin.logger,
                 this.mongoManager,
@@ -101,7 +119,8 @@ public class PluginRegister {
 
     private void registerCommands() {
         plugin.getCommand("spawnstash").setExecutor(new SpawnStashCommand());
-        plugin.getCommand("spawnstash").setTabCompleter(new SpawnStashTabCompleter());    }
+        plugin.getCommand("spawnstash").setTabCompleter(new SpawnStashTabCompleter());
+    }
 
     private void registerListeners() {
         boolean isSpawn = GoliathPaperCore.config
@@ -150,6 +169,8 @@ public class PluginRegister {
                 "goliath:history",
                 new HistorySnapshotMessenger()
         );
+
+        new LocationPluginMessageListener(plugin);
     }
 
     private void registerSchedulers() {

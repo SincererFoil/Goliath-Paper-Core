@@ -2,6 +2,7 @@ package ch.mcserver.goliathPaperCore.module.spawnstash;
 
 import ch.mcserver.goliathPaperCore.GoliathPaperCore;
 import ch.mcserver.goliathPaperCore.common.database.mysql.PlayerObject;
+import ch.mcserver.goliathPaperCore.common.service.CommandErrorService;
 import ch.mcserver.goliathPaperCore.module.spawnstash.type.*;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -28,6 +29,7 @@ public class SpawnStashCommand implements CommandExecutor {
             return false;
         }
         if (!playerObject.isSfmode()) {
+            CommandErrorService.sendMessage(player);
             return false;
         }
         Location location = player.getLocation();
@@ -57,8 +59,7 @@ public class SpawnStashCommand implements CommandExecutor {
 
         switch (type) {
             case "cluster":
-                stash = new Single();
-                break;
+                return false;
             case "column":
                 stash = new Column();
                 break;
