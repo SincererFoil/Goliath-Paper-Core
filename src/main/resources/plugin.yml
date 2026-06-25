@@ -9,3 +9,5 @@ load: POSTWORLD
 commands:
   spawnstash:
     description: Spawns a Fake Base
+  rtp:
+    description: Teleports to a Random Location

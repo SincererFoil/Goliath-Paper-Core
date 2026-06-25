@@ -14,6 +14,8 @@ import ch.mcserver.goliathPaperCore.common.pluginmessage.LocationPluginMessageLi
 import ch.mcserver.goliathPaperCore.common.service.CommandErrorService;
 import ch.mcserver.goliathPaperCore.common.service.ShutdownService;
 import ch.mcserver.goliathPaperCore.common.service.SpawnerService;
+import ch.mcserver.goliathPaperCore.module.randomteleport.RandomTeleportCommand;
+import ch.mcserver.goliathPaperCore.module.randomteleport.RandomTeleportMainListener;
 import ch.mcserver.goliathPaperCore.module.spawn.DoubleJumpBoostListener;
 import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestListener;
 import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestService;
@@ -27,6 +29,8 @@ import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+
+import java.util.List;
 
 public class PluginRegister {
 
@@ -121,6 +125,7 @@ public class PluginRegister {
     private void registerCommands() {
         plugin.getCommand("spawnstash").setExecutor(new SpawnStashCommand());
         plugin.getCommand("spawnstash").setTabCompleter(new SpawnStashTabCompleter());
+        plugin.getCommand("rtp").setExecutor(new RandomTeleportCommand());
     }
 
     private void registerListeners() {
@@ -147,6 +152,9 @@ public class PluginRegister {
 
         plugin.getServer().getPluginManager()
                 .registerEvents(new SpawnerService(), plugin);
+
+        plugin.getServer().getPluginManager()
+                .registerEvents(new RandomTeleportMainListener(), plugin);
 
     }
 
