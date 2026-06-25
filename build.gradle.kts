@@ -18,6 +18,9 @@ dependencies {
     implementation("org.spongepowered:configurate-yaml:4.2.0")
 
     compileOnly("com.comphenix.protocol:ProtocolLib:5.3.0")
+
+    implementation("com.zaxxer:HikariCP:5.1.0")
+    implementation("com.mysql:mysql-connector-j:9.3.0")
 }
 
 java {

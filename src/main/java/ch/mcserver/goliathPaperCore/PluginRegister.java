@@ -179,7 +179,7 @@ public class PluginRegister {
     }
 
     private void registerSchedulers() {
-        Bukkit.getScheduler().runTaskTimer(
+        Bukkit.getScheduler().runTaskTimerAsynchronously(
                 plugin,
                 () -> {
                     if (playerInventoryRepository == null) {
