@@ -47,6 +47,9 @@ public class GmspMessenger implements PluginMessageListener {
 
         } else {
 
+            if (player.getSpectatorTarget() != null) {
+                player.teleport(player.getWorld().getSpawnLocation());
+            }
             player.setGameMode(GameMode.SURVIVAL);
         }
     }

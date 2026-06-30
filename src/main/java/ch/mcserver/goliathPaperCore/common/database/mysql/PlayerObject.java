@@ -15,12 +15,12 @@ public class PlayerObject {
     private boolean sfmode;
     private boolean debugMode;
     private boolean gmsp;
-    private boolean vanished;
 
     private float flySpeed;
 
     private long firstJoin;
     private long lastJoin;
+    private boolean creative;
 
 
     public PlayerObject(
@@ -31,10 +31,10 @@ public class PlayerObject {
             boolean sfmode,
             boolean debugMode,
             boolean gmsp,
-            boolean vanished,
             float flySpeed,
             long firstJoin,
-            long lastJoinpunishments
+            long lastJoin,
+            boolean creative
     ) {
 
         this.uuid = uuid;
@@ -46,12 +46,12 @@ public class PlayerObject {
         this.sfmode = sfmode;
         this.debugMode = debugMode;
         this.gmsp = gmsp;
-        this.vanished = vanished;
 
         this.flySpeed = flySpeed;
 
         this.firstJoin = firstJoin;
         this.lastJoin = lastJoin;
+        this.creative = creative;
 
     }
 
@@ -83,10 +83,6 @@ public class PlayerObject {
         return gmsp;
     }
 
-    public boolean isVanished() {
-        return vanished;
-    }
-
     public float getFlySpeed() {
         return flySpeed;
     }
@@ -97,6 +93,10 @@ public class PlayerObject {
 
     public long getLastJoin() {
         return lastJoin;
+    }
+
+    public boolean isCreative() {
+        return creative;
     }
 
     public void setUuid(UUID uuid) {
@@ -127,10 +127,6 @@ public class PlayerObject {
         this.gmsp = gmsp;
     }
 
-    public void setVanished(boolean vanished) {
-        this.vanished = vanished;
-    }
-
     public void setFlySpeed(float flySpeed) {
         this.flySpeed = flySpeed;
     }
@@ -141,6 +137,10 @@ public class PlayerObject {
 
     public void setLastJoin(long lastJoin) {
         this.lastJoin = lastJoin;
+    }
+
+    public void setCreative(boolean creative) {
+        this.creative = creative;
     }
 
 }

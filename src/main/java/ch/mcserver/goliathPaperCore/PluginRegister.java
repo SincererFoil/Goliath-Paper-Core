@@ -176,6 +176,10 @@ public class PluginRegister {
         );
 
         new LocationPluginMessageListener(plugin);
+
+        ch.mcserver.goliathPaperCore.common.pluginmessage.CreativeMessenger creativeMessenger =
+                new ch.mcserver.goliathPaperCore.common.pluginmessage.CreativeMessenger(plugin);
+        plugin.getServer().getPluginManager().registerEvents(creativeMessenger, plugin);
     }
 
     private void registerSchedulers() {

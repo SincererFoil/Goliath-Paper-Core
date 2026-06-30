@@ -80,10 +80,10 @@ public class PlayerRepository {
                         resultSet.getBoolean("sfmode"),
                         resultSet.getBoolean("debug_mode"),
                         resultSet.getBoolean("gmsp"),
-                        resultSet.getBoolean("vanished"),
                         resultSet.getFloat("fly_speed"),
                         resultSet.getLong("first_join"),
-                        resultSet.getLong("last_join")
+                        resultSet.getLong("last_join"),
+                        resultSet.getBoolean("creative")
                 );
             }
 
@@ -118,10 +118,10 @@ public class PlayerRepository {
                         resultSet.getBoolean("sfmode"),
                         resultSet.getBoolean("debug_mode"),
                         resultSet.getBoolean("gmsp"),
-                        resultSet.getBoolean("vanished"),
                         resultSet.getFloat("fly_speed"),
                         resultSet.getLong("first_join"),
-                        resultSet.getLong("last_join")
+                        resultSet.getLong("last_join"),
+                        resultSet.getBoolean("creative")
                 );
             }
 
@@ -138,8 +138,8 @@ public class PlayerRepository {
              PreparedStatement statement = connection.prepareStatement(
                      """
                      UPDATE players
-                     SET name = ?, prefix = ?, sfmode = ?, debug_mode = ?, gmsp = ?, vanished = ?,
-                         fly_speed = ?, current_server = ?, last_join = ?
+                     SET name = ?, prefix = ?, sfmode = ?, debug_mode = ?, gmsp = ?,
+                         fly_speed = ?, current_server = ?, last_join = ?, creative = ?
                      WHERE uuid = ?
                      """
              )) {
@@ -149,10 +149,10 @@ public class PlayerRepository {
             statement.setBoolean(3, playerObject.isSfmode());
             statement.setBoolean(4, playerObject.isDebugMode());
             statement.setBoolean(5, playerObject.isGmsp());
-            statement.setBoolean(6, playerObject.isVanished());
-            statement.setFloat(7, playerObject.getFlySpeed());
-            statement.setString(8, playerObject.getCurrentServer());
-            statement.setLong(9, playerObject.getLastJoin());
+            statement.setFloat(6, playerObject.getFlySpeed());
+            statement.setString(7, playerObject.getCurrentServer());
+            statement.setLong(8, playerObject.getLastJoin());
+            statement.setBoolean(9, playerObject.isCreative());
             statement.setString(10, playerObject.getUuid().toString());
 
             statement.executeUpdate();
@@ -168,8 +168,8 @@ public class PlayerRepository {
              PreparedStatement statement = connection.prepareStatement(
                      """
                      UPDATE players
-                     SET name = ?, prefix = ?, sfmode = ?, debug_mode = ?, gmsp = ?, vanished = ?,
-                         fly_speed = ?, current_server = ?, last_join = ?
+                     SET name = ?, prefix = ?, sfmode = ?, debug_mode = ?, gmsp = ?,
+                         fly_speed = ?, current_server = ?, last_join = ?, creative = ?
                      WHERE uuid = ?
                      """
              )) {
@@ -179,10 +179,10 @@ public class PlayerRepository {
             statement.setBoolean(3, playerObject.isSfmode());
             statement.setBoolean(4, playerObject.isDebugMode());
             statement.setBoolean(5, playerObject.isGmsp());
-            statement.setBoolean(6, playerObject.isVanished());
-            statement.setFloat(7, playerObject.getFlySpeed());
-            statement.setString(8, playerObject.getCurrentServer());
-            statement.setLong(9, playerObject.getLastJoin());
+            statement.setFloat(6, playerObject.getFlySpeed());
+            statement.setString(7, playerObject.getCurrentServer());
+            statement.setLong(8, playerObject.getLastJoin());
+            statement.setBoolean(9, playerObject.isCreative());
             statement.setString(10, playerObject.getUuid().toString());
 
             statement.executeUpdate();
