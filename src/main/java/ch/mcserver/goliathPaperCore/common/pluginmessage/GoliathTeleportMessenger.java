@@ -47,10 +47,10 @@ public class GoliathTeleportMessenger implements PluginMessageListener {
         Player staff = Bukkit.getPlayer(staffUuid);
         Player target = Bukkit.getPlayer(targetUuid);
 
-        if (staff == null || target == null) {
+        if (staff == null) {
             return;
         }
-        if (!target.isOnline()) {
+        if (target == null || !target.isOnline()) {
             PlayerLocationObject targetLocation = playerLocationRepository.loadPlayer(targetUuid);
             if (targetLocation == null) {
                 return;
