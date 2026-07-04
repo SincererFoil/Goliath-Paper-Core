@@ -154,7 +154,7 @@ public class PluginRegister {
         plugin.getServer().getMessenger().registerIncomingPluginChannel(
                 plugin,
                 "goliath:gtp",
-                new GoliathTeleportMessenger()
+                new GoliathTeleportMessenger(playerLocationRepository)
         );
 
         plugin.getServer().getMessenger().registerIncomingPluginChannel(
