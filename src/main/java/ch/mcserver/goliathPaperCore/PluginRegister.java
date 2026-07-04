@@ -18,6 +18,9 @@ import ch.mcserver.goliathPaperCore.module.spawn.DoubleJumpBoostListener;
 import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestListener;
 import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestService;
 import ch.mcserver.goliathPaperCore.module.enderchest.PlayerEnderchestRepository;
+import ch.mcserver.goliathPaperCore.module.enderchest.command.GoliathEnderchestCommand;
+import ch.mcserver.goliathPaperCore.module.enderchest.command.GoliathEnderchestViewListener;
+import ch.mcserver.goliathPaperCore.module.enderchest.command.ShowGoliathEnderchest;
 import ch.mcserver.goliathPaperCore.module.inventory.InventoryListener;
 import ch.mcserver.goliathPaperCore.module.inventory.PlayerInventoryRepository;
 import ch.mcserver.goliathPaperCore.module.spawn.SpawnListener;
@@ -121,6 +124,9 @@ public class PluginRegister {
     private void registerCommands() {
         plugin.getCommand("spawnstash").setExecutor(new SpawnStashCommand());
         plugin.getCommand("spawnstash").setTabCompleter(new SpawnStashTabCompleter());
+
+        ShowGoliathEnderchest showGoliathEnderchest = new ShowGoliathEnderchest(enderchestRepository);
+        plugin.getCommand("echest").setExecutor(new GoliathEnderchestCommand(showGoliathEnderchest));
     }
 
     private void registerListeners() {
@@ -141,6 +147,9 @@ public class PluginRegister {
 
         plugin.getServer().getPluginManager()
                 .registerEvents(new EnderchestListener(enderchestService, enderchestRepository), plugin);
+
+        plugin.getServer().getPluginManager()
+                .registerEvents(new GoliathEnderchestViewListener(enderchestRepository), plugin);
 
         plugin.getServer().getPluginManager()
                 .registerEvents(new InventoryListener(playerInventoryRepository), plugin);

@@ -9,3 +9,6 @@ load: POSTWORLD
 commands:
   spawnstash:
     description: Spawns a Fake Base
+  echest:
+    description: View or edit a player's enderchest
+    aliases: [ec, enderchest]
