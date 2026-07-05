@@ -14,6 +14,7 @@ import ch.mcserver.goliathPaperCore.common.pluginmessage.LocationPluginMessageLi
 import ch.mcserver.goliathPaperCore.common.service.CommandErrorService;
 import ch.mcserver.goliathPaperCore.common.service.ShutdownService;
 import ch.mcserver.goliathPaperCore.common.service.SpawnerService;
+import ch.mcserver.goliathPaperCore.module.history.ShowHistory;
 import ch.mcserver.goliathPaperCore.module.spawn.DoubleJumpBoostListener;
 import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestListener;
 import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestService;
@@ -127,6 +128,7 @@ public class PluginRegister {
 
         ShowGoliathEnderchest showGoliathEnderchest = new ShowGoliathEnderchest(enderchestRepository);
         plugin.getCommand("echest").setExecutor(new GoliathEnderchestCommand(showGoliathEnderchest));
+        plugin.getCommand("history").setExecutor(new ShowHistory());
     }
 
     private void registerListeners() {
@@ -156,6 +158,9 @@ public class PluginRegister {
 
         plugin.getServer().getPluginManager()
                 .registerEvents(new SpawnerService(), plugin);
+
+        plugin.getServer().getPluginManager()
+                .registerEvents(new ShowHistory(), plugin);
 
     }
 

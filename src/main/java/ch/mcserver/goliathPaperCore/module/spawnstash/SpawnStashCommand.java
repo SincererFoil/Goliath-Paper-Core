@@ -59,7 +59,8 @@ public class SpawnStashCommand implements CommandExecutor {
 
         switch (type) {
             case "cluster":
-                return false;
+                stash = new Column();
+                break;
             case "column":
                 stash = new Column();
                 break;
