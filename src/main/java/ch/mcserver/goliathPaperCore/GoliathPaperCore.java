@@ -1,5 +1,6 @@
 package ch.mcserver.goliathPaperCore;
 
+import ch.mcserver.goliathPaperCore.common.database.mongodb.HistoryRepository;
 import ch.mcserver.goliathPaperCore.common.database.mongodb.MongoDBManager;
 import ch.mcserver.goliathPaperCore.common.database.mysql.MySQLManager;
 import ch.mcserver.goliathPaperCore.common.database.mysql.PlayerRepository;
@@ -16,6 +17,7 @@ public final class GoliathPaperCore extends JavaPlugin {
 
     public static ConfigurationNode config;
     public static PlayerRepository playerRepository;
+    public static HistoryRepository historyRepository;
 
     private static GoliathPaperCore instance;
 
@@ -69,6 +71,10 @@ public final class GoliathPaperCore extends JavaPlugin {
 
     public static PlayerRepository getPlayerRepository() {
         return playerRepository;
+    }
+
+    public static HistoryRepository getHistoryRepository() {
+        return historyRepository;
     }
 
     private void loadConfig() {

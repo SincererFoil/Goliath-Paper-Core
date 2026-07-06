@@ -1,5 +1,6 @@
 package ch.mcserver.goliathPaperCore;
 
+import ch.mcserver.goliathPaperCore.common.database.mongodb.HistoryRepository;
 import ch.mcserver.goliathPaperCore.common.database.mongodb.MongoDBManager;
 import ch.mcserver.goliathPaperCore.common.database.mysql.MySQLManager;
 import ch.mcserver.goliathPaperCore.common.database.mysql.PlayerLocationManager;
@@ -14,6 +15,7 @@ import ch.mcserver.goliathPaperCore.common.pluginmessage.LocationPluginMessageLi
 import ch.mcserver.goliathPaperCore.common.service.CommandErrorService;
 import ch.mcserver.goliathPaperCore.common.service.ShutdownService;
 import ch.mcserver.goliathPaperCore.common.service.SpawnerService;
+import ch.mcserver.goliathPaperCore.module.history.HistoryGuiListener;
 import ch.mcserver.goliathPaperCore.module.history.ShowHistory;
 import ch.mcserver.goliathPaperCore.module.spawn.DoubleJumpBoostListener;
 import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestListener;
@@ -44,6 +46,9 @@ public class PluginRegister {
 
     private MongoCollection<Document> inventoryCollection;
     private PlayerInventoryRepository playerInventoryRepository;
+
+    private MongoCollection<Document> historyCollection;
+    private HistoryRepository historyRepository;
 
     private PlayerLocationRepository playerLocationRepository;
     private PlayerLocationManager playerLocationManager;
@@ -87,6 +92,10 @@ public class PluginRegister {
         this.enderchestCollection = this.mongoManager.getMongoCollection("player_enderchest");
         this.enderchestRepository = new PlayerEnderchestRepository(enderchestCollection);
         this.enderchestService = new EnderchestService(enderchestRepository);
+
+        this.historyCollection = this.mongoManager.getMongoCollection("history_events");
+        this.historyRepository = new HistoryRepository(historyCollection);
+        GoliathPaperCore.historyRepository = this.historyRepository;
 
         this.playerLocationRepository = new PlayerLocationRepository(mySQLManager);
 
@@ -160,7 +169,7 @@ public class PluginRegister {
                 .registerEvents(new SpawnerService(), plugin);
 
         plugin.getServer().getPluginManager()
-                .registerEvents(new ShowHistory(), plugin);
+                .registerEvents(new HistoryGuiListener(), plugin);
 
     }
 
