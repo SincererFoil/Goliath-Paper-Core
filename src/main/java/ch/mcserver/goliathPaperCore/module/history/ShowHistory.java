@@ -107,8 +107,9 @@ public class ShowHistory implements CommandExecutor {
         ItemMeta meta = item.getItemMeta();
 
         String date = Instant.ofEpochMilli(event.createdAt())
-                .atZone(ZoneId.systemDefault())
+                .atZone(ZoneId.of("Europe/Zurich"))
                 .format(DATE_FORMAT);
+
 
         meta.setDisplayName(ChatColor.YELLOW + date + " " + event.title());
 
