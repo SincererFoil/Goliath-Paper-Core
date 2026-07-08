@@ -31,7 +31,6 @@ public class Column implements SpawnStash {
                 storageColumn(location);
                 break;
 
-
         }
 
     }
@@ -75,7 +74,6 @@ public class Column implements SpawnStash {
                 spawner.setSpawnedType(EntityType.CREEPER);
                 break;
 
-
             case 4:
                 spawner.setSpawnedType(EntityType.SPIDER);
                 break;
@@ -85,7 +83,6 @@ public class Column implements SpawnStash {
 
         temp.startAutoRestore();
     }
-
 
     private void crafterColumn(Location location) {
         TemporaryBlocks temp = new TemporaryBlocks();
@@ -100,12 +97,10 @@ public class Column implements SpawnStash {
         temp.add(craftingTableBlock);
         temp.add(amethyst);
 
-
         spawnerBlock.setType(Material.SPAWNER);
         amethystBlock.setType(Material.AMETHYST_BLOCK);
         craftingTableBlock.setType(Material.CRAFTING_TABLE);
         amethyst.setType(Material.AMETHYST_CLUSTER);
-
 
         CreatureSpawner spawner = (CreatureSpawner) spawnerBlock.getState();
         int random = ThreadLocalRandom.current().nextInt(1, 5);
@@ -121,7 +116,6 @@ public class Column implements SpawnStash {
             case 3:
                 spawner.setSpawnedType(EntityType.CREEPER);
                 break;
-
 
             case 4:
                 spawner.setSpawnedType(EntityType.SPIDER);
@@ -165,7 +159,6 @@ public class Column implements SpawnStash {
             case 3:
                 spawner.setSpawnedType(EntityType.CREEPER);
                 break;
-
 
             case 4:
                 spawner.setSpawnedType(EntityType.SPIDER);

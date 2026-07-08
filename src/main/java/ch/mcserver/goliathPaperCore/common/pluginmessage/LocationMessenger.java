@@ -11,11 +11,11 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 
 import java.util.UUID;
 
-public class LocationPluginMessageListener implements PluginMessageListener {
+public class LocationMessenger implements PluginMessageListener {
 
     private final Plugin plugin;
 
-    public LocationPluginMessageListener(Plugin plugin) {
+    public LocationMessenger(Plugin plugin) {
         this.plugin = plugin;
 
         Bukkit.getMessenger().registerIncomingPluginChannel(

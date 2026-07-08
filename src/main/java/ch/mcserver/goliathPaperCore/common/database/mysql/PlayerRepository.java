@@ -4,15 +4,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class PlayerRepository {
 
-    private final ch.mcserver.goliathPaperCore.common.database.mysql.MySQLManager mySQLManager;
-    private static final ZoneId ZONE = ZoneId.of("Europe/Zurich");
+    private final MySQLManager mySQLManager;
 
     public PlayerRepository(MySQLManager mySQLManager) {
         this.mySQLManager = mySQLManager;
@@ -132,7 +130,6 @@ public class PlayerRepository {
         return null;
     }
 
-
     public void save(PlayerObject playerObject) {
         try (Connection connection = mySQLManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(
@@ -161,7 +158,6 @@ public class PlayerRepository {
             exception.printStackTrace();
         }
     }
-
 
     public void savePlayerDataOnly(PlayerObject playerObject) {
         try (Connection connection = mySQLManager.getConnection();

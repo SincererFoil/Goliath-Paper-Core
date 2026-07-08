@@ -6,8 +6,6 @@ import ch.mcserver.goliathPaperCore.common.database.mysql.MySQLManager;
 import ch.mcserver.goliathPaperCore.common.database.mysql.PlayerRepository;
 import ch.mcserver.goliathPaperCore.module.history.snapshot.PlayerInventorySnapshotRepository;
 import ch.mcserver.goliathPaperCore.module.inventory.PlayerInventoryRepository;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
@@ -80,7 +78,7 @@ public final class GoliathPaperCore extends JavaPlugin {
     }
 
     public static PlayerInventorySnapshotRepository getPlayerInventorySnapshotRepository() {
-        return  playerInventorySnapshotRepository;
+        return playerInventorySnapshotRepository;
     }
 
     public static HistoryRepository getHistoryRepository() {

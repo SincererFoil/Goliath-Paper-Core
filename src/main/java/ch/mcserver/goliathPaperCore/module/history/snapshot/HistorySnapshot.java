@@ -1,8 +1,6 @@
 package ch.mcserver.goliathPaperCore.module.history.snapshot;
 
 import ch.mcserver.goliathPaperCore.GoliathPaperCore;
-import ch.mcserver.goliathPaperCore.common.database.mongodb.HistoryRepository;
-import ch.mcserver.goliathPaperCore.common.database.mysql.PlayerObject;
 import ch.mcserver.goliathPaperCore.common.database.mysql.PlayerObjectManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -32,7 +30,5 @@ public class HistorySnapshot {
         String offhand = toBase64(new ItemStack[]{player.getInventory().getItemInOffHand()});
 
         GoliathPaperCore.getPlayerInventorySnapshotRepository().createInventorySnapshot(playerUUID, historyUUID, inventory, armor, offhand);
-
     }
-
 }

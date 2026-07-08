@@ -1,7 +1,6 @@
 package ch.mcserver.goliathPaperCore.module.history.gui;
 
-import ch.mcserver.goliathPaperCore.module.history.gui.specific.GUI;
-import net.kyori.adventure.text.Component;
+import ch.mcserver.goliathPaperCore.module.history.gui.specific.SpecificHistoryGui;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -71,10 +70,7 @@ public class HistoryGuiListener implements Listener {
 
         if (historyUUID != null) {
             event.getInventory().close();
-            GUI.openSpecificInventory(player, historyUUID);
+            SpecificHistoryGui.openSpecificInventory(player, historyUUID);
         }
-
-
-
     }
 }

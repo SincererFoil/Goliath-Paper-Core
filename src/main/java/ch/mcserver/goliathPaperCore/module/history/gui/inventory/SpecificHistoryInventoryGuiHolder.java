@@ -1,15 +1,12 @@
 package ch.mcserver.goliathPaperCore.module.history.gui.inventory;
 
-import ch.mcserver.goliathPaperCore.module.history.gui.HistoryEvent;
+import ch.mcserver.goliathPaperCore.module.history.HistoryEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
 import java.util.List;
-import java.util.UUID;
-
 
 public class SpecificHistoryInventoryGuiHolder implements InventoryHolder {
-
 
     private final List<HistoryEvent> events;
     private Inventory inventory;

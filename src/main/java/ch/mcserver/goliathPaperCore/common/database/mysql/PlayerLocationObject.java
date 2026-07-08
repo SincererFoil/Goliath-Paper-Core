@@ -4,20 +4,21 @@ import java.sql.Timestamp;
 import java.util.UUID;
 
 public class PlayerLocationObject {
+
     private UUID uuid;
     private Timestamp timestamp;
-    private float Yaw;
-    private float Pitch;
+    private float yaw;
+    private float pitch;
     private int x;
-    private  int y;
-    private  int z;
+    private int y;
+    private int z;
     private String server;
 
     public PlayerLocationObject(UUID uuid, Timestamp timestamp, float yaw, float pitch, int x, int y, int z, String server) {
         this.uuid = uuid;
         this.timestamp = timestamp;
-        Yaw = yaw;
-        Pitch = pitch;
+        this.yaw = yaw;
+        this.pitch = pitch;
         this.x = x;
         this.y = y;
         this.z = z;
@@ -41,19 +42,19 @@ public class PlayerLocationObject {
     }
 
     public float getYaw() {
-        return Yaw;
+        return yaw;
     }
 
     public void setYaw(float yaw) {
-        Yaw = yaw;
+        this.yaw = yaw;
     }
 
     public float getPitch() {
-        return Pitch;
+        return pitch;
     }
 
     public void setPitch(float pitch) {
-        Pitch = pitch;
+        this.pitch = pitch;
     }
 
     public int getX() {
@@ -84,8 +85,7 @@ public class PlayerLocationObject {
         return server;
     }
 
-    public  void setServer(String server) {
+    public void setServer(String server) {
         this.server = server;
     }
-
 }

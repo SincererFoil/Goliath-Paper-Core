@@ -44,7 +44,5 @@ public class HistorySnapshotMessenger implements PluginMessageListener {
         }
         HistorySnapshot.createSnapshot(uuid, historyUUID, type);
         GoliathPaperCore.getInstance().logger.log(Level.FINE, "[Goliath] Snapshot is not finished yet!");
-
-
     }
 }

@@ -10,7 +10,6 @@ import org.bukkit.entity.EntityType;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-
 public class Single implements SpawnStash {
 
     @Override
@@ -44,7 +43,6 @@ public class Single implements SpawnStash {
     }
 
     private void crafterSingleStash(Location location) {
-
         TemporaryBlocks temp = new TemporaryBlocks();
 
         Block spawnerBlock = location.clone().add(0, 0, 0).getBlock();
@@ -58,7 +56,6 @@ public class Single implements SpawnStash {
         temp.add(craftingTable2);
         temp.add(decoration1);
         temp.add(decoration2);
-
 
         spawnerBlock.setType(Material.SPAWNER);
         craftingTable1.setType(Material.CRAFTING_TABLE);
@@ -86,29 +83,22 @@ public class Single implements SpawnStash {
         spawner.setSpawnCount(0);
         spawner.update();
         temp.startAutoRestore();
-
     }
 
     private void snowSingleStash(Location location) {
-
         TemporaryBlocks temp = new TemporaryBlocks();
 
         Block spawnerBlock = location.clone().add(0, 0, 0).getBlock();
         Block snowBlock = location.clone().add(0, 0, -1).getBlock();
         Block cake = location.clone().add(0, 1, -1).getBlock();
 
-
-
         temp.add(spawnerBlock);
         temp.add(snowBlock);
         temp.add(cake);
 
-
-
         spawnerBlock.setType(Material.SPAWNER);
         snowBlock.setType(Material.SNOW_BLOCK);
         cake.setType(Material.CAKE);
-
 
         CreatureSpawner spawner = (CreatureSpawner) spawnerBlock.getState();
         int random = ThreadLocalRandom.current().nextInt(1, 5);
@@ -131,21 +121,16 @@ public class Single implements SpawnStash {
         spawner.setSpawnCount(0);
         spawner.update();
         temp.startAutoRestore();
-
     }
 
     private void oneSingleStash(Location location) {
-
         TemporaryBlocks temp = new TemporaryBlocks();
 
         Block spawnerBlock = location.clone().add(0, 0, 0).getBlock();
 
         temp.add(spawnerBlock);
 
-
-
         spawnerBlock.setType(Material.SPAWNER);
-
 
         CreatureSpawner spawner = (CreatureSpawner) spawnerBlock.getState();
         int random = ThreadLocalRandom.current().nextInt(1, 5);
@@ -167,7 +152,6 @@ public class Single implements SpawnStash {
         spawner.setSpawnCount(0);
         spawner.update();
         temp.startAutoRestore();
-
     }
 
     private void smallCraftingSingleStash(Location location) {
@@ -220,13 +204,11 @@ public class Single implements SpawnStash {
         temp.add(amethystCluster);
         temp.add(amethystCluster2);
 
-
         spawnerBlock.setType(Material.SPAWNER);
         craftingTable.setType(Material.CRAFTING_TABLE);
         enderchest.setType(Material.ENDER_CHEST);
         amethystCluster.setType(Material.AMETHYST_CLUSTER);
         amethystCluster2.setType(Material.AMETHYST_CLUSTER);
-
 
         CreatureSpawner spawner = (CreatureSpawner) spawnerBlock.getState();
         int random = ThreadLocalRandom.current().nextInt(1, 5);
@@ -260,11 +242,9 @@ public class Single implements SpawnStash {
         temp.add(enderchest);
         temp.add(candle);
 
-
         spawnerBlock.setType(Material.SPAWNER);
         enderchest.setType(Material.ENDER_CHEST);
         candle.setType(Material.CANDLE);
-
 
         CreatureSpawner spawner = (CreatureSpawner) spawnerBlock.getState();
         int random = ThreadLocalRandom.current().nextInt(1, 5);
@@ -287,6 +267,4 @@ public class Single implements SpawnStash {
         spawner.update();
         temp.startAutoRestore();
     }
-
 }
-

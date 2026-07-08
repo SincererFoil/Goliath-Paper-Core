@@ -1,6 +1,6 @@
 package ch.mcserver.goliathPaperCore.common.database.mongodb;
 
-import ch.mcserver.goliathPaperCore.module.history.gui.HistoryEvent;
+import ch.mcserver.goliathPaperCore.module.history.HistoryEvent;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;

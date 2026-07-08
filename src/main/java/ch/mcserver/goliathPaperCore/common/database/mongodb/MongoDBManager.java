@@ -12,9 +12,11 @@ import java.util.logging.Logger;
 
 public class MongoDBManager {
 
+    private final Logger logger = GoliathPaperCore.getInstance().getLogger();
+
     private MongoClient mongoClient;
     private MongoDatabase mongoDatabase;
-    private Logger logger = GoliathPaperCore.getInstance().getLogger();
+
     public void connect() {
         try {
             String uri = GoliathPaperCore.config.node("mongodb", "uri").getString();
@@ -34,12 +36,14 @@ public class MongoDBManager {
         return mongoDatabase;
     }
 
-    public MongoCollection<Document> getMongoCollection(String name) {return mongoDatabase.getCollection(name);}
+    public MongoCollection<Document> getMongoCollection(String name) {
+        return mongoDatabase.getCollection(name);
+    }
 
     public void disconnect() {
         if (mongoClient != null) {
             mongoClient.close();
             logger.log(Level.INFO, "[Goliath] MongoDB closed");
-        }}
-
+        }
+    }
 }

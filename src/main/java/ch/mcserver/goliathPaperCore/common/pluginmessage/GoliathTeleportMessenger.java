@@ -70,6 +70,5 @@ public class GoliathTeleportMessenger implements PluginMessageListener {
         }
 
         staff.playSound(staff.getLocation(), Sound.ENTITY_PLAYER_TELEPORT, 1, 1);
-
     }
 }

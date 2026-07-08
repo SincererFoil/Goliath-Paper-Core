@@ -1,4 +1,4 @@
-package ch.mcserver.goliathPaperCore.module.history.gui;
+package ch.mcserver.goliathPaperCore.module.history;
 
 import java.util.UUID;
 
@@ -9,7 +9,5 @@ public record HistoryEvent(
         String title,
         String server,
         long createdAt
-)
-{
-
+) {
 }

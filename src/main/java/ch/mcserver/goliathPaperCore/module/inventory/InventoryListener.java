@@ -24,5 +24,4 @@ public class InventoryListener implements Listener {
     public void onQuit(PlayerQuitEvent event) {
         repository.saveInventory(event.getPlayer().getUniqueId());
     }
-
 }

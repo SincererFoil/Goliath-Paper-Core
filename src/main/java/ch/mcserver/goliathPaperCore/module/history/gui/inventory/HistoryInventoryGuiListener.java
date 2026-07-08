@@ -1,8 +1,7 @@
 package ch.mcserver.goliathPaperCore.module.history.gui.inventory;
 
-import ch.mcserver.goliathPaperCore.module.history.gui.HistoryEvent;
-import ch.mcserver.goliathPaperCore.module.history.gui.specific.GUI;
-import ch.mcserver.goliathPaperCore.module.history.gui.specific.SpecificHistoryGuiHolder;
+import ch.mcserver.goliathPaperCore.module.history.HistoryEvent;
+import ch.mcserver.goliathPaperCore.module.history.gui.specific.SpecificHistoryGui;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -22,14 +21,11 @@ public class HistoryInventoryGuiListener implements Listener {
         HumanEntity humanEntity = event.getWhoClicked();
         if (!(humanEntity instanceof Player)) return;
 
-        Player player = (Player)  humanEntity;
+        Player player = (Player) humanEntity;
 
         if (!player.hasPermission("goliath.*")) {
             event.setCancelled(true);
         }
-
-
-
     }
 
     @EventHandler
@@ -45,12 +41,12 @@ public class HistoryInventoryGuiListener implements Listener {
 
         if (!(humanEntity instanceof Player)) return;
 
-        Player player = (Player)  humanEntity;
+        Player player = (Player) humanEntity;
 
         if (event.getRawSlot() == 36) {
             event.getInventory().close();
             event.setCancelled(true);
-            GUI.openSpecificInventory(player, UUID.fromString(historyEvent.historyId()));
+            SpecificHistoryGui.openSpecificInventory(player, UUID.fromString(historyEvent.historyId()));
         }
     }
 }

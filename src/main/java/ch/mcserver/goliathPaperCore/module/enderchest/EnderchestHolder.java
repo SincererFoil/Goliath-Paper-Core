@@ -25,5 +25,4 @@ public class EnderchestHolder implements InventoryHolder {
     public Inventory getInventory() {
         return null;
     }
-
 }

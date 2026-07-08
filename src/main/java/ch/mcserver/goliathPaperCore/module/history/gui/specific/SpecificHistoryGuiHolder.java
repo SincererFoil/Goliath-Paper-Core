@@ -1,6 +1,6 @@
 package ch.mcserver.goliathPaperCore.module.history.gui.specific;
 
-import ch.mcserver.goliathPaperCore.module.history.gui.HistoryEvent;
+import ch.mcserver.goliathPaperCore.module.history.HistoryEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 

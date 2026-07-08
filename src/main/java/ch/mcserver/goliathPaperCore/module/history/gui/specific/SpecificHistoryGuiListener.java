@@ -1,8 +1,8 @@
 package ch.mcserver.goliathPaperCore.module.history.gui.specific;
 
-import ch.mcserver.goliathPaperCore.module.history.gui.HistoryEvent;
+import ch.mcserver.goliathPaperCore.module.history.HistoryEvent;
 import ch.mcserver.goliathPaperCore.module.history.gui.ShowHistory;
-import ch.mcserver.goliathPaperCore.module.history.gui.inventory.HistoryInventoryGUI;
+import ch.mcserver.goliathPaperCore.module.history.gui.inventory.HistoryInventoryGui;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,9 +11,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 
 import java.util.List;
-import java.util.UUID;
 
-public class GUIListener implements Listener {
+public class SpecificHistoryGuiListener implements Listener {
 
     @EventHandler
     public void onDrag(InventoryDragEvent event) {
@@ -33,20 +32,20 @@ public class GUIListener implements Listener {
         HistoryEvent historyEvent = eventList.getFirst();
 
         switch (event.getRawSlot()) {
-            case  11:
+            case 11:
                 player.sendMessage("Enderchest");
                 event.setCancelled(true);
                 break;
-            case  12:
+            case 12:
                 event.getInventory().close();
-                HistoryInventoryGUI.openHistoryInventory(player, eventList);
+                HistoryInventoryGui.openHistoryInventory(player, eventList);
                 event.setCancelled(true);
                 break;
-            case  15:
+            case 15:
                 player.sendMessage("Homes");
                 event.setCancelled(true);
                 break;
-            case  17:
+            case 17:
                 player.sendMessage("Rolled Back");
                 event.setCancelled(true);
                 break;
@@ -56,8 +55,6 @@ public class GUIListener implements Listener {
                 break;
             default:
                 event.setCancelled(true);
-
         }
-        event.setCancelled(true);
     }
 }

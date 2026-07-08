@@ -58,7 +58,6 @@ public class SpawnListener implements Listener {
 
     @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent event) {
-        Player player = event.getPlayer();
         World world = event.getPlayer().getWorld();
         if (world.getName().equals("DonutSpawn_")) {
             event.setCancelled(true);
@@ -85,7 +84,7 @@ public class SpawnListener implements Listener {
     }
 
     @EventHandler
-    public void EntityExplodeEvent(EntityExplodeEvent event) {
+    public void onEntityExplode(EntityExplodeEvent event) {
         World world = event.getEntity().getWorld();
         if (world.getName().equals("DonutSpawn_")) {
             event.setCancelled(true);
@@ -103,7 +102,6 @@ public class SpawnListener implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-        Player player = event.getPlayer();
         World world = event.getPlayer().getWorld();
         if (world.getName().equals("DonutSpawn_")) {
             event.setCancelled(true);

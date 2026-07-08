@@ -1,5 +1,6 @@
 package ch.mcserver.goliathPaperCore.module.spawn;
 
+import ch.mcserver.goliathPaperCore.GoliathPaperCore;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -16,8 +17,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-
-import ch.mcserver.goliathPaperCore.GoliathPaperCore;
 
 public class DoubleJumpBoostListener implements Listener {
 
@@ -48,7 +47,6 @@ public class DoubleJumpBoostListener implements Listener {
 
     @EventHandler
     public void onToggleFlight(PlayerToggleFlightEvent event) {
-
         Player player = event.getPlayer();
 
         if (player.getGameMode() != GameMode.SURVIVAL) {
@@ -62,8 +60,6 @@ public class DoubleJumpBoostListener implements Listener {
         event.setCancelled(true);
         player.setFlying(false);
         player.setAllowFlight(false);
-
-
 
         long now = System.currentTimeMillis();
         Long cooldownUntil = cooldownMap.get(uuid);

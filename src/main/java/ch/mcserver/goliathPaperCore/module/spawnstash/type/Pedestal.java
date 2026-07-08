@@ -19,7 +19,6 @@ public class Pedestal implements SpawnStash {
 
     @Override
     public void spawn(Location location) {
-
         TemporaryBlocks temp = new TemporaryBlocks();
 
         Block spawnerBlock = location.clone().add(0, 0, 0).getBlock();
@@ -30,7 +29,6 @@ public class Pedestal implements SpawnStash {
         Block craftingTable2 = location.clone().add(0, 0, -1).getBlock();
         Block cake = location.clone().add(0, 1, -1).getBlock();
 
-
         temp.add(spawnerBlock);
         temp.add(amethystBlock);
         temp.add(decoration1);
@@ -38,8 +36,6 @@ public class Pedestal implements SpawnStash {
         temp.add(craftingTable);
         temp.add(craftingTable2);
         temp.add(cake);
-
-
 
         spawnerBlock.setType(Material.SPAWNER);
         amethystBlock.setType(Material.AMETHYST_BLOCK);

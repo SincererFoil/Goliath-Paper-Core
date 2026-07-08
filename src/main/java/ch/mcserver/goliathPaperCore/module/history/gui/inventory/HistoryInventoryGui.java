@@ -1,9 +1,8 @@
 package ch.mcserver.goliathPaperCore.module.history.gui.inventory;
 
 import ch.mcserver.goliathPaperCore.GoliathPaperCore;
-import ch.mcserver.goliathPaperCore.module.history.gui.HistoryEvent;
+import ch.mcserver.goliathPaperCore.module.history.HistoryEvent;
 import ch.mcserver.goliathPaperCore.module.history.snapshot.PlayerInventorySnapshotRepository;
-
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,7 +19,7 @@ import java.util.UUID;
 
 import static ch.mcserver.goliathPaperCore.module.enderchest.PlayerEnderchestRepository.fromBase64;
 
-public class HistoryInventoryGUI {
+public class HistoryInventoryGui {
 
     public static void openHistoryInventory(Player staffPlayer, List<HistoryEvent> events) {
 
@@ -62,11 +61,8 @@ public class HistoryInventoryGUI {
         meta.setLore(lore);
         returnPane.setItemMeta(meta);
 
-
         historyInventory.setItem(36, returnPane);
 
         staffPlayer.openInventory(historyInventory);
-
-
     }
 }

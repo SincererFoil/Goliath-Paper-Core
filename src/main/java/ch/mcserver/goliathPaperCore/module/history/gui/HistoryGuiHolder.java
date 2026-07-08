@@ -1,5 +1,6 @@
 package ch.mcserver.goliathPaperCore.module.history.gui;
 
+import ch.mcserver.goliathPaperCore.module.history.HistoryEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +15,7 @@ public class HistoryGuiHolder implements InventoryHolder {
     private final int page;
     private Inventory inventory;
 
-    public  HistoryGuiHolder(UUID targetUUID, List<HistoryEvent> events, int page) {
+    public HistoryGuiHolder(UUID targetUUID, List<HistoryEvent> events, int page) {
         this.targetUUID = targetUUID;
         this.events = events;
         this.page = page;
@@ -23,14 +24,14 @@ public class HistoryGuiHolder implements InventoryHolder {
     @NotNull
     @Override
     public Inventory getInventory() {
-        return  inventory;
+        return inventory;
     }
 
     public void setInventory(Inventory inventory) {
         this.inventory = inventory;
     }
 
-    public  UUID getTargetUUID() {
+    public UUID getTargetUUID() {
         return targetUUID;
     }
 

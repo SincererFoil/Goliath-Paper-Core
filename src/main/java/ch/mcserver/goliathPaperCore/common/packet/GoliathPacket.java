@@ -15,5 +15,4 @@ public final class GoliathPacket {
     public ProtocolLibHook getProtocolLibHook() {
         return protocolLibHook;
     }
-
 }

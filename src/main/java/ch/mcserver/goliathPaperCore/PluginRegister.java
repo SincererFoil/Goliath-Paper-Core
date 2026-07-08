@@ -9,27 +9,28 @@ import ch.mcserver.goliathPaperCore.common.database.mysql.PlayerObjectManager;
 import ch.mcserver.goliathPaperCore.common.packet.GoliathPacket;
 import ch.mcserver.goliathPaperCore.common.packet.ProtocolLibHook;
 import ch.mcserver.goliathPaperCore.common.pluginmessage.CommandUpdateMessenger;
+import ch.mcserver.goliathPaperCore.common.pluginmessage.CreativeMessenger;
 import ch.mcserver.goliathPaperCore.common.pluginmessage.GmspMessenger;
 import ch.mcserver.goliathPaperCore.common.pluginmessage.GoliathTeleportMessenger;
 import ch.mcserver.goliathPaperCore.common.pluginmessage.HistorySnapshotMessenger;
-import ch.mcserver.goliathPaperCore.common.pluginmessage.LocationPluginMessageListener;
+import ch.mcserver.goliathPaperCore.common.pluginmessage.LocationMessenger;
 import ch.mcserver.goliathPaperCore.common.service.CommandErrorService;
 import ch.mcserver.goliathPaperCore.common.service.ShutdownService;
 import ch.mcserver.goliathPaperCore.common.service.SpawnerService;
-import ch.mcserver.goliathPaperCore.module.history.gui.HistoryGuiListener;
-import ch.mcserver.goliathPaperCore.module.history.gui.ShowHistory;
-import ch.mcserver.goliathPaperCore.module.history.gui.inventory.HistoryInventoryGuiListener;
-import ch.mcserver.goliathPaperCore.module.history.gui.specific.GUIListener;
-import ch.mcserver.goliathPaperCore.module.history.snapshot.PlayerInventorySnapshotRepository;
-import ch.mcserver.goliathPaperCore.module.spawn.DoubleJumpBoostListener;
 import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestListener;
 import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestService;
 import ch.mcserver.goliathPaperCore.module.enderchest.PlayerEnderchestRepository;
 import ch.mcserver.goliathPaperCore.module.enderchest.command.GoliathEnderchestCommand;
 import ch.mcserver.goliathPaperCore.module.enderchest.command.GoliathEnderchestViewListener;
 import ch.mcserver.goliathPaperCore.module.enderchest.command.ShowGoliathEnderchest;
+import ch.mcserver.goliathPaperCore.module.history.gui.HistoryGuiListener;
+import ch.mcserver.goliathPaperCore.module.history.gui.ShowHistory;
+import ch.mcserver.goliathPaperCore.module.history.gui.inventory.HistoryInventoryGuiListener;
+import ch.mcserver.goliathPaperCore.module.history.gui.specific.SpecificHistoryGuiListener;
+import ch.mcserver.goliathPaperCore.module.history.snapshot.PlayerInventorySnapshotRepository;
 import ch.mcserver.goliathPaperCore.module.inventory.InventoryListener;
 import ch.mcserver.goliathPaperCore.module.inventory.PlayerInventoryRepository;
+import ch.mcserver.goliathPaperCore.module.spawn.DoubleJumpBoostListener;
 import ch.mcserver.goliathPaperCore.module.spawn.SpawnListener;
 import ch.mcserver.goliathPaperCore.module.spawnstash.SpawnStashCommand;
 import ch.mcserver.goliathPaperCore.module.spawnstash.SpawnStashTabCompleter;
@@ -186,7 +187,7 @@ public class PluginRegister {
                 .registerEvents(new PlayerObjectManager(), plugin);
 
         plugin.getServer().getPluginManager()
-                .registerEvents(new GUIListener(), plugin);
+                .registerEvents(new SpecificHistoryGuiListener(), plugin);
 
         plugin.getServer().getPluginManager()
                 .registerEvents(new HistoryInventoryGuiListener(), plugin);
@@ -217,10 +218,9 @@ public class PluginRegister {
                 new HistorySnapshotMessenger()
         );
 
-        new LocationPluginMessageListener(plugin);
+        new LocationMessenger(plugin);
 
-        ch.mcserver.goliathPaperCore.common.pluginmessage.CreativeMessenger creativeMessenger =
-                new ch.mcserver.goliathPaperCore.common.pluginmessage.CreativeMessenger(plugin);
+        CreativeMessenger creativeMessenger = new CreativeMessenger(plugin);
         plugin.getServer().getPluginManager().registerEvents(creativeMessenger, plugin);
     }
 

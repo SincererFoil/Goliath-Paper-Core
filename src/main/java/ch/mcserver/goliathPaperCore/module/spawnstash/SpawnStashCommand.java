@@ -23,10 +23,9 @@ public class SpawnStashCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player player)) {
             return false;
         }
-        Player player = (Player) sender;
         UUID uuid = player.getUniqueId();
         PlayerObject playerObject = GoliathPaperCore.playerRepository.loadPlayer(uuid);
         if (playerObject == null) {
@@ -62,10 +61,7 @@ public class SpawnStashCommand implements CommandExecutor {
         SpawnStash stash;
 
         switch (type) {
-            case "cluster":
-                stash = new Column();
-                break;
-            case "column":
+            case "cluster", "column":
                 stash = new Column();
                 break;
             case "line":

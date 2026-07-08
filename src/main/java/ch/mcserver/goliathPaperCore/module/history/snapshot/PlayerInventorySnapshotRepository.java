@@ -1,9 +1,9 @@
 package ch.mcserver.goliathPaperCore.module.history.snapshot;
 
 import ch.mcserver.goliathPaperCore.GoliathPaperCore;
+import com.mongodb.ErrorCategory;
 import com.mongodb.MongoException;
 import com.mongodb.MongoWriteException;
-import com.mongodb.ErrorCategory;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
@@ -17,6 +17,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 public class PlayerInventorySnapshotRepository {
+
     private final MongoCollection<Document> collection;
 
     public PlayerInventorySnapshotRepository(MongoCollection<Document> collection) {

@@ -36,7 +36,6 @@ public class Line implements SpawnStash {
         spawnerBlock3.setType(Material.SPAWNER);
         shulkerBox.setType(Material.SHULKER_BOX);
 
-
         CreatureSpawner spawner = (CreatureSpawner) spawnerBlock.getState();
         int random = ThreadLocalRandom.current().nextInt(1, 5);
         switch (random) {

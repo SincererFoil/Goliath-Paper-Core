@@ -1,6 +1,5 @@
 package ch.mcserver.goliathPaperCore.module.spawnstash.type;
 
-import ch.mcserver.goliathPaperCore.common.service.SpawnerService;
 import ch.mcserver.goliathPaperCore.module.spawnstash.SpawnStash;
 import ch.mcserver.goliathPaperCore.module.spawnstash.TemporaryBlocks;
 import org.bukkit.Location;
@@ -77,9 +76,7 @@ public class Loot implements SpawnStash {
         spawner.setSpawnCount(0);
         spawner.update();
         temp.startAutoRestore();
-
     }
-
 
     private void amethystLootStash(Location location) {
         TemporaryBlocks temp = new TemporaryBlocks();
@@ -122,7 +119,6 @@ public class Loot implements SpawnStash {
         spawner.setSpawnCount(0);
         spawner.update();
         temp.startAutoRestore();
-
     }
 
     private void shulkerBoxLootStash(Location location) {
@@ -160,6 +156,5 @@ public class Loot implements SpawnStash {
         spawner.setSpawnCount(0);
         spawner.update();
         temp.startAutoRestore();
-
     }
 }

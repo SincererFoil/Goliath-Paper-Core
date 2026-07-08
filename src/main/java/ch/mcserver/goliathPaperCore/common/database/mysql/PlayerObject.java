@@ -1,6 +1,5 @@
 package ch.mcserver.goliathPaperCore.common.database.mysql;
 
-
 import java.util.UUID;
 
 public class PlayerObject {
@@ -21,7 +20,6 @@ public class PlayerObject {
     private long firstJoin;
     private long lastJoin;
     private boolean creative;
-
 
     public PlayerObject(
             UUID uuid,
@@ -52,7 +50,6 @@ public class PlayerObject {
         this.firstJoin = firstJoin;
         this.lastJoin = lastJoin;
         this.creative = creative;
-
     }
 
     public UUID getUuid() {
@@ -142,5 +139,4 @@ public class PlayerObject {
     public void setCreative(boolean creative) {
         this.creative = creative;
     }
-
 }

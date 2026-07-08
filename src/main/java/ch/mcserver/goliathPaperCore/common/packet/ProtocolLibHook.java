@@ -2,14 +2,14 @@ package ch.mcserver.goliathPaperCore.common.packet;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 
 public class ProtocolLibHook {
+
     private final Plugin plugin;
     private ProtocolManager protocolManager;
     private boolean enabled;
-
 
     public ProtocolLibHook(Plugin plugin) {
         this.plugin = plugin;
@@ -38,7 +38,4 @@ public class ProtocolLibHook {
 
         return protocolManager;
     }
-
-
-
 }

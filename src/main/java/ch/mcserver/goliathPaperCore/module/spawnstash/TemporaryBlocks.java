@@ -17,7 +17,6 @@ public class TemporaryBlocks {
     }
 
     public void startAutoRestore() {
-
         Bukkit.getScheduler().runTaskLater(
                 GoliathPaperCore.getInstance(),
                 this::restore,
@@ -26,7 +25,6 @@ public class TemporaryBlocks {
     }
 
     private void restore() {
-
         for (Map.Entry<Block, BlockData> entry : blocks.entrySet()) {
             entry.getKey().setBlockData(entry.getValue());
         }

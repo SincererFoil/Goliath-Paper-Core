@@ -23,7 +23,6 @@ public class PlayerInventoryRepository {
         this.collection = collection;
     }
 
-
     public void saveInventory(UUID playerUUID) {
         Player player = Bukkit.getPlayer(playerUUID);
         if (player == null) return;
@@ -41,7 +40,6 @@ public class PlayerInventoryRepository {
                 new Document("$set", update),
                 new UpdateOptions().upsert(true)
         );
-
     }
 
     public void loadInventory(UUID playerUUID) {
@@ -62,35 +60,5 @@ public class PlayerInventoryRepository {
         } catch (Exception e) {
             GoliathPaperCore.getInstance().logger.log(Level.WARNING, "Could not load Inventory from " + player.getName() + ". Error message: ", e);
         }
-
     }
-
-    public boolean inventoryExist(UUID playerUUID) {
-        return collection.find(Filters.eq("uuid", playerUUID.toString())).first() != null;
-    }
-
-    public InventoryData getInventoryData(UUID playerUUID) {
-        Document document = collection.find(Filters.eq("uuid", playerUUID.toString())).first();
-
-        if (document == null) {
-            return null;
-        }
-
-        try {
-            String inventory = document.getString("inventory");
-            String armor = document.getString("armor");
-            String offhand = document.getString("offhand");
-
-            return new InventoryData(playerUUID.toString(), inventory, armor, offhand);
-
-        } catch (Exception e) {
-            GoliathPaperCore.getInstance().logger.log(Level.WARNING, "Could not load Inventory from " + playerUUID + ". Error message: ", e);
-            return null;
-        }
-
-    }
-
-
-
 }
-

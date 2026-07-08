@@ -10,10 +10,10 @@ import java.util.Map;
 import java.util.UUID;
 
 public class EnderchestService {
+
     private final Map<UUID, Inventory> openInventories = new HashMap<>();
-
-
     private final PlayerEnderchestRepository enderchestRepository;
+
     public EnderchestService(PlayerEnderchestRepository enderchestRepository) {
         this.enderchestRepository = enderchestRepository;
     }
@@ -28,6 +28,7 @@ public class EnderchestService {
         openInventories.put(player.getUniqueId(), inventory);
         player.openInventory(inventory);
     }
+
     public void removeOpenInventory(UUID uuid) {
         openInventories.remove(uuid);
     }
@@ -42,5 +43,4 @@ public class EnderchestService {
 
         openInventories.clear();
     }
-
 }

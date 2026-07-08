@@ -16,15 +16,14 @@ import org.bukkit.inventory.ItemStack;
 import static ch.mcserver.goliathPaperCore.module.enderchest.EnderchestHolder.openedEnderChests;
 
 public class EnderchestListener implements Listener {
-    private final EnderchestService enderchestService;
-    private PlayerEnderchestRepository enderchestRepository;
 
+    private final EnderchestService enderchestService;
+    private final PlayerEnderchestRepository enderchestRepository;
 
     public EnderchestListener(EnderchestService enderchestService, PlayerEnderchestRepository enderchestRepository) {
         this.enderchestService = enderchestService;
         this.enderchestRepository = enderchestRepository;
     }
-
 
     @EventHandler
     public void onEnderChestOpen(PlayerInteractEvent event) {
@@ -78,5 +77,4 @@ public class EnderchestListener implements Listener {
             openedEnderChests.remove(event.getPlayer().getUniqueId());
         }
     }
-
 }

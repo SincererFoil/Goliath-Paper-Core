@@ -3,6 +3,7 @@ package ch.mcserver.goliathPaperCore.module.history.gui;
 import ch.mcserver.goliathPaperCore.GoliathPaperCore;
 import ch.mcserver.goliathPaperCore.common.database.mongodb.HistoryRepository;
 import ch.mcserver.goliathPaperCore.common.database.mysql.PlayerObject;
+import ch.mcserver.goliathPaperCore.module.history.HistoryEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -72,7 +73,6 @@ public class ShowHistory implements CommandExecutor {
     private static void renderPage(Inventory inventory, HistoryGuiHolder holder) {
         List<HistoryEvent> events = holder.getEvents();
         int page = holder.getPage();
-        int totalPages = holder.getTotalPages();
 
         int fromIndex = page * EVENTS_PER_PAGE;
         int toIndex = Math.min(fromIndex + EVENTS_PER_PAGE, events.size());
@@ -88,14 +88,12 @@ public class ShowHistory implements CommandExecutor {
 
         ItemMeta meta = item.getItemMeta();
 
-
         List<String> lore = new ArrayList<>();
         lore.add(ChatColor.DARK_PURPLE + "Example info Button.");
         lore.add(ChatColor.DARK_PURPLE + "I mean it this is just an example");
         meta.setDisplayName(ChatColor.AQUA + "Info Button");
         meta.setLore(lore);
         item.setItemMeta(meta);
-
 
         inventory.setItem(SLOT_PREV, buildNavItem(Material.ARROW, ChatColor.GRAY + "Back"));
         inventory.setItem(SLOT_PAGE_EXAMPLE, item);
@@ -109,7 +107,6 @@ public class ShowHistory implements CommandExecutor {
         String date = Instant.ofEpochMilli(event.createdAt())
                 .atZone(ZoneId.of("Europe/Zurich"))
                 .format(DATE_FORMAT);
-
 
         meta.setDisplayName(ChatColor.YELLOW + date + " " + event.title());
 

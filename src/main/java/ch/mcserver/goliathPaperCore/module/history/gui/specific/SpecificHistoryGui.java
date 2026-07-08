@@ -2,7 +2,7 @@ package ch.mcserver.goliathPaperCore.module.history.gui.specific;
 
 import ch.mcserver.goliathPaperCore.GoliathPaperCore;
 import ch.mcserver.goliathPaperCore.common.database.mongodb.HistoryRepository;
-import ch.mcserver.goliathPaperCore.module.history.gui.HistoryEvent;
+import ch.mcserver.goliathPaperCore.module.history.HistoryEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -18,26 +18,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-
-public class GUI {
+public class SpecificHistoryGui {
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").withZone(ZoneId.of("Europe/Zurich"));
 
-
     public static void openSpecificInventory(Player staffPlayer, UUID historyUUID) {
-
-        String date = "Null";
-
 
         List<HistoryEvent> specificHistoryEvent = GoliathPaperCore.getHistoryRepository().getEventsByHistoryUUID(historyUUID);
 
         HistoryEvent event = specificHistoryEvent.get(0);
 
-        date = formatter.format(Instant.ofEpochMilli(event.createdAt()));
+        String date = formatter.format(Instant.ofEpochMilli(event.createdAt()));
 
         SpecificHistoryGuiHolder holder = new SpecificHistoryGuiHolder(specificHistoryEvent);
 
-        Inventory specififiedGUI = Bukkit.createInventory(holder, 27, event.title());
+        Inventory specificInventory = Bukkit.createInventory(holder, 27, event.title());
 
         ItemStack balItem = buildItem(Material.GOLD_INGOT, ChatColor.WHITE + "Bal COMMINGSOON");
         ItemStack enderchestItem = buildItem(Material.ENDER_CHEST, ChatColor.WHITE + "Enderchest");
@@ -54,27 +49,24 @@ public class GUI {
         rollbackMeta.setLore(lore);
         rollbackItem.setItemMeta(rollbackMeta);
 
-
         ItemMeta backItemMeta = backItem.getItemMeta();
         List<String> backItemlore = new ArrayList<>();
-        lore.add(ChatColor.WHITE + "Click to return");
+        backItemlore.add(ChatColor.WHITE + "Click to return");
         backItemMeta.setLore(backItemlore);
         backItem.setItemMeta(backItemMeta);
 
-        specififiedGUI.setItem(10, balItem);
-        specififiedGUI.setItem(11, enderchestItem);
-        specififiedGUI.setItem(12, inventoryItem);
-        specififiedGUI.setItem(13, shardItem);
-        specififiedGUI.setItem(14, dateItem);
-        specififiedGUI.setItem(15, homeItem);
-        specififiedGUI.setItem(17, rollbackItem);
-        specififiedGUI.setItem(18, backItem);
+        specificInventory.setItem(10, balItem);
+        specificInventory.setItem(11, enderchestItem);
+        specificInventory.setItem(12, inventoryItem);
+        specificInventory.setItem(13, shardItem);
+        specificInventory.setItem(14, dateItem);
+        specificInventory.setItem(15, homeItem);
+        specificInventory.setItem(17, rollbackItem);
+        specificInventory.setItem(18, backItem);
 
-        holder.setInventory(specififiedGUI);
-        staffPlayer.openInventory(specififiedGUI);
-
+        holder.setInventory(specificInventory);
+        staffPlayer.openInventory(specificInventory);
     }
-
 
     private static ItemStack buildItem(Material material, String name) {
         ItemStack item = new ItemStack(material);
