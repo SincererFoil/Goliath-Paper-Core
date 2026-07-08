@@ -69,6 +69,28 @@ public class PlayerInventoryRepository {
         return collection.find(Filters.eq("uuid", playerUUID.toString())).first() != null;
     }
 
+    public InventoryData getInventoryData(UUID playerUUID) {
+        Document document = collection.find(Filters.eq("uuid", playerUUID.toString())).first();
+
+        if (document == null) {
+            return null;
+        }
+
+        try {
+            String inventory = document.getString("inventory");
+            String armor = document.getString("armor");
+            String offhand = document.getString("offhand");
+
+            return new InventoryData(playerUUID.toString(), inventory, armor, offhand);
+
+        } catch (Exception e) {
+            GoliathPaperCore.getInstance().logger.log(Level.WARNING, "Could not load Inventory from " + playerUUID + ". Error message: ", e);
+            return null;
+        }
+
+    }
+
+
 
 }
 

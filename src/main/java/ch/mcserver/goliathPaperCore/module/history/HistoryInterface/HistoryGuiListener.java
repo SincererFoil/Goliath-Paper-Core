@@ -1,4 +1,4 @@
-package ch.mcserver.goliathPaperCore.module.history;
+package ch.mcserver.goliathPaperCore.module.history.HistoryInterface;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

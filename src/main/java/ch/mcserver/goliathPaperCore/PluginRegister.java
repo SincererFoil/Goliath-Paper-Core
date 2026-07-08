@@ -15,8 +15,8 @@ import ch.mcserver.goliathPaperCore.common.pluginmessage.LocationPluginMessageLi
 import ch.mcserver.goliathPaperCore.common.service.CommandErrorService;
 import ch.mcserver.goliathPaperCore.common.service.ShutdownService;
 import ch.mcserver.goliathPaperCore.common.service.SpawnerService;
-import ch.mcserver.goliathPaperCore.module.history.HistoryGuiListener;
-import ch.mcserver.goliathPaperCore.module.history.ShowHistory;
+import ch.mcserver.goliathPaperCore.module.history.HistoryInterface.HistoryGuiListener;
+import ch.mcserver.goliathPaperCore.module.history.HistoryInterface.ShowHistory;
 import ch.mcserver.goliathPaperCore.module.spawn.DoubleJumpBoostListener;
 import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestListener;
 import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestService;
