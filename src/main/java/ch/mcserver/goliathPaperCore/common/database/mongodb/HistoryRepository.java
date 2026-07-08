@@ -1,6 +1,6 @@
 package ch.mcserver.goliathPaperCore.common.database.mongodb;
 
-import ch.mcserver.goliathPaperCore.module.history.HistoryInterface.HistoryEvent;
+import ch.mcserver.goliathPaperCore.module.history.gui.HistoryEvent;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
@@ -49,6 +49,11 @@ public class HistoryRepository {
     public List<HistoryEvent> getEventsByPlayerUUID(UUID uuid) {
         return toList(collection.find(Filters.eq("uuid", uuid.toString()))
                 .sort(Sorts.descending("createdAt")));
+    }
+
+    public List<HistoryEvent> getEventsByHistoryUUID(UUID historyUUID) {
+        return toList(collection.find(Filters.eq("historyId", historyUUID.toString()))
+                .sort(Sorts.descending("createdAt")).limit(1));
     }
 
     public List<HistoryEvent> getAllEvents() {

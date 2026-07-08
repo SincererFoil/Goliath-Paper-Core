@@ -1,4 +1,4 @@
-package ch.mcserver.goliathPaperCore.module.history.HistoryInterface;
+package ch.mcserver.goliathPaperCore.module.history.gui;
 
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;

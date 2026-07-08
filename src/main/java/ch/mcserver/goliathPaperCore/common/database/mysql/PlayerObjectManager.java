@@ -1,6 +1,7 @@
 package ch.mcserver.goliathPaperCore.common.database.mysql;
 
 import ch.mcserver.goliathPaperCore.GoliathPaperCore;
+import ch.mcserver.goliathPaperCore.module.history.snapshot.HistorySnapshot;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -71,6 +72,22 @@ public class PlayerObjectManager implements Listener {
         playerObject.setGmsp(false);
 
         GoliathPaperCore.playerRepository.savePlayerDataOnly(playerObject);
+
+        String serverName = GoliathPaperCore.config
+                .node("server", "name")
+                .getString("unknown");
+
+        UUID historyId = UUID.randomUUID();
+
+        GoliathPaperCore.getHistoryRepository().createEvent(
+                player.getUniqueId(),
+                "Disconnect",
+                "PlayerQuit DISCONNECTING FREE",
+                serverName,
+                historyId.toString()
+        );
+
+        HistorySnapshot.createSnapshot(player.getUniqueId(), historyId, "Disconnect");
 
         removePlayer(player.getUniqueId());
     }

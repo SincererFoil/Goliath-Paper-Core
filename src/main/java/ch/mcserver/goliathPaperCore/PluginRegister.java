@@ -5,6 +5,7 @@ import ch.mcserver.goliathPaperCore.common.database.mongodb.MongoDBManager;
 import ch.mcserver.goliathPaperCore.common.database.mysql.MySQLManager;
 import ch.mcserver.goliathPaperCore.common.database.mysql.PlayerLocationManager;
 import ch.mcserver.goliathPaperCore.common.database.mysql.PlayerLocationRepository;
+import ch.mcserver.goliathPaperCore.common.database.mysql.PlayerObjectManager;
 import ch.mcserver.goliathPaperCore.common.packet.GoliathPacket;
 import ch.mcserver.goliathPaperCore.common.packet.ProtocolLibHook;
 import ch.mcserver.goliathPaperCore.common.pluginmessage.CommandUpdateMessenger;
@@ -15,8 +16,11 @@ import ch.mcserver.goliathPaperCore.common.pluginmessage.LocationPluginMessageLi
 import ch.mcserver.goliathPaperCore.common.service.CommandErrorService;
 import ch.mcserver.goliathPaperCore.common.service.ShutdownService;
 import ch.mcserver.goliathPaperCore.common.service.SpawnerService;
-import ch.mcserver.goliathPaperCore.module.history.HistoryInterface.HistoryGuiListener;
-import ch.mcserver.goliathPaperCore.module.history.HistoryInterface.ShowHistory;
+import ch.mcserver.goliathPaperCore.module.history.gui.HistoryGuiListener;
+import ch.mcserver.goliathPaperCore.module.history.gui.ShowHistory;
+import ch.mcserver.goliathPaperCore.module.history.gui.inventory.HistoryInventoryGuiListener;
+import ch.mcserver.goliathPaperCore.module.history.gui.specific.GUIListener;
+import ch.mcserver.goliathPaperCore.module.history.snapshot.PlayerInventorySnapshotRepository;
 import ch.mcserver.goliathPaperCore.module.spawn.DoubleJumpBoostListener;
 import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestListener;
 import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestService;
@@ -49,6 +53,9 @@ public class PluginRegister {
 
     private MongoCollection<Document> historyCollection;
     private HistoryRepository historyRepository;
+
+    private MongoCollection<Document> historyPlayerInventoryCollection;
+    private PlayerInventorySnapshotRepository playerInventorySnapshotRepository;
 
     private PlayerLocationRepository playerLocationRepository;
     private PlayerLocationManager playerLocationManager;
@@ -96,6 +103,10 @@ public class PluginRegister {
         this.historyCollection = this.mongoManager.getMongoCollection("history_events");
         this.historyRepository = new HistoryRepository(historyCollection);
         GoliathPaperCore.historyRepository = this.historyRepository;
+
+        this.historyPlayerInventoryCollection = this.mongoManager.getMongoCollection("history_player_inventory_snapshot");
+        this.playerInventorySnapshotRepository = new PlayerInventorySnapshotRepository(historyPlayerInventoryCollection);
+        GoliathPaperCore.playerInventorySnapshotRepository = this.playerInventorySnapshotRepository;
 
         this.playerLocationRepository = new PlayerLocationRepository(mySQLManager);
 
@@ -171,6 +182,14 @@ public class PluginRegister {
         plugin.getServer().getPluginManager()
                 .registerEvents(new HistoryGuiListener(), plugin);
 
+        plugin.getServer().getPluginManager()
+                .registerEvents(new PlayerObjectManager(), plugin);
+
+        plugin.getServer().getPluginManager()
+                .registerEvents(new GUIListener(), plugin);
+
+        plugin.getServer().getPluginManager()
+                .registerEvents(new HistoryInventoryGuiListener(), plugin);
     }
 
     private void registerPluginMessaging() {

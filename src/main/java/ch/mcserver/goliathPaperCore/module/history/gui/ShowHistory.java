@@ -1,4 +1,4 @@
-package ch.mcserver.goliathPaperCore.module.history.HistoryInterface;
+package ch.mcserver.goliathPaperCore.module.history.gui;
 
 import ch.mcserver.goliathPaperCore.GoliathPaperCore;
 import ch.mcserver.goliathPaperCore.common.database.mongodb.HistoryRepository;

@@ -1,4 +1,4 @@
-package ch.mcserver.goliathPaperCore.module.history.HistoryInterface;
+package ch.mcserver.goliathPaperCore.module.history.gui;
 
 import java.util.UUID;
 

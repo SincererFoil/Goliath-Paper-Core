@@ -5,16 +5,25 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.*;
-import org.bukkit.event.player.*;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerBucketFillEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 
 public class SpawnListener implements Listener {
+
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
@@ -30,6 +39,7 @@ public class SpawnListener implements Listener {
             event.setCancelled(true);
         }
     }
+
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         World world = event.getPlayer().getWorld();
@@ -37,6 +47,7 @@ public class SpawnListener implements Listener {
             event.setCancelled(true);
         }
     }
+
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
         World world = event.getPlayer().getWorld();
@@ -53,6 +64,7 @@ public class SpawnListener implements Listener {
             event.setCancelled(true);
         }
     }
+
     @EventHandler
     public void onEntityPickupItem(EntityPickupItemEvent event) {
         if (!(event.getEntity() instanceof Player player)) {
@@ -71,6 +83,7 @@ public class SpawnListener implements Listener {
             event.setCancelled(true);
         }
     }
+
     @EventHandler
     public void EntityExplodeEvent(EntityExplodeEvent event) {
         World world = event.getEntity().getWorld();
@@ -78,6 +91,7 @@ public class SpawnListener implements Listener {
             event.setCancelled(true);
         }
     }
+
     @EventHandler
     public void onBlockIgnite(BlockIgniteEvent event) {
         World world = event.getBlock().getWorld();
@@ -86,6 +100,7 @@ public class SpawnListener implements Listener {
             event.setCancelled(true);
         }
     }
+
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
@@ -94,6 +109,7 @@ public class SpawnListener implements Listener {
             event.setCancelled(true);
         }
     }
+
     @EventHandler
     public void onWeatherChange(WeatherChangeEvent event) {
         World world = event.getWorld();
@@ -133,5 +149,4 @@ public class SpawnListener implements Listener {
             event.setCancelled(true);
         }
     }
-
 }

@@ -3,7 +3,11 @@ package ch.mcserver.goliathPaperCore.module.spawnstash;
 import ch.mcserver.goliathPaperCore.GoliathPaperCore;
 import ch.mcserver.goliathPaperCore.common.database.mysql.PlayerObject;
 import ch.mcserver.goliathPaperCore.common.service.CommandErrorService;
-import ch.mcserver.goliathPaperCore.module.spawnstash.type.*;
+import ch.mcserver.goliathPaperCore.module.spawnstash.type.Column;
+import ch.mcserver.goliathPaperCore.module.spawnstash.type.Line;
+import ch.mcserver.goliathPaperCore.module.spawnstash.type.Loot;
+import ch.mcserver.goliathPaperCore.module.spawnstash.type.Pedestal;
+import ch.mcserver.goliathPaperCore.module.spawnstash.type.Single;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -85,7 +89,6 @@ public class SpawnStashCommand implements CommandExecutor {
 
         player.sendMessage(ChatColor.GREEN + "Spawned stash: " + ChatColor.WHITE + stash.getName());
         player.sendActionBar(ChatColor.GREEN + "Spawned stash: " + ChatColor.WHITE + stash.getName());
-
 
         return true;
     }

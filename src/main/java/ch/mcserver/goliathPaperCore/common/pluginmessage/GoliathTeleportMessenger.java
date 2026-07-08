@@ -1,6 +1,7 @@
 package ch.mcserver.goliathPaperCore.common.pluginmessage;
 
-import ch.mcserver.goliathPaperCore.common.database.mysql.*;
+import ch.mcserver.goliathPaperCore.common.database.mysql.PlayerLocationObject;
+import ch.mcserver.goliathPaperCore.common.database.mysql.PlayerLocationRepository;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 import org.bukkit.Bukkit;
