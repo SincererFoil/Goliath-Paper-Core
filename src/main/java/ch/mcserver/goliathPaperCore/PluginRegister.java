@@ -122,7 +122,7 @@ public class PluginRegister {
         );
 
         this.shutdownService = new ShutdownService(
-                this.plugin.logger,
+                this.plugin.getLogger(),
                 this.mongoManager,
                 this.enderchestService,
                 this.playerInventoryRepository
@@ -136,11 +136,11 @@ public class PluginRegister {
         this.goliathPacket = new GoliathPacket(protocolLibHook);
 
         if (!this.goliathPacket.isEnabled()) {
-            plugin.getLogger().warning("[Goliath] Packet systems disabled because ProtocolLib is missing.");
+            plugin.getLogger().warning("Packet systems disabled because ProtocolLib is missing.");
             return;
         }
 
-        plugin.getLogger().info("[Goliath] Packet systems enabled.");
+        plugin.getLogger().info("Packet systems enabled.");
     }
 
     private void registerCommands() {

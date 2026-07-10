@@ -23,15 +23,15 @@ public class MongoDBManager {
 
             mongoClient = MongoClients.create(uri);
             mongoDatabase = mongoClient.getDatabase("goliath");
-            logger.log(Level.INFO, "[Goliath] MongoDB connected");
+            logger.log(Level.INFO, "MongoDB connected");
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "[Goliath] MongoDB connection failed", e);
+            logger.log(Level.SEVERE, "MongoDB connection failed", e);
         }
     }
 
     public MongoDatabase getMongoDatabase() {
         if (mongoDatabase == null) {
-            logger.log(Level.SEVERE, "[Goliath] MongoDB is not Connected");
+            logger.log(Level.SEVERE, "MongoDB is not Connected");
         }
         return mongoDatabase;
     }
@@ -43,7 +43,7 @@ public class MongoDBManager {
     public void disconnect() {
         if (mongoClient != null) {
             mongoClient.close();
-            logger.log(Level.INFO, "[Goliath] MongoDB closed");
+            logger.log(Level.INFO, "MongoDB closed");
         }
     }
 }

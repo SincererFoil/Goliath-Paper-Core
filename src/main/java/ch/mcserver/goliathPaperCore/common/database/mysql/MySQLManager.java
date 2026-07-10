@@ -31,7 +31,7 @@ public class MySQLManager {
 
         dataSource = new HikariDataSource(config);
 
-        GoliathPaperCore.getInstance().logger.info("[Goliath] MySQL connected.");
+        GoliathPaperCore.getInstance().getLogger().info("MySQL connected.");
     }
 
     public Connection getConnection() throws SQLException {
@@ -41,7 +41,7 @@ public class MySQLManager {
     public void disconnect() {
         if (dataSource != null && !dataSource.isClosed()) {
             dataSource.close();
-            GoliathPaperCore.getInstance().logger.info("[Goliath] MySQL connection closed!");
+            GoliathPaperCore.getInstance().getLogger().info("MySQL connection closed!");
         }
     }
 }

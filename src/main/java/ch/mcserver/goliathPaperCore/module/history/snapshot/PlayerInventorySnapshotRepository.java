@@ -54,7 +54,7 @@ public class PlayerInventorySnapshotRepository {
             if (exception.getError().getCategory() == ErrorCategory.DUPLICATE_KEY) {
                 return false;
             }
-            GoliathPaperCore.getInstance().logger.log(Level.WARNING,
+            GoliathPaperCore.getInstance().getLogger().log(Level.WARNING,
                     "Failed to create inventory snapshot for player " + playerUUID, exception);
             return false;
         }
@@ -64,7 +64,7 @@ public class PlayerInventorySnapshotRepository {
         try {
             return collection.find(Filters.eq("historyUUID", historyUUID.toString())).first();
         } catch (MongoException exception) {
-            GoliathPaperCore.getInstance().logger.log(Level.WARNING,
+            GoliathPaperCore.getInstance().getLogger().log(Level.WARNING,
                     "Failed to load inventory snapshot for history " + historyUUID, exception);
             return null;
         }

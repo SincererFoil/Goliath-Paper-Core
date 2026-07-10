@@ -17,14 +17,14 @@ public class ProtocolLibHook {
 
     public void init() {
         if (Bukkit.getPluginManager().getPlugin("ProtocolLib") == null) {
-            plugin.getLogger().warning("[Goliath] ProtocolLib not found. Packet systems disabled");
+            plugin.getLogger().warning("ProtocolLib not found. Packet systems disabled");
             this.enabled = false;
             return;
         }
 
         this.enabled = true;
         this.protocolManager = ProtocolLibrary.getProtocolManager();
-        plugin.getLogger().info("[Goliath] ProtocolLib hooked successfully");
+        plugin.getLogger().info("ProtocolLib hooked successfully");
     }
 
     public boolean isEnabled() {

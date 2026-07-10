@@ -4,6 +4,7 @@ import ch.mcserver.goliathPaperCore.common.database.mongodb.HistoryRepository;
 import ch.mcserver.goliathPaperCore.common.database.mongodb.MongoDBManager;
 import ch.mcserver.goliathPaperCore.common.database.mysql.MySQLManager;
 import ch.mcserver.goliathPaperCore.common.database.mysql.PlayerRepository;
+import ch.mcserver.goliathPaperCore.common.database.redis.RedisManager;
 import ch.mcserver.goliathPaperCore.module.history.snapshot.PlayerInventorySnapshotRepository;
 import ch.mcserver.goliathPaperCore.module.inventory.PlayerInventoryRepository;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -25,8 +26,9 @@ public final class GoliathPaperCore extends JavaPlugin {
 
     private static GoliathPaperCore instance;
 
-    public Logger logger;
+    private Logger logger;
 
+    private RedisManager redisManager;
     private MongoDBManager mongoManager;
     private MySQLManager mySQLManager;
     private PluginRegister pluginRegister;
@@ -44,12 +46,15 @@ public final class GoliathPaperCore extends JavaPlugin {
         mySQLManager = new MySQLManager();
         mySQLManager.connect();
 
+        redisManager = new RedisManager();
+        redisManager.connect();
+
         playerRepository = new PlayerRepository(mySQLManager);
 
         pluginRegister = new PluginRegister(this, mongoManager, mySQLManager);
         pluginRegister.registerAll();
 
-        logger.info("[Goliath] Plugin Enabled!");
+        logger.info("Plugin Enabled!");
     }
 
     @Override
@@ -66,7 +71,11 @@ public final class GoliathPaperCore extends JavaPlugin {
             mySQLManager.disconnect();
         }
 
-        logger.info("[Goliath] Plugin Disabled!");
+        if (redisManager != null) {
+            redisManager.close();
+        }
+
+        logger.info("Plugin Disabled!");
     }
 
     public static GoliathPaperCore getInstance() {
@@ -79,6 +88,10 @@ public final class GoliathPaperCore extends JavaPlugin {
 
     public static PlayerInventorySnapshotRepository getPlayerInventorySnapshotRepository() {
         return playerInventorySnapshotRepository;
+    }
+
+    public RedisManager getRedisManager() {
+        return redisManager;
     }
 
     public static HistoryRepository getHistoryRepository() {
@@ -107,7 +120,10 @@ public final class GoliathPaperCore extends JavaPlugin {
                 config.node("mysql", "port").set(3306);
                 config.node("mysql", "database").set("goliath");
                 config.node("mysql", "username").set("goliath");
-                config.node("mysql", "password").set("");
+                config.node("mysql", "password").set("YOUR_PASSWORD");
+                config.node("redis", "ipaddress").set("127.0.0.1");
+                config.node("redis", "port").set("6379");
+                config.node("redis", "password").set("YOUR_PASSWORD");
 
                 config.node("server", "isSpawn").set(false);
                 config.node("server", "name").set("goliath-unknown");

@@ -58,7 +58,7 @@ public class PlayerInventoryRepository {
                 player.getInventory().setItemInOffHand(offhand[0]);
             }
         } catch (Exception e) {
-            GoliathPaperCore.getInstance().logger.log(Level.WARNING, "Could not load Inventory from " + player.getName() + ". Error message: ", e);
+            GoliathPaperCore.getInstance().getLogger().log(Level.WARNING, "Could not load Inventory from " + player.getName() + ". Error message: ", e);
         }
     }
 }

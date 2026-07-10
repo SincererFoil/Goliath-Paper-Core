@@ -15,6 +15,7 @@ dependencies {
 
     implementation(platform("org.mongodb:mongodb-driver-bom:5.8.0"))
     implementation("org.mongodb:mongodb-driver-sync")
+    implementation("redis.clients:jedis:5.2.0")
     implementation("org.spongepowered:configurate-yaml:4.2.0")
 
     compileOnly("com.comphenix.protocol:ProtocolLib:5.3.0")
