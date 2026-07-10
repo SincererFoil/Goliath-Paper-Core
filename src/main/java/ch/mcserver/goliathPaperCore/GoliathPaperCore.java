@@ -32,6 +32,7 @@ public final class GoliathPaperCore extends JavaPlugin {
     private MongoDBManager mongoManager;
     private MySQLManager mySQLManager;
     private PluginRegister pluginRegister;
+    public static String serverName;
 
     @Override
     public void onEnable() {
@@ -133,6 +134,11 @@ public final class GoliathPaperCore extends JavaPlugin {
             }
 
             config = loader.load();
+            serverName = config.node("server", "name").getString("goliath-unknown");
+
+            if ("goliath-unknown".equals(serverName)) {
+                logger.warning("server.name ist nicht in config.yml gesetzt oder konnte nicht gelesen werden!");
+            }
 
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to load config.yml!", e);

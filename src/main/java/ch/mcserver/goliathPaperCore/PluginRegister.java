@@ -17,6 +17,7 @@ import ch.mcserver.goliathPaperCore.common.pluginmessage.LocationMessenger;
 import ch.mcserver.goliathPaperCore.common.service.CommandErrorService;
 import ch.mcserver.goliathPaperCore.common.service.ShutdownService;
 import ch.mcserver.goliathPaperCore.common.service.SpawnerService;
+import ch.mcserver.goliathPaperCore.module.chat.GoliathChat;
 import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestListener;
 import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestService;
 import ch.mcserver.goliathPaperCore.module.enderchest.PlayerEnderchestRepository;
@@ -60,6 +61,8 @@ public class PluginRegister {
 
     private PlayerLocationRepository playerLocationRepository;
     private PlayerLocationManager playerLocationManager;
+
+    private GoliathChat goliathChat;
 
     private ShutdownService shutdownService;
 
@@ -110,7 +113,7 @@ public class PluginRegister {
         GoliathPaperCore.playerInventorySnapshotRepository = this.playerInventorySnapshotRepository;
 
         this.playerLocationRepository = new PlayerLocationRepository(mySQLManager);
-
+        this.goliathChat = new GoliathChat(plugin);
         String serverName = GoliathPaperCore.config
                 .node("server", "name")
                 .getString("unknown");
@@ -164,6 +167,11 @@ public class PluginRegister {
             plugin.getServer().getPluginManager()
                     .registerEvents(new DoubleJumpBoostListener(plugin), plugin);
         }
+
+        plugin.getServer().getPluginManager()
+                .registerEvents(goliathChat, plugin);
+
+        goliathChat.startChatSubscriber();
 
         plugin.getServer().getPluginManager()
                 .registerEvents(new CommandErrorService(), plugin);
