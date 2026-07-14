@@ -8,9 +8,12 @@ load: POSTWORLD
 
 commands:
   spawnstash:
+    permission: goliath.staff.spawnstash
     description: Spawns a Fake Base
   echest:
+    permission: goliath.staff.echest
     description: View or edit a player's enderchest
     aliases: [enderchest]
   history:
+    permission: goliath.staff.history
     description: Opens Player History for Staff
