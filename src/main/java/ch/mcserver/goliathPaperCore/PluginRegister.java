@@ -1,5 +1,6 @@
 package ch.mcserver.goliathPaperCore;
 
+import ch.mcserver.goliathPaperCore.common.database.mongodb.ChatLogRepository;
 import ch.mcserver.goliathPaperCore.common.database.mongodb.HistoryRepository;
 import ch.mcserver.goliathPaperCore.common.database.mongodb.MongoDBManager;
 import ch.mcserver.goliathPaperCore.common.database.mysql.MySQLManager;
@@ -54,7 +55,9 @@ public class PluginRegister {
     private PlayerInventoryRepository playerInventoryRepository;
 
     private MongoCollection<Document> historyCollection;
+    private MongoCollection<Document> chatLogCollection;
     private HistoryRepository historyRepository;
+    private ChatLogRepository chatLogRepository;
 
     private MongoCollection<Document> historyPlayerInventoryCollection;
     private PlayerInventorySnapshotRepository playerInventorySnapshotRepository;
@@ -99,6 +102,10 @@ public class PluginRegister {
     private void registerManagers() {
         this.inventoryCollection = this.mongoManager.getMongoCollection("player_inventory");
         this.playerInventoryRepository = new PlayerInventoryRepository(inventoryCollection);
+
+        this.chatLogCollection = this.mongoManager.getMongoCollection("chat_log");
+        this.chatLogRepository = new ChatLogRepository(chatLogCollection);
+        GoliathPaperCore.chatLogRepository = this.chatLogRepository;
 
         this.enderchestCollection = this.mongoManager.getMongoCollection("player_enderchest");
         this.enderchestRepository = new PlayerEnderchestRepository(enderchestCollection);

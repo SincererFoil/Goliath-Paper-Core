@@ -34,7 +34,6 @@ public class GoliathChat implements Listener {
         String plainMessage = PlainTextComponentSerializer.plainText()
                 .serialize(event.message());
 
-        // Possible Log and Auto-Moderation
         sendChatMessage(player, plainMessage);
 
     }
@@ -47,6 +46,8 @@ public class GoliathChat implements Listener {
                 message,
                 System.currentTimeMillis()
         );
+
+        GoliathPaperCore.getChatLogRepository().createEvent(player.getUniqueId(), serverName, message, player.getName());
 
         String json = gson.toJson(chatMessage);
 
