@@ -4,6 +4,8 @@ import ch.mcserver.goliathPaperCore.GoliathPaperCore;
 import ch.mcserver.goliathPaperCore.common.database.mongodb.HistoryRepository;
 import ch.mcserver.goliathPaperCore.common.database.mysql.PlayerObject;
 import ch.mcserver.goliathPaperCore.module.history.HistoryEvent;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -58,27 +60,39 @@ public class ShowHistory implements CommandExecutor {
 
     public static void openHistory(Player staffPlayer, UUID targetUUID) {
         HistoryRepository historyRepository = GoliathPaperCore.getHistoryRepository();
+        long start = System.nanoTime();
         List<HistoryEvent> events = historyRepository.getEventsByPlayerUUID(targetUUID);
+        int eventSize = events.size();
+        int loadedEventCount = 0;
+        if (eventSize > EVENTS_PER_PAGE) {
+            loadedEventCount = EVENTS_PER_PAGE;
+        } else {
+            loadedEventCount = eventSize;
+        }
         openPage(staffPlayer, targetUUID, events, 0);
+        long durationMs = (System.nanoTime() - start) / 1_000_000;
+        staffPlayer.sendMessage(Component.text("took " + durationMs + "ms to get total of histories "  + loadedEventCount + ".").color(NamedTextColor.GRAY));
+
     }
 
     public static void openPage(Player staffPlayer, UUID targetUUID, List<HistoryEvent> events, int page) {
         HistoryGuiHolder holder = new HistoryGuiHolder(targetUUID, events, page);
         Inventory inventory = Bukkit.createInventory(holder, 54, "History " + page);
         holder.setInventory(inventory);
-        renderPage(inventory, holder);
+        renderPage(inventory, holder, staffPlayer);
         staffPlayer.openInventory(inventory);
     }
 
-    private static void renderPage(Inventory inventory, HistoryGuiHolder holder) {
+    private static void renderPage(Inventory inventory, HistoryGuiHolder holder, Player player) {
+        long start = System.nanoTime();
         List<HistoryEvent> events = holder.getEvents();
         int page = holder.getPage();
 
         int fromIndex = page * EVENTS_PER_PAGE;
         int toIndex = Math.min(fromIndex + EVENTS_PER_PAGE, events.size());
-
         if (fromIndex < toIndex) {
             List<HistoryEvent> pageEvents = events.subList(fromIndex, toIndex);
+
             for (int i = 0; i < pageEvents.size(); i++) {
                 inventory.setItem(i, buildEventItem(pageEvents.get(i)));
             }
@@ -98,6 +112,10 @@ public class ShowHistory implements CommandExecutor {
         inventory.setItem(SLOT_PREV, buildNavItem(Material.ARROW, ChatColor.GRAY + "Back"));
         inventory.setItem(SLOT_PAGE_EXAMPLE, item);
         inventory.setItem(SLOT_NEXT, buildNavItem(Material.ARROW, ChatColor.GRAY + "Next"));
+        long durationMs = (System.nanoTime() - start) / 1_000_000;
+        if (page >= 1) {
+            player.sendMessage(Component.text("took " + durationMs + "ms of processing.").color(NamedTextColor.GRAY));
+        }
     }
 
     private static ItemStack buildEventItem(HistoryEvent event) {
