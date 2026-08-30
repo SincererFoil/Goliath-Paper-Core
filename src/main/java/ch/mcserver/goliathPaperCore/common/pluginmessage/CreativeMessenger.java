@@ -47,6 +47,7 @@ public class CreativeMessenger implements PluginMessageListener, Listener {
 
         serverTriggered.add(uuid);
         player.setGameMode(enabled ? GameMode.CREATIVE : GameMode.SURVIVAL);
+        player.setFlying(true);
         Bukkit.getScheduler().runTaskLater(plugin, () -> serverTriggered.remove(uuid), 2L);
     }
 

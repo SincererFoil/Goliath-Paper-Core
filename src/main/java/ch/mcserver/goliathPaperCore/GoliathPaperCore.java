@@ -143,7 +143,7 @@ public final class GoliathPaperCore extends JavaPlugin {
             serverName = config.node("server", "name").getString("goliath-unknown");
 
             if ("goliath-unknown".equals(serverName)) {
-                logger.warning("server.name ist nicht in config.yml gesetzt oder konnte nicht gelesen werden!");
+                logger.warning("The Servername in the config.yml is not set or couldn't load");
             }
 
         } catch (Exception e) {

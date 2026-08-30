@@ -47,6 +47,7 @@ public class GoliathChat implements Listener {
                 System.currentTimeMillis()
         );
 
+
         GoliathPaperCore.getChatLogRepository().createEvent(player.getUniqueId(), serverName, message, player.getName());
 
         String json = gson.toJson(chatMessage);
