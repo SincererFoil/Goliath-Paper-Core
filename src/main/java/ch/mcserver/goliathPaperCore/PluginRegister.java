@@ -18,6 +18,7 @@ import ch.mcserver.goliathPaperCore.common.pluginmessage.LocationMessenger;
 import ch.mcserver.goliathPaperCore.common.service.CommandErrorService;
 import ch.mcserver.goliathPaperCore.common.service.ShutdownService;
 import ch.mcserver.goliathPaperCore.common.service.SpawnerService;
+import ch.mcserver.goliathPaperCore.module.anticheat.AnticheatListener;
 import ch.mcserver.goliathPaperCore.module.chat.GoliathChat;
 import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestListener;
 import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestService;
@@ -36,6 +37,7 @@ import ch.mcserver.goliathPaperCore.module.spawn.DoubleJumpBoostListener;
 import ch.mcserver.goliathPaperCore.module.spawn.SpawnListener;
 import ch.mcserver.goliathPaperCore.module.spawnstash.SpawnStashCommand;
 import ch.mcserver.goliathPaperCore.module.spawnstash.SpawnStashTabCompleter;
+import com.comphenix.protocol.ProtocolLibrary;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 import org.bukkit.Bukkit;
@@ -206,6 +208,9 @@ public class PluginRegister {
 
         plugin.getServer().getPluginManager()
                 .registerEvents(new HistoryInventoryGuiListener(), plugin);
+
+        ProtocolLibrary.getProtocolManager()
+                .addPacketListener(new AnticheatListener(plugin));
     }
 
     private void registerPluginMessaging() {
