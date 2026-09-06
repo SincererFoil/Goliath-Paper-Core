@@ -26,7 +26,7 @@ public class PlayerInventorySnapshotRepository {
 
     public boolean createInventorySnapshot(UUID playerUUID, UUID historyUUID, String inventory, String armor, String offhand) {
 
-        if (collection.countDocuments(Filters.eq("playerUUID", playerUUID.toString())) > 119) {
+        if (collection.countDocuments(Filters.eq("playerUUID", playerUUID.toString())) > 499) {
             List<ObjectId> ids = collection.find(Filters.eq("playerUUID", playerUUID.toString()))
                     .sort(Sorts.ascending("createdAt"))
                     .limit(1)
