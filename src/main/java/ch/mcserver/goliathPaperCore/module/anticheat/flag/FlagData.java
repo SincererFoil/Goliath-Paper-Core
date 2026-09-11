@@ -5,7 +5,7 @@ import java.util.UUID;
 public record FlagData(
         UUID playerUuid,
         String playerName,
-        String checkName,
+        FlagType checkName,
         double violations,
         String details,
         String serverName,

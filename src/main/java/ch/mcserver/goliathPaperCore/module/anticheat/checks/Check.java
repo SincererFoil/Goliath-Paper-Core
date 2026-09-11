@@ -1,11 +1,14 @@
 package ch.mcserver.goliathPaperCore.module.anticheat.checks;
 
 import ch.mcserver.goliathPaperCore.module.anticheat.data.PlayerData;
+import ch.mcserver.goliathPaperCore.module.anticheat.flag.FlagManager;
+import ch.mcserver.goliathPaperCore.module.anticheat.flag.FlagType;
 
 public abstract class Check {
 
     protected final PlayerData playerData;
     protected double violations;
+    private FlagType flagType;
 
     protected Check(PlayerData playerData) {
         this.playerData = playerData;
@@ -14,11 +17,11 @@ public abstract class Check {
     protected void flag(String details) {
         violations++;
 
-//        FlagManager.flag(
-//                playerData,
-//                getClass().getSimpleName(),
-//                violations,
-//                details
-//        );
+        FlagManager.handleFlag(
+                playerData,
+                flagType,
+                violations,
+                details
+        );
     }
 }
