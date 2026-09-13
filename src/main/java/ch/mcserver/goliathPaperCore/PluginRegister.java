@@ -18,6 +18,7 @@ import ch.mcserver.goliathPaperCore.common.service.SpawnerService;
 import ch.mcserver.goliathPaperCore.module.anticheat.AnticheatListener;
 import ch.mcserver.goliathPaperCore.module.anticheat.data.AnticheatStateService;
 import ch.mcserver.goliathPaperCore.module.anticheat.data.PlayerDataManager;
+import ch.mcserver.goliathPaperCore.module.anticheat.flag.FlagManager;
 import ch.mcserver.goliathPaperCore.module.chat.GoliathChat;
 import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestListener;
 import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestService;
@@ -77,6 +78,7 @@ public class PluginRegister {
 
     private ProtocolLibHook protocolLibHook;
     private GoliathPacket goliathPacket;
+    private FlagManager flagManager;
 
     public PluginRegister(GoliathPaperCore plugin, MongoDBManager mongoManager, MySQLManager mySQLManager) {
         this.plugin = plugin;
@@ -121,6 +123,7 @@ public class PluginRegister {
         this.historyRepository = new HistoryRepository(historyCollection);
         GoliathPaperCore.historyRepository = this.historyRepository;
 
+
         this.historyPlayerInventoryCollection = this.mongoManager.getMongoCollection("history_player_inventory_snapshot");
         this.playerInventorySnapshotRepository = new PlayerInventorySnapshotRepository(historyPlayerInventoryCollection);
         GoliathPaperCore.playerInventorySnapshotRepository = this.playerInventorySnapshotRepository;
@@ -144,7 +147,12 @@ public class PluginRegister {
                 this.playerInventoryRepository
         );
 
-        this.playerDataManager = new PlayerDataManager();
+        this.flagManager = new FlagManager(
+                plugin,
+                plugin.getRedisManager()
+        );
+
+        this.playerDataManager = new PlayerDataManager(flagManager);
 
         this.anticheatRepository = new AnticheatRepository(mySQLManager);
 

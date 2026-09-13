@@ -1,6 +1,7 @@
 package ch.mcserver.goliathPaperCore.module.anticheat.data;
 
 import ch.mcserver.goliathPaperCore.module.anticheat.checks.CheckManager;
+import ch.mcserver.goliathPaperCore.module.anticheat.flag.FlagManager;
 
 import java.util.UUID;
 
@@ -48,10 +49,10 @@ public class PlayerData {
 
     private boolean checkStateLoaded;
 
-    public PlayerData(UUID uuid, String username) {
+    public PlayerData(UUID uuid, String username, FlagManager flagManager) {
         this.username = username;
         this.uuid = uuid;
-        this.checkManager = new CheckManager(this);
+        this.checkManager = new CheckManager(this, flagManager);
         positionInitialized = false;
         rotationInitialized = false;
     }

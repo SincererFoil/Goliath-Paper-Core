@@ -3,6 +3,7 @@ package ch.mcserver.goliathPaperCore.module.anticheat.checks;
 import ch.mcserver.goliathPaperCore.module.anticheat.data.CheckState;
 import ch.mcserver.goliathPaperCore.module.anticheat.data.PacketData;
 import ch.mcserver.goliathPaperCore.module.anticheat.data.PlayerData;
+import ch.mcserver.goliathPaperCore.module.anticheat.flag.FlagManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,10 +12,10 @@ public class CheckManager {
 
     private final List<Check> checks;
 
-    public CheckManager(PlayerData playerData) {
+    public CheckManager(PlayerData playerData, FlagManager flagManager) {
         this.checks = new ArrayList<>();
         // Initializes Invalid A check
-        checks.add(new InvalidA(playerData));
+        checks.add(new InvalidA(playerData, flagManager));
     }
 
     public void handle(PacketData data) {

@@ -15,10 +15,12 @@ public abstract class Check {
     protected int violations;
     protected double buffer;
     private final FlagType flagType;
+    private final FlagManager flagManager;
 
-    protected Check(PlayerData playerData, FlagType flagType) {
+    protected Check(PlayerData playerData, FlagType flagType, FlagManager flagManager) {
         this.playerData = playerData;
         this.flagType = flagType;
+        this.flagManager = flagManager;
     }
 
     public abstract void handle(PacketData event);
@@ -28,7 +30,7 @@ public abstract class Check {
     protected void flag(String details) {
         violations++;
 
-        FlagManager.handleFlag(
+        flagManager.handleFlag(
                 playerData,
                 flagType,
                 violations,

@@ -1,26 +1,31 @@
 package ch.mcserver.goliathPaperCore.module.anticheat.flag;
 
 import ch.mcserver.goliathPaperCore.GoliathPaperCore;
-import ch.mcserver.goliathPaperCore.module.anticheat.checks.Check;
+import ch.mcserver.goliathPaperCore.common.database.redis.RedisManager;
 import ch.mcserver.goliathPaperCore.module.anticheat.data.PlayerData;
+import com.google.gson.Gson;
 import org.bukkit.plugin.Plugin;
 
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
-
-import static org.bukkit.Bukkit.getServer;
 
 public class FlagManager {
 
-    private static Plugin plugin = GoliathPaperCore.getInstance();
+    private final Plugin plugin;
 
-    private static final List<FlagType> autoPunishFlagTypes = new ArrayList<>();
+    private final RedisManager redisManager;
 
-    public static void handleFlag(PlayerData playerData, FlagType checkName, int violationLevel, String details) {
+    private final Gson gson = new Gson();
+
+    private static final Set<FlagType> autoPunishFlagTypes = new HashSet<>();
+
+    public FlagManager(Plugin plugin, RedisManager redisManager) {
+        this.plugin = plugin;
+        this.redisManager = redisManager;
+    }
+
+    public void handleFlag(PlayerData playerData, FlagType checkName, int violationLevel, String details) {
 
         FlagData data = new FlagData(
                 playerData.getUuid(),
@@ -37,12 +42,12 @@ public class FlagManager {
 
     }
 
-    public static void sendStaffAlert(FlagData flagData) {
+    public void sendStaffAlert(FlagData flagData) {
         plugin.getLogger().log(Level.INFO, "[AC] " + flagData.playerName() + " FAILED " + flagData.checkName() + " | VL = " + flagData.violations() + " | " + flagData.details());
-        // Publish redis
+        redisManager.publish("goliath:anticheat:flag", gson.toJson(flagData));
     }
 
-    public static void handlePunishment(FlagData flagData) {
+    public void handlePunishment(FlagData flagData) {
         if (autoPunishFlagTypes.contains(flagData.checkName())) {
             // TODO AUTOPUNISHMENT / SEND TO PROXY
         }

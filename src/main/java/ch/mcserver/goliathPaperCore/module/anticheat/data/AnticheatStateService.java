@@ -56,7 +56,6 @@ public class AnticheatStateService {
     }
 
     public void saveAll() {
-
         List<CheckState> states = new ArrayList<>();
 
         playerDataManager.getAll().stream().filter(PlayerData::isCheckStateLoaded).forEach(playerData -> {

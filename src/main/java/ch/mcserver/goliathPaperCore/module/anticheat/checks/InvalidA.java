@@ -2,6 +2,7 @@ package ch.mcserver.goliathPaperCore.module.anticheat.checks;
 
 import ch.mcserver.goliathPaperCore.module.anticheat.data.PacketData;
 import ch.mcserver.goliathPaperCore.module.anticheat.data.PlayerData;
+import ch.mcserver.goliathPaperCore.module.anticheat.flag.FlagManager;
 import ch.mcserver.goliathPaperCore.module.anticheat.flag.FlagType;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketEvent;
@@ -10,8 +11,8 @@ import java.util.Set;
 
 public class InvalidA extends Check{
 
-    public InvalidA(PlayerData playerData) {
-        super(playerData, FlagType.INVALID_A);
+    public InvalidA(PlayerData playerData, FlagManager flagManager) {
+        super(playerData, FlagType.INVALID_A, flagManager);
     }
 
     @Override
