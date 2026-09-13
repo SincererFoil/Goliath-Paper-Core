@@ -10,6 +10,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 import static org.bukkit.Bukkit.getServer;
 
@@ -19,7 +20,7 @@ public class FlagManager {
 
     private static final List<FlagType> autoPunishFlagTypes = new ArrayList<>();
 
-    public static void handleFlag(PlayerData playerData, FlagType checkName, Double violationLevel, String details) {
+    public static void handleFlag(PlayerData playerData, FlagType checkName, int violationLevel, String details) {
 
         FlagData data = new FlagData(
                 playerData.getUuid(),
@@ -31,18 +32,17 @@ public class FlagManager {
                 System.currentTimeMillis()
         );
 
-        plugin.getServer().getScheduler().runTask(plugin, () -> {
-            sendStaffAlert(data, playerData);
-            handlePunishment(data, playerData);
-        });
+        sendStaffAlert(data);
+        handlePunishment(data);
 
     }
 
-    public static void sendStaffAlert(FlagData flagData, PlayerData playerData) {
+    public static void sendStaffAlert(FlagData flagData) {
+        plugin.getLogger().log(Level.INFO, "[AC] " + flagData.playerName() + " FAILED " + flagData.checkName() + " | VL = " + flagData.violations() + " | " + flagData.details());
         // Publish redis
     }
 
-    public static void handlePunishment(FlagData flagData, PlayerData playerData) {
+    public static void handlePunishment(FlagData flagData) {
         if (autoPunishFlagTypes.contains(flagData.checkName())) {
             // TODO AUTOPUNISHMENT / SEND TO PROXY
         }

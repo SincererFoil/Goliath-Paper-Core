@@ -4,6 +4,8 @@ import ch.mcserver.goliathPaperCore.module.anticheat.data.CheckState;
 import ch.mcserver.goliathPaperCore.module.anticheat.data.PlayerData;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class AnticheatRepository {
@@ -12,6 +14,36 @@ public class AnticheatRepository {
 
     public AnticheatRepository(MySQLManager mySQLManager) {
         this.mySQLManager = mySQLManager;
+    }
+
+    public void saveCheckStates(List<CheckState> states) {
+        try (
+                Connection connection = mySQLManager.getConnection();
+                PreparedStatement statement = connection.prepareStatement(
+                        """
+                        INSERT INTO anticheat_check_state
+                        (player_uuid, check_id, violations, buffer)
+                        VALUES (?, ?, ?, ?) 
+                        ON DUPLICATE KEY UPDATE
+                                         violations = VALUES(violations),
+                                         buffer = VALUES(buffer)
+                                         
+                        """
+                )
+        ) {
+            for (CheckState state : states) {
+                statement.setString(1, state.playerUuid().toString());
+                statement.setString(2, state.checkId());
+                statement.setInt(3, state.violations());
+                statement.setDouble(4, state.buffer());
+                statement.addBatch();
+            }
+
+            statement.executeBatch();
+
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
     }
 
     public void saveCheckState(CheckState checkState) {
@@ -41,33 +73,35 @@ public class AnticheatRepository {
         }
     }
 
-    public CheckState loadCheckState(UUID uuid) {
+    public List<CheckState> loadCheckStates(UUID uuid) {
+        List<CheckState> states = new ArrayList<>();
+
         try (
                 Connection connection = mySQLManager.getConnection();
                 PreparedStatement statement = connection.prepareStatement(
-                        "SELECT * FROM anticheat_check_state WHERE uuid = ?"
+                        """
+                        SELECT player_uuid, check_id, violations, buffer
+                        FROM anticheat_check_state
+                        WHERE player_uuid = ?
+                        """
                 )
         ) {
             statement.setString(1, uuid.toString());
 
             try (ResultSet resultSet = statement.executeQuery()) {
-
-                if (!resultSet.next()) {
-                    return null;
+                while (resultSet.next()) {
+                    states.add(new CheckState(
+                            UUID.fromString(resultSet.getString("player_uuid")),
+                            resultSet.getString("check_id"),
+                            resultSet.getInt("violations"),
+                            resultSet.getDouble("buffer")
+                    ));
                 }
-
-                return new CheckState(
-                        UUID.fromString(resultSet.getString("player_uuid")),
-                        resultSet.getString("check_id"),
-                        resultSet.getInt("violations"),
-                        resultSet.getDouble("buffer")
-                );
             }
-
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
 
-        return null;
+        return states;
     }
 }

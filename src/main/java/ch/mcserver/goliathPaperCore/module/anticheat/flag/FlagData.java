@@ -6,7 +6,7 @@ public record FlagData(
         UUID playerUuid,
         String playerName,
         FlagType checkName,
-        double violations,
+        int violations,
         String details,
         String serverName,
         long timestamp

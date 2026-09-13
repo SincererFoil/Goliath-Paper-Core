@@ -1,6 +1,6 @@
 package ch.mcserver.goliathPaperCore.module.anticheat.data;
 
-import org.checkerframework.checker.units.qual.UnknownUnits;
+import ch.mcserver.goliathPaperCore.module.anticheat.checks.CheckManager;
 
 import java.util.UUID;
 
@@ -40,8 +40,21 @@ public class PlayerData {
 
     private float deltaPitch;
 
-    private CheckManager checkManager;
+    private final CheckManager checkManager;
 
+    private boolean positionInitialized;
+
+    private boolean rotationInitialized;
+
+    private boolean checkStateLoaded;
+
+    public PlayerData(UUID uuid, String username) {
+        this.username = username;
+        this.uuid = uuid;
+        this.checkManager = new CheckManager(this);
+        positionInitialized = false;
+        rotationInitialized = false;
+    }
 
     public UUID getUuid() {
         return uuid;
@@ -159,7 +172,7 @@ public class PlayerData {
         return getDeltaZ;
     }
 
-    public void setGetDeltaZ(double getDeltaZ) {
+    public void setDeltaZ(double getDeltaZ) {
         this.getDeltaZ = getDeltaZ;
     }
 
@@ -183,7 +196,74 @@ public class PlayerData {
         return checkManager;
     }
 
-    public void setCheckManager(CheckManager checkManager) {
-        this.checkManager = checkManager;
+    public boolean isPositionInitialized() {
+        return positionInitialized;
+    }
+
+    public void setPositionInitialized(boolean positionInitialized) {
+        this.positionInitialized = positionInitialized;
+    }
+
+    public boolean isRotationInitialized() {
+        return rotationInitialized;
+    }
+
+    public void setRotationInitialized(boolean rotationInitialized) {
+        this.rotationInitialized = rotationInitialized;
+    }
+
+    public boolean isCheckStateLoaded() {
+        return checkStateLoaded;
+    }
+
+    public void setCheckStateLoaded(boolean checkStateLoaded) {
+        this.checkStateLoaded = checkStateLoaded;
+    }
+
+    public void updateMovement(MovementPacketData data) {
+        if (data.hasPosition()) {
+            if (!positionInitialized) {
+                setLastX(data.x());
+                setLastY(data.y());
+                setLastZ(data.z());
+                positionInitialized = true;
+            } else {
+                setLastX(getX());
+                setLastY(getY());
+                setLastZ(getZ());
+            }
+
+            setX(data.x());
+            setY(data.y());
+            setZ(data.z());
+
+            setDeltaX(getX() - getLastX());
+            setDeltaY(getY() - getLastY());
+            setDeltaZ(getZ() - getLastZ());
+
+        }
+
+        if (data.hasRotation()) {
+            if (!rotationInitialized) {
+                setLastPitch(data.pitch());
+                setLastYaw(data.yaw());
+                rotationInitialized = true;
+            } else {
+                setLastPitch(getPitch());
+                setLastYaw(getYaw());
+            }
+
+            setPitch(data.pitch());
+            setYaw(data.yaw());
+
+            setDeltaPitch(getPitch() - getLastPitch());
+            setDeltaYaw(getYaw() - getLastYaw());
+
+            if (getDeltaYaw() > 180) {
+                setDeltaYaw(getDeltaYaw() - 360);
+            } else if (getDeltaYaw() < -180) {
+                setDeltaYaw(getDeltaYaw() + 360);
+            }
+        }
     }
 }

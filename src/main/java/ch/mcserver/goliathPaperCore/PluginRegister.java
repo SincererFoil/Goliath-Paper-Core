@@ -3,10 +3,7 @@ package ch.mcserver.goliathPaperCore;
 import ch.mcserver.goliathPaperCore.common.database.mongodb.ChatLogRepository;
 import ch.mcserver.goliathPaperCore.common.database.mongodb.HistoryRepository;
 import ch.mcserver.goliathPaperCore.common.database.mongodb.MongoDBManager;
-import ch.mcserver.goliathPaperCore.common.database.mysql.MySQLManager;
-import ch.mcserver.goliathPaperCore.common.database.mysql.PlayerLocationManager;
-import ch.mcserver.goliathPaperCore.common.database.mysql.PlayerLocationRepository;
-import ch.mcserver.goliathPaperCore.common.database.mysql.PlayerObjectManager;
+import ch.mcserver.goliathPaperCore.common.database.mysql.*;
 import ch.mcserver.goliathPaperCore.common.packet.GoliathPacket;
 import ch.mcserver.goliathPaperCore.common.packet.ProtocolLibHook;
 import ch.mcserver.goliathPaperCore.common.pluginmessage.CommandUpdateMessenger;
@@ -19,6 +16,8 @@ import ch.mcserver.goliathPaperCore.common.service.CommandErrorService;
 import ch.mcserver.goliathPaperCore.common.service.ShutdownService;
 import ch.mcserver.goliathPaperCore.common.service.SpawnerService;
 import ch.mcserver.goliathPaperCore.module.anticheat.AnticheatListener;
+import ch.mcserver.goliathPaperCore.module.anticheat.data.AnticheatStateService;
+import ch.mcserver.goliathPaperCore.module.anticheat.data.PlayerDataManager;
 import ch.mcserver.goliathPaperCore.module.chat.GoliathChat;
 import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestListener;
 import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestService;
@@ -68,6 +67,11 @@ public class PluginRegister {
     private PlayerLocationManager playerLocationManager;
 
     private GoliathChat goliathChat;
+
+    private PlayerDataManager playerDataManager;
+    private AnticheatRepository anticheatRepository;
+    private AnticheatStateService anticheatStateService;
+    private AnticheatListener anticheatListener;
 
     private ShutdownService shutdownService;
 
@@ -139,6 +143,22 @@ public class PluginRegister {
                 this.enderchestService,
                 this.playerInventoryRepository
         );
+
+        this.playerDataManager = new PlayerDataManager();
+
+        this.anticheatRepository = new AnticheatRepository(mySQLManager);
+
+        this.anticheatStateService = new AnticheatStateService(
+                plugin,
+                anticheatRepository,
+                playerDataManager
+        );
+
+        this.anticheatListener = new AnticheatListener(
+                plugin,
+                playerDataManager,
+                anticheatStateService
+        );
     }
 
     private void registerPacketSystems() {
@@ -209,8 +229,11 @@ public class PluginRegister {
         plugin.getServer().getPluginManager()
                 .registerEvents(new HistoryInventoryGuiListener(), plugin);
 
+        plugin.getServer().getPluginManager()
+                .registerEvents(anticheatListener, plugin);
+
         ProtocolLibrary.getProtocolManager()
-                .addPacketListener(new AnticheatListener(plugin));
+                .addPacketListener(anticheatListener);
     }
 
     private void registerPluginMessaging() {
