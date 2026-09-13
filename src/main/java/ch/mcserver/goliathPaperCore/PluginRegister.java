@@ -287,5 +287,10 @@ public class PluginRegister {
                 20L * 60 * 5,
                 20L * 60 * 5
         );
+
+        Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+            anticheatStateService.saveAll();
+        }, 20L * 60, 20L * 60
+        );
     }
 }

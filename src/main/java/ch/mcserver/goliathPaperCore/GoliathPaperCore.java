@@ -63,6 +63,9 @@ public final class GoliathPaperCore extends JavaPlugin {
 
     @Override
     public void onDisable() {
+
+        pluginRegister.onDisable();
+
         if (pluginRegister != null && pluginRegister.getShutdownService() != null) {
             pluginRegister.getShutdownService().shutdown();
         }
@@ -79,7 +82,6 @@ public final class GoliathPaperCore extends JavaPlugin {
             redisManager.close();
         }
 
-        pluginRegister.onDisable();
 
         logger.info("Plugin Disabled!");
     }
