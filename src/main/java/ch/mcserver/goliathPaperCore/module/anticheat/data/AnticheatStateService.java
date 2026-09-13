@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 public class AnticheatStateService {
 
@@ -18,7 +20,7 @@ public class AnticheatStateService {
 
     private final PlayerDataManager playerDataManager;
 
-    private ExecutorService databaseExcecutor = Executors.newSingleThreadExecutor();
+    private final ExecutorService databaseExecutor = Executors.newSingleThreadExecutor();
 
     public AnticheatStateService(Plugin plugin, AnticheatRepository repository, PlayerDataManager playerDataManager) {
         this.plugin = plugin;
@@ -29,7 +31,8 @@ public class AnticheatStateService {
     public void load(PlayerData playerData) {
         UUID uuid = playerData.getUuid();
 
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+        databaseExecutor.execute(() -> {
+
             List<CheckState> states = repository.loadCheckStates(uuid);
 
             Bukkit.getScheduler().runTask(plugin, () -> {
@@ -41,11 +44,12 @@ public class AnticheatStateService {
                 playerData.setCheckStateLoaded(true);
             });
         });
+
     }
 
     public void save(PlayerData playerData) {
         List<CheckState> states = playerData.getCheckManager().createStates();
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+        databaseExecutor.execute(() -> {
             repository.saveCheckStates(states);
         });
 
@@ -63,8 +67,27 @@ public class AnticheatStateService {
             return;
         }
 
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+        databaseExecutor.execute(() -> {
             repository.saveCheckStates(states);
         });
+    }
+
+    public void shutdown() {
+
+        saveAll();
+
+        databaseExecutor.shutdown();
+        try {
+            boolean finished = databaseExecutor.awaitTermination(5, TimeUnit.SECONDS);
+            if (!finished) {
+                plugin.getLogger().log(Level.WARNING, "AnticheatStateService shutdown timed out.");
+                databaseExecutor.shutdownNow();
+            }
+
+        } catch (InterruptedException e) {
+            databaseExecutor.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
+
     }
 }

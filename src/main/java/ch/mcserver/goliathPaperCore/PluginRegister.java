@@ -161,6 +161,10 @@ public class PluginRegister {
         );
     }
 
+    public void onDisable() {
+        anticheatStateService.shutdown();
+    }
+
     private void registerPacketSystems() {
         this.protocolLibHook = new ProtocolLibHook(plugin);
         this.protocolLibHook.init();
@@ -234,6 +238,7 @@ public class PluginRegister {
 
         ProtocolLibrary.getProtocolManager()
                 .addPacketListener(anticheatListener);
+
     }
 
     private void registerPluginMessaging() {
