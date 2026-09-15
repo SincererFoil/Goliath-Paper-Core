@@ -22,7 +22,7 @@ public class InvalidA extends Check{
             buffer += 0.5;
 
             if (buffer >= 10) {
-                flag("BUFFER = " + buffer + "|  PITCH = " + playerData.getPitch());
+                flag(String.valueOf(buffer));
                 buffer -= 10;
             }
 

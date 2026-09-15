@@ -1,9 +1,11 @@
 package ch.mcserver.goliathPaperCore.common.database.mysql;
 
 import ch.mcserver.goliathPaperCore.module.anticheat.data.CheckState;
-import ch.mcserver.goliathPaperCore.module.anticheat.data.PlayerData;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -22,12 +24,12 @@ public class AnticheatRepository {
                 PreparedStatement statement = connection.prepareStatement(
                         """
                         INSERT INTO anticheat_check_state
-                        (player_uuid, check_id, violations, buffer)
-                        VALUES (?, ?, ?, ?) 
+                        (player_uuid, check_id, violations, buffer, last_violation_update_at)
+                        VALUES (?, ?, ?, ?, ?)
                         ON DUPLICATE KEY UPDATE
-                                         violations = VALUES(violations),
-                                         buffer = VALUES(buffer)
-                                         
+                            violations = VALUES(violations),
+                            buffer = VALUES(buffer),
+                            last_violation_update_at = VALUES(last_violation_update_at)
                         """
                 )
         ) {
@@ -36,37 +38,11 @@ public class AnticheatRepository {
                 statement.setString(2, state.checkId());
                 statement.setInt(3, state.violations());
                 statement.setDouble(4, state.buffer());
+                statement.setLong(5, state.lastViolationUpdateAt());
                 statement.addBatch();
             }
 
             statement.executeBatch();
-
-        } catch (SQLException exception) {
-            exception.printStackTrace();
-        }
-    }
-
-    public void saveCheckState(CheckState checkState) {
-        try (
-                Connection connection = mySQLManager.getConnection();
-                PreparedStatement statement = connection.prepareStatement(
-                        """
-                        INSERT INTO anticheat_check_state
-                        (player_uuid, check_id, violations, buffer)
-                        VALUES (?, ?, ?, ?) 
-                        ON DUPLICATE KEY UPDATE
-                                         violations = VALUES(violations),
-                                         buffer = VALUES(buffer)
-                                         
-                        """
-                )
-        ) {
-            statement.setString(1, checkState.playerUuid().toString());
-            statement.setString(2, checkState.checkId());
-            statement.setInt(3, checkState.violations());
-            statement.setDouble(4, checkState.buffer());
-
-            statement.executeUpdate();
 
         } catch (SQLException exception) {
             exception.printStackTrace();
@@ -80,7 +56,11 @@ public class AnticheatRepository {
                 Connection connection = mySQLManager.getConnection();
                 PreparedStatement statement = connection.prepareStatement(
                         """
-                        SELECT player_uuid, check_id, violations, buffer
+                        SELECT player_uuid,
+                               check_id,
+                               violations,
+                               buffer,
+                               last_violation_update_at
                         FROM anticheat_check_state
                         WHERE player_uuid = ?
                         """
@@ -94,10 +74,12 @@ public class AnticheatRepository {
                             UUID.fromString(resultSet.getString("player_uuid")),
                             resultSet.getString("check_id"),
                             resultSet.getInt("violations"),
-                            resultSet.getDouble("buffer")
+                            resultSet.getDouble("buffer"),
+                            resultSet.getLong("last_violation_update_at")
                     ));
                 }
             }
+
         } catch (SQLException exception) {
             exception.printStackTrace();
         }

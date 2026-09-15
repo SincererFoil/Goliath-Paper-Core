@@ -6,6 +6,7 @@ public record CheckState(
         UUID playerUuid,
         String checkId,
         int violations,
-        double buffer
+        double buffer,
+        long lastViolationUpdateAt
 ) {
 }

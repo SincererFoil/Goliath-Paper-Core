@@ -21,6 +21,7 @@ public class CheckManager {
     public void handle(PacketData data) {
         for (Check check : checks) {
             if (check.getPacketTypes().contains(data.packetType())) {
+                check.decayViolations();
                 check.handle(data);
             }
         }
