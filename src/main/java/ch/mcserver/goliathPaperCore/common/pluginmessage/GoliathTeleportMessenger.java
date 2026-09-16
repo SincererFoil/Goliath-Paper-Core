@@ -23,11 +23,7 @@ public class GoliathTeleportMessenger implements PluginMessageListener {
     }
 
     @Override
-    public void onPluginMessageReceived(
-            @NotNull String channel,
-            @NotNull Player receiver,
-            byte @NotNull [] message
-    ) {
+    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player receiver, byte @NotNull [] message) {
 
         if (!channel.equalsIgnoreCase("goliath:gtp")) {
             return;
