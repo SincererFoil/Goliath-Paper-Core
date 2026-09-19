@@ -17,7 +17,7 @@ public class InvalidA extends Check{
 
     @Override
     public void handle(PacketData data) {
-        float pitch = playerData.getPitch();
+        float pitch = -91;
         if (pitch < -90 || pitch > 90) {
             buffer += 0.5;
 

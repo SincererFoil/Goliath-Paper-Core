@@ -3,11 +3,13 @@ package ch.mcserver.goliathPaperCore.module.anticheat.flag;
 import ch.mcserver.goliathPaperCore.GoliathPaperCore;
 import ch.mcserver.goliathPaperCore.common.database.redis.RedisManager;
 import ch.mcserver.goliathPaperCore.module.anticheat.data.PlayerData;
+import ch.mcserver.goliathPaperCore.module.anticheat.flag.autopunish.AutopunishData;
+import ch.mcserver.goliathPaperCore.module.anticheat.flag.autopunish.PunishReason;
 import com.google.gson.Gson;
 import org.bukkit.plugin.Plugin;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 
 public class FlagManager {
@@ -18,7 +20,9 @@ public class FlagManager {
 
     private final Gson gson = new Gson();
 
-    private static final Set<FlagType> autoPunishFlagTypes = new HashSet<>();
+    private static final Map<FlagType, Integer> autoPunishFlagTypes = new HashMap<>(Map.of(FlagType.INVALID_A, 100));
+    private static final Map<FlagType, PunishReason> autoPunishReasons = new HashMap<>(Map.of(FlagType.INVALID_A, PunishReason.CHEATING));
+
 
     public FlagManager(Plugin plugin, RedisManager redisManager) {
         this.plugin = plugin;
@@ -48,10 +52,27 @@ public class FlagManager {
     }
 
     public void handlePunishment(FlagData flagData) {
-        if (autoPunishFlagTypes.contains(flagData.checkName())) {
-            // TODO AUTOPUNISHMENT / SEND TO PROXY
+        if (!autoPunishFlagTypes.containsKey(flagData.checkName())) {
+            return;
         }
-        return;
+
+        int violationLimit = autoPunishFlagTypes.get(flagData.checkName());
+
+
+
+        if (flagData.violations() >= violationLimit) {
+            plugin.getLogger().log(Level.INFO, "AC auto punish executed... ");
+
+            PunishReason reason = autoPunishReasons.get(flagData.checkName());
+
+            if (reason == null) {
+                plugin.getLogger().log(Level.WARNING, "[AC] Can't load the punish reason from the flag " + flagData.checkName());
+            }
+
+            AutopunishData data = new AutopunishData(flagData, reason);
+
+            redisManager.publish("goliath:anticheat:autopunish", gson.toJson(data));
+        }
     }
 
 }
