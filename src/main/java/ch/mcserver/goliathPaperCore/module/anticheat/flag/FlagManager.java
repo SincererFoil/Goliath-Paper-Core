@@ -61,8 +61,6 @@ public class FlagManager {
 
 
         if (flagData.violations() >= violationLimit) {
-            plugin.getLogger().log(Level.INFO, "AC auto punish executed... ");
-
             PunishReason reason = autoPunishReasons.get(flagData.checkName());
 
             if (reason == null) {

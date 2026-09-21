@@ -12,8 +12,4 @@ public class SpawnerService implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        event.setJoinMessage(null);
-    }
 }
