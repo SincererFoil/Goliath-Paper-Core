@@ -1,6 +1,7 @@
 package ch.mcserver.goliathPaperCore.module.spawn;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -35,6 +36,7 @@ public class SpawnListener implements Listener {
     @EventHandler
     public void onPlayerDamage(EntityDamageByEntityEvent event) {
         World world = event.getEntity().getWorld();
+
         if (world.getName().equals("DonutSpawn_")) {
             event.setCancelled(true);
         }
@@ -43,6 +45,9 @@ public class SpawnListener implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         World world = event.getPlayer().getWorld();
+        if (!(event.getPlayer().getGameMode() == GameMode.SURVIVAL)) {
+            return;
+        }
         if (world.getName().equals("DonutSpawn_")) {
             event.setCancelled(true);
         }
@@ -51,6 +56,9 @@ public class SpawnListener implements Listener {
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
         World world = event.getPlayer().getWorld();
+        if (!(event.getPlayer().getGameMode() == GameMode.SURVIVAL)) {
+            return;
+        }
         if (world.getName().equals("DonutSpawn_")) {
             event.setCancelled(true);
         }
@@ -59,6 +67,9 @@ public class SpawnListener implements Listener {
     @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent event) {
         World world = event.getPlayer().getWorld();
+        if (!(event.getPlayer().getGameMode() == GameMode.SURVIVAL)) {
+            return;
+        }
         if (world.getName().equals("DonutSpawn_")) {
             event.setCancelled(true);
         }
@@ -67,6 +78,10 @@ public class SpawnListener implements Listener {
     @EventHandler
     public void onEntityPickupItem(EntityPickupItemEvent event) {
         if (!(event.getEntity() instanceof Player player)) {
+            return;
+        }
+
+        if (!(player.getGameMode() == GameMode.SURVIVAL)) {
             return;
         }
 
@@ -103,6 +118,9 @@ public class SpawnListener implements Listener {
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         World world = event.getPlayer().getWorld();
+        if (!(event.getPlayer().getGameMode() == GameMode.SURVIVAL)) {
+            return;
+        }
         if (world.getName().equals("DonutSpawn_")) {
             event.setCancelled(true);
         }
@@ -135,6 +153,9 @@ public class SpawnListener implements Listener {
     @EventHandler
     public void onPlayerEmptyBucket(PlayerBucketEmptyEvent event) {
         World world = event.getPlayer().getWorld();
+        if (!(event.getPlayer().getGameMode() == GameMode.SURVIVAL)) {
+            return;
+        }
         if (world.getName().equals("DonutSpawn_")) {
             event.setCancelled(true);
         }
@@ -143,6 +164,9 @@ public class SpawnListener implements Listener {
     @EventHandler
     public void onPlayerBucketFill(PlayerBucketFillEvent event) {
         World world = event.getPlayer().getWorld();
+        if (!(event.getPlayer().getGameMode() == GameMode.SURVIVAL)) {
+            return;
+        }
         if (world.getName().equals("DonutSpawn_")) {
             event.setCancelled(true);
         }
