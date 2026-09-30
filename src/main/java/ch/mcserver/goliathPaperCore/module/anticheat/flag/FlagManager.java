@@ -61,7 +61,7 @@ public class FlagManager {
 
 
         if (flagData.violations() >= violationLimit) {
-            PunishReason reason = autoPunishReasons.get(flagData.checkName());
+            String reason = autoPunishReasons.get(flagData.checkName()).getText();
 
             if (reason == null) {
                 plugin.getLogger().log(Level.WARNING, "[AC] Can't load the punish reason from the flag " + flagData.checkName());

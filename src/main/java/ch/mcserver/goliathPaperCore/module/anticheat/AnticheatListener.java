@@ -23,7 +23,8 @@ public class AnticheatListener extends PacketAdapter implements Listener {
     private final AnticheatStateService stateService;
 
     public AnticheatListener(Plugin plugin, PlayerDataManager playerDataManager, AnticheatStateService stateService) {
-        super(plugin, ListenerPriority.HIGH, PacketType.Play.Client.POSITION, PacketType.Play.Client.POSITION_LOOK, PacketType.Play.Client.LOOK);
+        super(plugin, ListenerPriority.HIGH, PacketType.Play.Client.POSITION, PacketType.Play.Client.POSITION_LOOK, PacketType.Play.Client.LOOK, PacketType.Play.Server.OPEN_WINDOW,
+        PacketType.Play.Client.CLOSE_WINDOW, PacketType.Play.Server.CLOSE_WINDOW, PacketType.Play.Client.WINDOW_CLICK);
         this.playerDataManager = playerDataManager;
         this.stateService = stateService;
     }
@@ -36,10 +37,47 @@ public class AnticheatListener extends PacketAdapter implements Listener {
 
         boolean hasRotation = type.equals(PacketType.Play.Client.LOOK) || type.equals(PacketType.Play.Client.POSITION_LOOK);
 
-        if (!hasPosition && !hasRotation) {
-            return;
+        boolean openedWindow = type.equals(PacketType.Play.Server.OPEN_WINDOW);
+
+        boolean closedWindow = type.equals(PacketType.Play.Server.CLOSE_WINDOW) || type.equals(PacketType.Play.Client.CLOSE_WINDOW);
+
+        boolean containerClick = type.equals(PacketType.Play.Client.WINDOW_CLICK);
+
+
+
+        if (hasPosition || hasRotation) {
+            updateMovement(event, type, hasPosition, hasRotation);
         }
 
+
+    }
+
+    @Override
+    public void onPacketSending(PacketEvent event) {
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        PlayerData playerData = playerDataManager.create(event.getPlayer().getUniqueId(), event.getPlayer().getName());
+        stateService.load(playerData);
+    }
+
+    @EventHandler
+    public  void onQuit(PlayerQuitEvent event) {
+        UUID uuid = event.getPlayer().getUniqueId();
+        PlayerData playerData = playerDataManager.get(uuid);
+
+        if (playerData != null&& playerData.isCheckStateLoaded()) {
+            stateService.save(playerData);
+        }
+        playerDataManager.remove(event.getPlayer().getUniqueId());
+    }
+
+    private void updateContainerState(PacketEvent  event) {
+
+    }
+
+    private void updateMovement(PacketEvent event, PacketType type, boolean hasPosition, boolean hasRotation) {
         double x = hasPosition ? event.getPacket().getDoubles().read(0) : 0;
         double y = hasPosition ? event.getPacket().getDoubles().read(1) : 0;
         double z = hasPosition ? event.getPacket().getDoubles().read(2) : 0;
@@ -70,27 +108,6 @@ public class AnticheatListener extends PacketAdapter implements Listener {
                 playerData.getCheckManager().handle(data);
             }
         });
-    }
-
-    @Override
-    public void onPacketSending(PacketEvent event) {
-    }
-
-    @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
-        PlayerData playerData = playerDataManager.create(event.getPlayer().getUniqueId(), event.getPlayer().getName());
-        stateService.load(playerData);
-    }
-
-    @EventHandler
-    public  void onQuit(PlayerQuitEvent event) {
-        UUID uuid = event.getPlayer().getUniqueId();
-        PlayerData playerData = playerDataManager.get(uuid);
-
-        if (playerData != null&& playerData.isCheckStateLoaded()) {
-            stateService.save(playerData);
-        }
-        playerDataManager.remove(event.getPlayer().getUniqueId());
     }
 
 }
