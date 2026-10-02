@@ -1,4 +1,4 @@
-package ch.mcserver.goliathPaperCore.module.anticheat.data;
+package ch.mcserver.goliathPaperCore.module.anticheat.data.player.PacketData;
 
 import com.comphenix.protocol.PacketType;
 import java.util.UUID;

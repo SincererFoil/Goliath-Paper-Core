@@ -1,0 +1,2207 @@
+package ch.mcserver.goliathPaperCore.module.anticheat.data.player.playerdata;
+
+import ch.mcserver.goliathPaperCore.module.anticheat.checks.CheckManager;
+import ch.mcserver.goliathPaperCore.module.anticheat.data.player.PacketData.*;
+import ch.mcserver.goliathPaperCore.module.anticheat.flag.FlagManager;
+import com.comphenix.protocol.wrappers.BlockPosition;
+import com.sun.tools.attach.AttachPermission;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+public class PlayerData {
+
+    // Player
+    private UUID uuid;
+
+    private String username;
+
+    private int entityId;
+
+    private GameMode gameMode;
+
+    private boolean isOnline;
+
+    private boolean isDead;
+
+
+    // Position
+    private double x;
+
+    private double y;
+
+    private double z;
+
+    private double lastX;
+
+    private double lastY;
+
+    private double lastZ;
+
+    private double deltaX;
+
+    private double deltaY;
+
+    private double deltaZ;
+
+    private double verticalDelta;
+
+    private double horizontalDelta;
+
+
+    // Rotation
+    private float yaw;
+
+    private float pitch;
+
+    private float lastYaw;
+
+    private float lastPitch;
+
+    private float deltaYaw;
+
+    private float deltaPitch;
+
+    private double lastDeltaYaw;
+
+    private double lastDeltaPitch;
+
+    private List<Float> yawHistory;
+
+    private List<Float> pitchHistory;
+
+    private List<Double> deltaYawHistory;
+
+    private List<Double> deltaPitchHistory;
+
+
+    // Movement
+    private boolean onGround;
+
+    private boolean lastOnGround;
+
+    private boolean clientOnGround;
+
+    private boolean serverOnGround;
+
+    private boolean moving;
+
+    private boolean rotating;
+
+    private boolean sprinting;
+
+    private boolean sneaking;
+
+    private boolean swimming;
+
+    private boolean gliding;
+
+    private boolean flying;
+
+    private boolean jumping;
+
+    private boolean inVehicle;
+
+    private int ticksSinceMove;
+
+    private int ticksSinceRotation;
+
+    private int ticksSinceGround;
+
+    private int ticksSinceAir;
+
+    private int airTicks;
+
+    private int groundTicks;
+
+    private Double fallDistance;
+
+
+    // Velocity
+    private Double velocityX;
+
+    private Double velocityY;
+
+    private Double velocityZ;
+
+    private Double lastVelocityX;
+
+    private Double lastVelocityY;
+
+    private Double lastVelocityZ;
+
+    private int velocityTicks;
+
+    private boolean hasVelocity;
+
+    private boolean velocityPending;
+
+
+    // Teleport
+    private boolean teleporting;
+
+    private long lastTeleportTime;
+
+    private int ticksSinceTeleport;
+
+    private Double teleportX;
+
+    private Double teleportY;
+
+    private Double teleportZ;
+
+
+    // World / Environment
+
+    private World world;
+
+    private int worldId;
+
+    private Block blockBelow;
+
+    private Block blockAbove;
+
+    private boolean insideBlock;
+
+    private boolean insideLiquid;
+
+    private boolean inWater;
+
+    private boolean inLava;
+
+    private boolean onIce;
+
+    private boolean onSlime;
+
+    private boolean onHoney;
+
+    private boolean onSoulSand;
+
+    private boolean nearWall;
+
+    private boolean nearCeiling;
+
+    private boolean climbing;
+
+    private boolean onLadder;
+
+    private boolean onVine;
+
+
+    // Combat
+    private long lastAttackTime;
+
+    private int ticksSinceAttack;
+
+    private String lastTarget;
+
+    private int lastTargetEntityId;
+
+    private int attackCount;
+
+    private List<String> attackHistory;
+
+    private long lastUseEntityTime;
+
+    private long lastHitPosition;
+
+    private int combatTicks;
+
+
+    // Aim / Rotation Analysis
+    private int rotationSamples;
+
+    private Double lastAimTarget;
+
+    private Double aimAngle;
+
+    private float targetYaw;
+
+    private float targetPitch;
+
+    private Double angleToTarget;
+
+    private Double sensitivityEstimate;
+
+    private Double mouseGcd;
+
+    private Double rotationConsistency;
+
+
+    // Block Interaction
+    private long lastBlockBreakTime;
+
+    private long lastBlockPlaceTime;
+
+    private long lastBlockInteractTime;
+
+    private BlockPosition lastBrokenBlock;
+
+    private BlockPosition lastPlacedBlock;
+
+    private BlockPosition lastInteractedBlock;
+
+    private List<BlockBreakSample> blockBreakHistory;
+
+    private List<Long> blockPlaceHistory;
+
+    private BlockPosition diggingBlockPosition;
+
+    private boolean digging;
+
+    private boolean diggingBlock;
+
+    private long digStartTime;
+
+    private int digTicks;
+
+    private Double lastDigAction;
+
+
+    // Inventory / GUI
+    private boolean inventoryOpen;
+
+    private boolean windowOpen;
+
+    private String windowTitle;
+
+    private long lastWindowOpenTime;
+
+    private long lastWindowCloseTime;
+
+    private int ticksSinceWindowOpen;
+
+    private int ticksSinceWindowClose;
+
+    private int inventoryClicks;
+
+    private long lastInventoryClickTime;
+
+    private List<Long> inventoryClickHistory;
+
+    private int lastClickedSlot;
+
+    private ClickType lastClickType;
+
+    private ItemStack cursorItem;
+
+    private int heldSlot;
+
+    private int lastHeldSlot;
+
+    private List<Integer> hotbarSlotChanges;
+
+    private long lastSlotChangeTime;
+
+    private int inventoryActionCount;
+
+
+    // Item / Hand State
+    private ItemStack heldItem;
+
+    private ItemStack offHandItem;
+
+    private ItemStack usingItem;
+
+    private int useItemTicks;
+
+    private long lastUseItemTime;
+
+    private boolean blocking;
+
+    private boolean eating;
+
+    private boolean drinking;
+
+    private boolean drawingBow;
+
+
+    // Network
+    private int ping;
+
+    private int lastPing;
+
+    private int transactionPing;
+
+    private int keepAlivePing;
+
+    private int packetCount;
+
+    private int movementPacketCount;
+
+    private int rotationPacketCount;
+
+    private int positionPacketCount;
+
+    private long lastPacketTime;
+
+    private int transactionsSent;
+
+    private int transactionsReceived;
+
+    private long lastTransactionTime;
+
+    private int pendingTransactions;
+
+
+    // Packet State
+    private long lastMovementPacket;
+
+    private long lastPositionPacket;
+
+    private long lastRotationPacket;
+
+    private long lastFlyingPacket;
+
+    private long lastUseEntityPacket;
+
+    private long lastDigPacket;
+
+    private long lastPlacePacket;
+
+    private long lastWindowClickPacket;
+
+    private long lastHeldItemChangePacket;
+
+
+    // Timing
+    private int currentTick;
+
+    private int joinTick;
+
+    private int ticksSinceJoin;
+
+    private int lastMovementTick;
+
+    private int lastRotationTick;
+
+    private int lastAttackTick;
+
+    private int lastDigTick;
+
+    private int lastInventoryTick;
+
+
+    // Action State
+    private long lastAction;
+
+    private long lastActionTime;
+
+    private List<Long> actionHistory;
+
+    private boolean interacting;
+
+    private boolean placing;
+
+    private boolean breaking;
+
+    private boolean attacking;
+
+    private boolean clickingInventory;
+
+
+    // Managers
+    private final CheckManager checkManager;
+
+    private boolean positionInitialized;
+
+    private boolean rotationInitialized;
+
+    private boolean checkStateLoaded;
+
+
+    public PlayerData(UUID uuid, String username, FlagManager flagManager) {
+        this.username = username;
+        this.uuid = uuid;
+        this.checkManager = new CheckManager(this, flagManager);
+        positionInitialized = false;
+        rotationInitialized = false;
+
+        hotbarSlotChanges = new ArrayList<>();
+        inventoryClickHistory = new ArrayList<>();
+        yawHistory = new ArrayList<>();
+        pitchHistory = new ArrayList<>();
+        deltaYawHistory = new ArrayList<>();
+        deltaPitchHistory = new ArrayList<>();
+        blockBreakHistory = new ArrayList<>();
+        blockPlaceHistory = new ArrayList<>();
+        attackHistory = new ArrayList<>();
+        actionHistory = new ArrayList<>();
+    }
+
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public int getEntityId() {
+        return entityId;
+    }
+
+    public void setEntityId(int entityId) {
+        this.entityId = entityId;
+    }
+
+    public GameMode getGameMode() {
+        return gameMode;
+    }
+
+    public void setGameMode(GameMode gameMode) {
+        this.gameMode = gameMode;
+    }
+
+    public boolean isOnline() {
+        return isOnline;
+    }
+
+    public void setOnline(boolean online) {
+        isOnline = online;
+    }
+
+    public boolean isDead() {
+        return isDead;
+    }
+
+    public void setDead(boolean dead) {
+        isDead = dead;
+    }
+
+
+// Position
+
+    public double getX() {
+        return x;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    public double getZ() {
+        return z;
+    }
+
+    public void setZ(double z) {
+        this.z = z;
+    }
+
+    public double getLastX() {
+        return lastX;
+    }
+
+    public void setLastX(double lastX) {
+        this.lastX = lastX;
+    }
+
+    public double getLastY() {
+        return lastY;
+    }
+
+    public void setLastY(double lastY) {
+        this.lastY = lastY;
+    }
+
+    public double getLastZ() {
+        return lastZ;
+    }
+
+    public void setLastZ(double lastZ) {
+        this.lastZ = lastZ;
+    }
+
+    public double getDeltaX() {
+        return deltaX;
+    }
+
+    public void setDeltaX(double deltaX) {
+        this.deltaX = deltaX;
+    }
+
+    public double getDeltaY() {
+        return deltaY;
+    }
+
+    public void setDeltaY(double deltaY) {
+        this.deltaY = deltaY;
+    }
+
+    public double getDeltaZ() {
+        return deltaZ;
+    }
+
+    public void setDeltaZ(double deltaZ) {
+        this.deltaZ = deltaZ;
+    }
+
+    public double getVerticalDelta() {
+        return verticalDelta;
+    }
+
+    public void setVerticalDelta(double verticalDelta) {
+        this.verticalDelta = verticalDelta;
+    }
+
+    public double getHorizontalDelta() {
+        return horizontalDelta;
+    }
+
+    public void setHorizontalDelta(double horizontalDelta) {
+        this.horizontalDelta = horizontalDelta;
+    }
+
+
+// Rotation
+
+    public float getYaw() {
+        return yaw;
+    }
+
+    public void setYaw(float yaw) {
+        this.yaw = yaw;
+    }
+
+    public float getPitch() {
+        return pitch;
+    }
+
+    public void setPitch(float pitch) {
+        this.pitch = pitch;
+    }
+
+    public float getLastYaw() {
+        return lastYaw;
+    }
+
+    public void setLastYaw(float lastYaw) {
+        this.lastYaw = lastYaw;
+    }
+
+    public float getLastPitch() {
+        return lastPitch;
+    }
+
+    public void setLastPitch(float lastPitch) {
+        this.lastPitch = lastPitch;
+    }
+
+    public float getDeltaYaw() {
+        return deltaYaw;
+    }
+
+    public void setDeltaYaw(float deltaYaw) {
+        this.deltaYaw = deltaYaw;
+    }
+
+    public float getDeltaPitch() {
+        return deltaPitch;
+    }
+
+    public void setDeltaPitch(float deltaPitch) {
+        this.deltaPitch = deltaPitch;
+    }
+
+    public double getLastDeltaYaw() {
+        return lastDeltaYaw;
+    }
+
+    public void setLastDeltaYaw(double lastDeltaYaw) {
+        this.lastDeltaYaw = lastDeltaYaw;
+    }
+
+    public double getLastDeltaPitch() {
+        return lastDeltaPitch;
+    }
+
+    public void setLastDeltaPitch(double lastDeltaPitch) {
+        this.lastDeltaPitch = lastDeltaPitch;
+    }
+
+    public List<Float> getYawHistory() {
+        return yawHistory;
+    }
+
+    public void setYawHistory(List<Float> yawHistory) {
+        this.yawHistory = yawHistory;
+    }
+
+    public List<Float> getPitchHistory() {
+        return pitchHistory;
+    }
+
+    public void setPitchHistory(List<Float> pitchHistory) {
+        this.pitchHistory = pitchHistory;
+    }
+
+    public List<Double> getDeltaYawHistory() {
+        return deltaYawHistory;
+    }
+
+    public void setDeltaYawHistory(List<Double> deltaYawHistory) {
+        this.deltaYawHistory = deltaYawHistory;
+    }
+
+    public List<Double> getDeltaPitchHistory() {
+        return deltaPitchHistory;
+    }
+
+    public void setDeltaPitchHistory(List<Double> deltaPitchHistory) {
+        this.deltaPitchHistory = deltaPitchHistory;
+    }
+
+
+// Movement
+
+    public boolean isOnGround() {
+        return onGround;
+    }
+
+    public void setOnGround(boolean onGround) {
+        this.onGround = onGround;
+    }
+
+    public boolean isLastOnGround() {
+        return lastOnGround;
+    }
+
+    public void setLastOnGround(boolean lastOnGround) {
+        this.lastOnGround = lastOnGround;
+    }
+
+    public boolean isClientOnGround() {
+        return clientOnGround;
+    }
+
+    public void setClientOnGround(boolean clientOnGround) {
+        this.clientOnGround = clientOnGround;
+    }
+
+    public boolean isServerOnGround() {
+        return serverOnGround;
+    }
+
+    public void setServerOnGround(boolean serverOnGround) {
+        this.serverOnGround = serverOnGround;
+    }
+
+    public boolean isMoving() {
+        return moving;
+    }
+
+    public void setMoving(boolean moving) {
+        this.moving = moving;
+    }
+
+    public boolean isRotating() {
+        return rotating;
+    }
+
+    public void setRotating(boolean rotating) {
+        this.rotating = rotating;
+    }
+
+    public boolean isSprinting() {
+        return sprinting;
+    }
+
+    public void setSprinting(boolean sprinting) {
+        this.sprinting = sprinting;
+    }
+
+    public boolean isSneaking() {
+        return sneaking;
+    }
+
+    public void setSneaking(boolean sneaking) {
+        this.sneaking = sneaking;
+    }
+
+    public boolean isSwimming() {
+        return swimming;
+    }
+
+    public void setSwimming(boolean swimming) {
+        this.swimming = swimming;
+    }
+
+    public boolean isGliding() {
+        return gliding;
+    }
+
+    public void setGliding(boolean gliding) {
+        this.gliding = gliding;
+    }
+
+    public boolean isFlying() {
+        return flying;
+    }
+
+    public void setFlying(boolean flying) {
+        this.flying = flying;
+    }
+
+    public boolean isJumping() {
+        return jumping;
+    }
+
+    public void setJumping(boolean jumping) {
+        this.jumping = jumping;
+    }
+
+    public boolean isInVehicle() {
+        return inVehicle;
+    }
+
+    public void setInVehicle(boolean inVehicle) {
+        this.inVehicle = inVehicle;
+    }
+
+    public int getTicksSinceMove() {
+        return ticksSinceMove;
+    }
+
+    public void setTicksSinceMove(int ticksSinceMove) {
+        this.ticksSinceMove = ticksSinceMove;
+    }
+
+    public int getTicksSinceRotation() {
+        return ticksSinceRotation;
+    }
+
+    public void setTicksSinceRotation(int ticksSinceRotation) {
+        this.ticksSinceRotation = ticksSinceRotation;
+    }
+
+    public int getTicksSinceGround() {
+        return ticksSinceGround;
+    }
+
+    public void setTicksSinceGround(int ticksSinceGround) {
+        this.ticksSinceGround = ticksSinceGround;
+    }
+
+    public int getTicksSinceAir() {
+        return ticksSinceAir;
+    }
+
+    public void setTicksSinceAir(int ticksSinceAir) {
+        this.ticksSinceAir = ticksSinceAir;
+    }
+
+    public int getAirTicks() {
+        return airTicks;
+    }
+
+    public void setAirTicks(int airTicks) {
+        this.airTicks = airTicks;
+    }
+
+    public int getGroundTicks() {
+        return groundTicks;
+    }
+
+    public void setGroundTicks(int groundTicks) {
+        this.groundTicks = groundTicks;
+    }
+
+    public double getFallDistance() {
+        return fallDistance;
+    }
+
+    public void setFallDistance(double fallDistance) {
+        this.fallDistance = fallDistance;
+    }
+
+
+// Velocity
+
+    public double getVelocityX() {
+        return velocityX;
+    }
+
+    public void setVelocityX(double velocityX) {
+        this.velocityX = velocityX;
+    }
+
+    public double getVelocityY() {
+        return velocityY;
+    }
+
+    public void setVelocityY(double velocityY) {
+        this.velocityY = velocityY;
+    }
+
+    public double getVelocityZ() {
+        return velocityZ;
+    }
+
+    public void setVelocityZ(double velocityZ) {
+        this.velocityZ = velocityZ;
+    }
+
+    public double getLastVelocityX() {
+        return lastVelocityX;
+    }
+
+    public void setLastVelocityX(double lastVelocityX) {
+        this.lastVelocityX = lastVelocityX;
+    }
+
+    public double getLastVelocityY() {
+        return lastVelocityY;
+    }
+
+    public void setLastVelocityY(double lastVelocityY) {
+        this.lastVelocityY = lastVelocityY;
+    }
+
+    public double getLastVelocityZ() {
+        return lastVelocityZ;
+    }
+
+    public void setLastVelocityZ(double lastVelocityZ) {
+        this.lastVelocityZ = lastVelocityZ;
+    }
+
+    public int getVelocityTicks() {
+        return velocityTicks;
+    }
+
+    public void setVelocityTicks(int velocityTicks) {
+        this.velocityTicks = velocityTicks;
+    }
+
+    public boolean isHasVelocity() {
+        return hasVelocity;
+    }
+
+    public void setHasVelocity(boolean hasVelocity) {
+        this.hasVelocity = hasVelocity;
+    }
+
+    public boolean isVelocityPending() {
+        return velocityPending;
+    }
+
+    public void setVelocityPending(boolean velocityPending) {
+        this.velocityPending = velocityPending;
+    }
+
+
+// Teleport
+
+    public boolean isTeleporting() {
+        return teleporting;
+    }
+
+    public void setTeleporting(boolean teleporting) {
+        this.teleporting = teleporting;
+    }
+
+    public long getLastTeleportTime() {
+        return lastTeleportTime;
+    }
+
+    public void setLastTeleportTime(long lastTeleportTime) {
+        this.lastTeleportTime = lastTeleportTime;
+    }
+
+    public int getTicksSinceTeleport() {
+        return ticksSinceTeleport;
+    }
+
+    public void setTicksSinceTeleport(int ticksSinceTeleport) {
+        this.ticksSinceTeleport = ticksSinceTeleport;
+    }
+
+    public double getTeleportX() {
+        return teleportX;
+    }
+
+    public void setTeleportX(double teleportX) {
+        this.teleportX = teleportX;
+    }
+
+    public double getTeleportY() {
+        return teleportY;
+    }
+
+    public void setTeleportY(double teleportY) {
+        this.teleportY = teleportY;
+    }
+
+    public double getTeleportZ() {
+        return teleportZ;
+    }
+
+    public void setTeleportZ(double teleportZ) {
+        this.teleportZ = teleportZ;
+    }
+
+
+// World
+
+    public World getWorld() {
+        return world;
+    }
+
+    public void setWorld(World world) {
+        this.world = world;
+    }
+
+    public int getWorldId() {
+        return worldId;
+    }
+
+    public void setWorldId(int worldId) {
+        this.worldId = worldId;
+    }
+
+    public Block getBlockBelow() {
+        return blockBelow;
+    }
+
+    public void setBlockBelow(Block blockBelow) {
+        this.blockBelow = blockBelow;
+    }
+
+    public Block getBlockAbove() {
+        return blockAbove;
+    }
+
+    public void setBlockAbove(Block blockAbove) {
+        this.blockAbove = blockAbove;
+    }
+
+    public boolean isInsideBlock() {
+        return insideBlock;
+    }
+
+    public void setInsideBlock(boolean insideBlock) {
+        this.insideBlock = insideBlock;
+    }
+
+    public boolean isInsideLiquid() {
+        return insideLiquid;
+    }
+
+    public void setInsideLiquid(boolean insideLiquid) {
+        this.insideLiquid = insideLiquid;
+    }
+
+    public boolean isInWater() {
+        return inWater;
+    }
+
+    public void setInWater(boolean inWater) {
+        this.inWater = inWater;
+    }
+
+    public boolean isInLava() {
+        return inLava;
+    }
+
+    public void setInLava(boolean inLava) {
+        this.inLava = inLava;
+    }
+
+    public boolean isOnIce() {
+        return onIce;
+    }
+
+    public void setOnIce(boolean onIce) {
+        this.onIce = onIce;
+    }
+
+    public boolean isOnSlime() {
+        return onSlime;
+    }
+
+    public void setOnSlime(boolean onSlime) {
+        this.onSlime = onSlime;
+    }
+
+    public boolean isOnHoney() {
+        return onHoney;
+    }
+
+    public void setOnHoney(boolean onHoney) {
+        this.onHoney = onHoney;
+    }
+
+    public boolean isOnSoulSand() {
+        return onSoulSand;
+    }
+
+    public void setOnSoulSand(boolean onSoulSand) {
+        this.onSoulSand = onSoulSand;
+    }
+
+    public boolean isNearWall() {
+        return nearWall;
+    }
+
+    public void setNearWall(boolean nearWall) {
+        this.nearWall = nearWall;
+    }
+
+    public boolean isNearCeiling() {
+        return nearCeiling;
+    }
+
+    public void setNearCeiling(boolean nearCeiling) {
+        this.nearCeiling = nearCeiling;
+    }
+
+    public boolean isClimbing() {
+        return climbing;
+    }
+
+    public void setClimbing(boolean climbing) {
+        this.climbing = climbing;
+    }
+
+    public boolean isOnLadder() {
+        return onLadder;
+    }
+
+    public void setOnLadder(boolean onLadder) {
+        this.onLadder = onLadder;
+    }
+
+    public boolean isOnVine() {
+        return onVine;
+    }
+
+    public void setOnVine(boolean onVine) {
+        this.onVine = onVine;
+    }
+
+
+// Combat
+
+    public long getLastAttackTime() {
+        return lastAttackTime;
+    }
+
+    public void setLastAttackTime(long lastAttackTime) {
+        this.lastAttackTime = lastAttackTime;
+    }
+
+    public int getTicksSinceAttack() {
+        return ticksSinceAttack;
+    }
+
+    public void setTicksSinceAttack(int ticksSinceAttack) {
+        this.ticksSinceAttack = ticksSinceAttack;
+    }
+
+    public String getLastTarget() {
+        return lastTarget;
+    }
+
+    public void setLastTarget(String lastTarget) {
+        this.lastTarget = lastTarget;
+    }
+
+    public int getLastTargetEntityId() {
+        return lastTargetEntityId;
+    }
+
+    public void setLastTargetEntityId(int lastTargetEntityId) {
+        this.lastTargetEntityId = lastTargetEntityId;
+    }
+
+    public int getAttackCount() {
+        return attackCount;
+    }
+
+    public void setAttackCount(int attackCount) {
+        this.attackCount = attackCount;
+    }
+
+    public List<String> getAttackHistory() {
+        return attackHistory;
+    }
+
+    public void setAttackHistory(List<String> attackHistory) {
+        this.attackHistory = attackHistory;
+    }
+
+    public long getLastUseEntityTime() {
+        return lastUseEntityTime;
+    }
+
+    public void setLastUseEntityTime(long lastUseEntityTime) {
+        this.lastUseEntityTime = lastUseEntityTime;
+    }
+
+    public int getCombatTicks() {
+        return combatTicks;
+    }
+
+    public void setCombatTicks(int combatTicks) {
+        this.combatTicks = combatTicks;
+    }
+
+
+// Aim
+
+    public int getRotationSamples() {
+        return rotationSamples;
+    }
+
+    public void setRotationSamples(int rotationSamples) {
+        this.rotationSamples = rotationSamples;
+    }
+
+    public double getAimAngle() {
+        return aimAngle;
+    }
+
+    public void setAimAngle(double aimAngle) {
+        this.aimAngle = aimAngle;
+    }
+
+    public float getTargetYaw() {
+        return targetYaw;
+    }
+
+    public void setTargetYaw(float targetYaw) {
+        this.targetYaw = targetYaw;
+    }
+
+    public float getTargetPitch() {
+        return targetPitch;
+    }
+
+    public void setTargetPitch(float targetPitch) {
+        this.targetPitch = targetPitch;
+    }
+
+    public double getAngleToTarget() {
+        return angleToTarget;
+    }
+
+    public void setAngleToTarget(double angleToTarget) {
+        this.angleToTarget = angleToTarget;
+    }
+
+    public double getSensitivityEstimate() {
+        return sensitivityEstimate;
+    }
+
+    public void setSensitivityEstimate(double sensitivityEstimate) {
+        this.sensitivityEstimate = sensitivityEstimate;
+    }
+
+    public double getMouseGcd() {
+        return mouseGcd;
+    }
+
+    public void setMouseGcd(double mouseGcd) {
+        this.mouseGcd = mouseGcd;
+    }
+
+    public double getRotationConsistency() {
+        return rotationConsistency;
+    }
+
+    public void setRotationConsistency(double rotationConsistency) {
+        this.rotationConsistency = rotationConsistency;
+    }
+
+
+// Block interaction
+
+    public long getLastBlockBreakTime() {
+        return lastBlockBreakTime;
+    }
+
+    public void setLastBlockBreakTime(long lastBlockBreakTime) {
+        this.lastBlockBreakTime = lastBlockBreakTime;
+    }
+
+    public long getLastBlockPlaceTime() {
+        return lastBlockPlaceTime;
+    }
+
+    public void setLastBlockPlaceTime(long lastBlockPlaceTime) {
+        this.lastBlockPlaceTime = lastBlockPlaceTime;
+    }
+
+    public long getLastBlockInteractTime() {
+        return lastBlockInteractTime;
+    }
+
+    public void setLastBlockInteractTime(long lastBlockInteractTime) {
+        this.lastBlockInteractTime = lastBlockInteractTime;
+    }
+
+    public boolean isDigging() {
+        return digging;
+    }
+
+    public void setDigging(boolean digging) {
+        this.digging = digging;
+    }
+
+    public boolean isDiggingBlock() {
+        return diggingBlock;
+    }
+
+    public void setDiggingBlock(boolean diggingBlock) {
+        this.diggingBlock = diggingBlock;
+    }
+
+    public long getDigStartTime() {
+        return digStartTime;
+    }
+
+    public void setDigStartTime(long digStartTime) {
+        this.digStartTime = digStartTime;
+    }
+
+    public int getDigTicks() {
+        return digTicks;
+    }
+
+    public void setDigTicks(int digTicks) {
+        this.digTicks = digTicks;
+    }
+
+
+// Inventory
+
+    public boolean isInventoryOpen() {
+        return inventoryOpen;
+    }
+
+    public void setInventoryOpen(boolean inventoryOpen) {
+        this.inventoryOpen = inventoryOpen;
+    }
+
+    public boolean isWindowOpen() {
+        return windowOpen;
+    }
+
+    public void setWindowOpen(boolean windowOpen) {
+        this.windowOpen = windowOpen;
+    }
+
+    public String getWindowTitle() {
+        return windowTitle;
+    }
+
+    public void setWindowTitle(String windowTitle) {
+        this.windowTitle = windowTitle;
+    }
+
+    public long getLastWindowOpenTime() {
+        return lastWindowOpenTime;
+    }
+
+    public void setLastWindowOpenTime(long lastWindowOpenTime) {
+        this.lastWindowOpenTime = lastWindowOpenTime;
+    }
+
+    public long getLastWindowCloseTime() {
+        return lastWindowCloseTime;
+    }
+
+    public void setLastWindowCloseTime(long lastWindowCloseTime) {
+        this.lastWindowCloseTime = lastWindowCloseTime;
+    }
+
+    public int getTicksSinceWindowOpen() {
+        return ticksSinceWindowOpen;
+    }
+
+    public void setTicksSinceWindowOpen(int ticksSinceWindowOpen) {
+        this.ticksSinceWindowOpen = ticksSinceWindowOpen;
+    }
+
+    public int getTicksSinceWindowClose() {
+        return ticksSinceWindowClose;
+    }
+
+    public void setTicksSinceWindowClose(int ticksSinceWindowClose) {
+        this.ticksSinceWindowClose = ticksSinceWindowClose;
+    }
+
+    public int getInventoryClicks() {
+        return inventoryClicks;
+    }
+
+    public void setInventoryClicks(int inventoryClicks) {
+        this.inventoryClicks = inventoryClicks;
+    }
+
+    public long getLastInventoryClickTime() {
+        return lastInventoryClickTime;
+    }
+
+    public void setLastInventoryClickTime(long lastInventoryClickTime) {
+        this.lastInventoryClickTime = lastInventoryClickTime;
+    }
+
+    public List<Long> getInventoryClickHistory() {
+        return inventoryClickHistory;
+    }
+
+    public void setInventoryClickHistory(List<Long> inventoryClickHistory) {
+        this.inventoryClickHistory = inventoryClickHistory;
+    }
+
+    public int getLastClickedSlot() {
+        return lastClickedSlot;
+    }
+
+    public void setLastClickedSlot(int lastClickedSlot) {
+        this.lastClickedSlot = lastClickedSlot;
+    }
+
+    public ClickType getLastClickType() {
+        return lastClickType;
+    }
+
+    public void setLastClickType(ClickType lastClickType) {
+        this.lastClickType = lastClickType;
+    }
+
+    public int getHeldSlot() {
+        return heldSlot;
+    }
+
+    public void setHeldSlot(int heldSlot) {
+        this.heldSlot = heldSlot;
+    }
+
+    public int getLastHeldSlot() {
+        return lastHeldSlot;
+    }
+
+    public void setLastHeldSlot(int lastHeldSlot) {
+        this.lastHeldSlot = lastHeldSlot;
+    }
+
+    public long getLastSlotChangeTime() {
+        return lastSlotChangeTime;
+    }
+
+    public void setLastSlotChangeTime(long lastSlotChangeTime) {
+        this.lastSlotChangeTime = lastSlotChangeTime;
+    }
+
+    public int getInventoryActionCount() {
+        return inventoryActionCount;
+    }
+
+    public void setInventoryActionCount(int inventoryActionCount) {
+        this.inventoryActionCount = inventoryActionCount;
+    }
+
+
+// Item / Hand
+
+    public ItemStack getCursorItem() {
+        return cursorItem;
+    }
+
+    public void setCursorItem(ItemStack cursorItem) {
+        this.cursorItem = cursorItem;
+    }
+
+    public ItemStack getHeldItem() {
+        return heldItem;
+    }
+
+    public void setHeldItem(ItemStack heldItem) {
+        this.heldItem = heldItem;
+    }
+
+    public ItemStack getOffHandItem() {
+        return offHandItem;
+    }
+
+    public void setOffHandItem(ItemStack offHandItem) {
+        this.offHandItem = offHandItem;
+    }
+
+    public ItemStack getUsingItem() {
+        return usingItem;
+    }
+
+    public void setUsingItem(ItemStack usingItem) {
+        this.usingItem = usingItem;
+    }
+
+    public int getUseItemTicks() {
+        return useItemTicks;
+    }
+
+    public void setUseItemTicks(int useItemTicks) {
+        this.useItemTicks = useItemTicks;
+    }
+
+    public long getLastUseItemTime() {
+        return lastUseItemTime;
+    }
+
+    public void setLastUseItemTime(long lastUseItemTime) {
+        this.lastUseItemTime = lastUseItemTime;
+    }
+
+    public boolean isBlocking() {
+        return blocking;
+    }
+
+    public void setBlocking(boolean blocking) {
+        this.blocking = blocking;
+    }
+
+    public boolean isEating() {
+        return eating;
+    }
+
+    public void setEating(boolean eating) {
+        this.eating = eating;
+    }
+
+    public boolean isDrinking() {
+        return drinking;
+    }
+
+    public void setDrinking(boolean drinking) {
+        this.drinking = drinking;
+    }
+
+    public boolean isDrawingBow() {
+        return drawingBow;
+    }
+
+    public void setDrawingBow(boolean drawingBow) {
+        this.drawingBow = drawingBow;
+    }
+
+
+// Network
+
+    public int getPing() {
+        return ping;
+    }
+
+    public void setPing(int ping) {
+        this.ping = ping;
+    }
+
+    public int getLastPing() {
+        return lastPing;
+    }
+
+    public void setLastPing(int lastPing) {
+        this.lastPing = lastPing;
+    }
+
+    public int getTransactionPing() {
+        return transactionPing;
+    }
+
+    public void setTransactionPing(int transactionPing) {
+        this.transactionPing = transactionPing;
+    }
+
+    public int getKeepAlivePing() {
+        return keepAlivePing;
+    }
+
+    public void setKeepAlivePing(int keepAlivePing) {
+        this.keepAlivePing = keepAlivePing;
+    }
+
+    public int getPacketCount() {
+        return packetCount;
+    }
+
+    public void setPacketCount(int packetCount) {
+        this.packetCount = packetCount;
+    }
+
+    public int getMovementPacketCount() {
+        return movementPacketCount;
+    }
+
+    public void setMovementPacketCount(int movementPacketCount) {
+        this.movementPacketCount = movementPacketCount;
+    }
+
+    public int getRotationPacketCount() {
+        return rotationPacketCount;
+    }
+
+    public void setRotationPacketCount(int rotationPacketCount) {
+        this.rotationPacketCount = rotationPacketCount;
+    }
+
+    public int getPositionPacketCount() {
+        return positionPacketCount;
+    }
+
+    public void setPositionPacketCount(int positionPacketCount) {
+        this.positionPacketCount = positionPacketCount;
+    }
+
+    public long getLastPacketTime() {
+        return lastPacketTime;
+    }
+
+    public void setLastPacketTime(long lastPacketTime) {
+        this.lastPacketTime = lastPacketTime;
+    }
+
+    public int getTransactionsSent() {
+        return transactionsSent;
+    }
+
+    public void setTransactionsSent(int transactionsSent) {
+        this.transactionsSent = transactionsSent;
+    }
+
+    public int getTransactionsReceived() {
+        return transactionsReceived;
+    }
+
+    public void setTransactionsReceived(int transactionsReceived) {
+        this.transactionsReceived = transactionsReceived;
+    }
+
+    public long getLastTransactionTime() {
+        return lastTransactionTime;
+    }
+
+    public void setLastTransactionTime(long lastTransactionTime) {
+        this.lastTransactionTime = lastTransactionTime;
+    }
+
+    public int getPendingTransactions() {
+        return pendingTransactions;
+    }
+
+    public void setPendingTransactions(int pendingTransactions) {
+        this.pendingTransactions = pendingTransactions;
+    }
+
+
+// Packet state
+
+    public long getLastMovementPacket() {
+        return lastMovementPacket;
+    }
+
+    public void setLastMovementPacket(long lastMovementPacket) {
+        this.lastMovementPacket = lastMovementPacket;
+    }
+
+    public long getLastPositionPacket() {
+        return lastPositionPacket;
+    }
+
+    public void setLastPositionPacket(long lastPositionPacket) {
+        this.lastPositionPacket = lastPositionPacket;
+    }
+
+    public long getLastRotationPacket() {
+        return lastRotationPacket;
+    }
+
+    public void setLastRotationPacket(long lastRotationPacket) {
+        this.lastRotationPacket = lastRotationPacket;
+    }
+
+    public long getLastFlyingPacket() {
+        return lastFlyingPacket;
+    }
+
+    public void setLastFlyingPacket(long lastFlyingPacket) {
+        this.lastFlyingPacket = lastFlyingPacket;
+    }
+
+    public long getLastUseEntityPacket() {
+        return lastUseEntityPacket;
+    }
+
+    public void setLastUseEntityPacket(long lastUseEntityPacket) {
+        this.lastUseEntityPacket = lastUseEntityPacket;
+    }
+
+    public long getLastDigPacket() {
+        return lastDigPacket;
+    }
+
+    public void setLastDigPacket(long lastDigPacket) {
+        this.lastDigPacket = lastDigPacket;
+    }
+
+    public long getLastPlacePacket() {
+        return lastPlacePacket;
+    }
+
+    public void setLastPlacePacket(long lastPlacePacket) {
+        this.lastPlacePacket = lastPlacePacket;
+    }
+
+    public long getLastWindowClickPacket() {
+        return lastWindowClickPacket;
+    }
+
+    public void setLastWindowClickPacket(long lastWindowClickPacket) {
+        this.lastWindowClickPacket = lastWindowClickPacket;
+    }
+
+    public long getLastHeldItemChangePacket() {
+        return lastHeldItemChangePacket;
+    }
+
+    public void setLastHeldItemChangePacket(long lastHeldItemChangePacket) {
+        this.lastHeldItemChangePacket = lastHeldItemChangePacket;
+    }
+
+
+// Timing
+
+    public int getCurrentTick() {
+        return currentTick;
+    }
+
+    public void setCurrentTick(int currentTick) {
+        this.currentTick = currentTick;
+    }
+
+    public int getJoinTick() {
+        return joinTick;
+    }
+
+    public void setJoinTick(int joinTick) {
+        this.joinTick = joinTick;
+    }
+
+    public int getTicksSinceJoin() {
+        return ticksSinceJoin;
+    }
+
+    public void setTicksSinceJoin(int ticksSinceJoin) {
+        this.ticksSinceJoin = ticksSinceJoin;
+    }
+
+    public int getLastMovementTick() {
+        return lastMovementTick;
+    }
+
+    public void setLastMovementTick(int lastMovementTick) {
+        this.lastMovementTick = lastMovementTick;
+    }
+
+    public int getLastRotationTick() {
+        return lastRotationTick;
+    }
+
+    public void setLastRotationTick(int lastRotationTick) {
+        this.lastRotationTick = lastRotationTick;
+    }
+
+    public int getLastAttackTick() {
+        return lastAttackTick;
+    }
+
+    public void setLastAttackTick(int lastAttackTick) {
+        this.lastAttackTick = lastAttackTick;
+    }
+
+    public int getLastDigTick() {
+        return lastDigTick;
+    }
+
+    public void setLastDigTick(int lastDigTick) {
+        this.lastDigTick = lastDigTick;
+    }
+
+    public int getLastInventoryTick() {
+        return lastInventoryTick;
+    }
+
+    public void setLastInventoryTick(int lastInventoryTick) {
+        this.lastInventoryTick = lastInventoryTick;
+    }
+
+
+// Action
+
+    public long getLastActionTime() {
+        return lastActionTime;
+    }
+
+    public void setLastActionTime(long lastActionTime) {
+        this.lastActionTime = lastActionTime;
+    }
+
+    public boolean isInteracting() {
+        return interacting;
+    }
+
+    public void setInteracting(boolean interacting) {
+        this.interacting = interacting;
+    }
+
+    public boolean isPlacing() {
+        return placing;
+    }
+
+    public void setPlacing(boolean placing) {
+        this.placing = placing;
+    }
+
+    public boolean isBreaking() {
+        return breaking;
+    }
+
+    public void setBreaking(boolean breaking) {
+        this.breaking = breaking;
+    }
+
+    public boolean isAttacking() {
+        return attacking;
+    }
+
+    public void setAttacking(boolean attacking) {
+        this.attacking = attacking;
+    }
+
+    public boolean isClickingInventory() {
+        return clickingInventory;
+    }
+
+    public void setClickingInventory(boolean clickingInventory) {
+        this.clickingInventory = clickingInventory;
+    }
+
+
+// Internal state
+
+    public CheckManager getCheckManager() {
+        return checkManager;
+    }
+
+    public boolean isPositionInitialized() {
+        return positionInitialized;
+    }
+
+    public void setPositionInitialized(boolean positionInitialized) {
+        this.positionInitialized = positionInitialized;
+    }
+
+    public boolean isRotationInitialized() {
+        return rotationInitialized;
+    }
+
+    public void setRotationInitialized(boolean rotationInitialized) {
+        this.rotationInitialized = rotationInitialized;
+    }
+
+    public boolean isCheckStateLoaded() {
+        return checkStateLoaded;
+    }
+
+    public void setCheckStateLoaded(boolean checkStateLoaded) {
+        this.checkStateLoaded = checkStateLoaded;
+    }
+
+
+
+    public void updatePlayerAction(PlayerActionPacketData data) {
+        switch (data.action()) {
+            case START_SPRINTING:
+                sprinting = true;
+                break;
+
+            case STOP_SPRINTING:
+                sprinting = false;
+                break;
+
+            case START_SNEAKING:
+                sneaking = true;
+                break;
+
+            case STOP_SNEAKING:
+                sneaking = false;
+                break;
+        }
+
+        lastActionTime = data.receivedAt();
+    }
+
+    public void updateTick() {
+        currentTick = Bukkit.getCurrentTick();
+        ticksSinceJoin++;
+
+        ticksSinceAttack++;
+        ticksSinceTeleport++;
+
+        if (digging) {
+            digTicks++;
+        }
+
+        if (hasVelocity) {
+            velocityTicks++;
+        }
+
+        combatTicks++;
+
+        ticksSinceWindowOpen++;
+        ticksSinceWindowClose++;
+
+        attacking = false;
+        placing = false;
+        interacting = false;
+        clickingInventory = false;
+
+        if (teleporting && ticksSinceTeleport > 3) {
+            teleporting = false;
+        }
+
+        if (velocityPending && velocityTicks > 2) {
+            velocityPending = false;
+        }
+
+        if (hasVelocity && velocityTicks > 20) {
+            hasVelocity = false;
+        }
+
+        Player player = Bukkit.getPlayer(uuid);
+
+        if (player != null) {
+            swimming = player.isSwimming();
+            gliding = player.isGliding();
+            flying = player.isFlying();
+            inVehicle = player.isInsideVehicle();
+        }
+    }
+
+    public void updateTeleport(TeleportPacketData data) {
+        teleporting = true;
+
+        lastTeleportTime = data.receivedAt();
+        ticksSinceTeleport = 0;
+
+        teleportX = data.x();
+        teleportY = data.y();
+        teleportZ = data.z();
+
+        lastActionTime = data.receivedAt();
+    }
+
+    public void updateVelocity(VelocityPacketData data) {
+        lastVelocityX = velocityX;
+        lastVelocityY = velocityY;
+        lastVelocityZ = velocityZ;
+
+        velocityX = data.velocityX();
+        velocityY = data.velocityY();
+        velocityZ = data.velocityZ();
+
+        velocityTicks = 0;
+
+        hasVelocity = true;
+        velocityPending = true;
+
+        lastActionTime = data.receivedAt();
+    }
+
+    public void updateBlockInteract(BlockInteractPacketData data) {
+        interacting = true;
+
+        lastBlockInteractTime = data.receivedAt();
+        lastActionTime = data.receivedAt();
+
+        lastInteractedBlock = new BlockPosition(data.blockX(), data.blockY(), data.blockZ());
+    }
+
+    public void updateBlockPlace(BlockPlacePacketData data) {
+        placing = true;
+
+        lastBlockPlaceTime = data.receivedAt();
+        lastPlacePacket = data.receivedAt();
+        lastActionTime = data.receivedAt();
+
+        lastPlacedBlock = new BlockPosition(data.blockX(), data.blockY(), data.blockZ());
+
+        blockPlaceHistory.add(data.receivedAt());
+
+        if (blockPlaceHistory.size() > 100) {
+            blockPlaceHistory.remove(0);
+        }
+    }
+
+    public void updateDig(DigPacketData data) {
+
+        switch(data.action()) {
+            case START_DESTROY_BLOCK:
+                digging = true;
+                diggingBlock = true;
+                breaking = true;
+                digStartTime = data.receivedAt();
+                digTicks = 0;
+                lastDigPacket = data.receivedAt();
+                lastDigTick = Bukkit.getCurrentTick();
+                lastActionTime = data.receivedAt();
+                diggingBlockPosition = new BlockPosition(data.blockX(), data.blockY(), data.blockZ());
+                return;
+            case STOP_DESTROY_BLOCK:
+                digging = false;
+                diggingBlock = false;
+                breaking = false;
+                lastBlockBreakTime = data.receivedAt();
+                lastDigPacket = data.receivedAt();
+                lastDigTick = Bukkit.getCurrentTick();
+                lastActionTime = data.receivedAt();
+                lastBrokenBlock = new BlockPosition(data.blockX(), data.blockY(), data.blockZ());
+                blockBreakHistory.add(new BlockBreakSample(new BlockPosition(data.blockX(), data.blockY(), data.blockZ()), data.receivedAt()));
+
+                if (blockBreakHistory.size() > 100) {
+                    blockBreakHistory.remove(0);
+                }
+                return;
+            case ABORT_DESTROY_BLOCK:
+                digging = false;
+                diggingBlock = false;
+                breaking = false;
+
+                lastDigPacket = data.receivedAt();
+                lastDigTick = Bukkit.getCurrentTick();
+                lastActionTime = data.receivedAt();
+                return;
+            default:
+                return;
+
+        }
+    }
+
+    public void updateAttack(AttackPacketData data) {
+        lastAttackTime = data.receivedAt();
+        ticksSinceAttack = 0;
+
+        lastTarget = data.targetName();
+        lastTargetEntityId = data.targetEntityId();
+        attackCount++;
+        lastUseEntityTime = data.receivedAt();
+        lastUseEntityPacket = data.receivedAt();
+        combatTicks = 0;
+        attacking = true;
+        lastAttackTick = Bukkit.getCurrentTick();
+        lastActionTime = data.receivedAt();
+        attackHistory.add(data.targetName());
+
+        if (attackHistory.size() > 50) {
+            attackHistory.remove(0);
+        }
+    }
+
+    public void updateHeldSlot(HeldSlotPacketData data) {
+        lastHeldSlot = heldSlot;
+        heldSlot = data.slot();
+
+        lastSlotChangeTime = data.receivedAt();
+
+        lastHeldItemChangePacket = data.receivedAt();
+
+        hotbarSlotChanges.add(data.slot());
+    }
+
+    public void updateInventoryClick(InventoryClickPacketData data) {
+        inventoryClicks++;
+        inventoryActionCount++;
+
+        lastInventoryClickTime = data.receivedAt();
+        lastClickedSlot = data.slot();
+        lastClickType = data.clickType();
+        cursorItem = data.cursorItem();
+
+        clickingInventory = true;
+
+        lastWindowClickPacket = data.receivedAt();
+
+        lastInventoryTick = Bukkit.getCurrentTick();
+
+        inventoryClickHistory.add(data.receivedAt());
+    }
+
+    public void updateWindow(WindowPacketData data) {
+        windowOpen = data.open();
+        inventoryOpen = data.open();
+        windowTitle = data.windowTitle();
+        clickingInventory = false;
+
+        if (data.open()) {
+            lastWindowOpenTime = System.nanoTime();
+            ticksSinceWindowOpen = 0;
+
+            inventoryActionCount = 0;
+            inventoryClicks = 0;
+        } else {
+            lastWindowCloseTime = System.nanoTime();
+            ticksSinceWindowClose = 0;
+        }
+    }
+
+    public void updateRotation(RotationPacketData data) {
+        long now = System.nanoTime();
+
+        lastRotationPacket = now;
+        rotationPacketCount++;
+        lastRotationTick = Bukkit.getCurrentTick();
+
+        if (!rotationInitialized) {
+            setLastYaw(data.yaw());
+            setLastPitch(data.pitch());
+
+            setYaw(data.yaw());
+            setPitch(data.pitch());
+
+            setDeltaYaw(0.0F);
+            setDeltaPitch(0.0F);
+
+            setLastDeltaYaw(0.0);
+            setLastDeltaPitch(0.0);
+
+            rotationInitialized = true;
+        } else {
+            setLastYaw(getYaw());
+            setLastPitch(getPitch());
+
+            setLastDeltaYaw(getDeltaYaw());
+            setLastDeltaPitch(getDeltaPitch());
+
+            setYaw(data.yaw());
+            setPitch(data.pitch());
+
+            setDeltaYaw(getYaw() - getLastYaw());
+            setDeltaPitch(getPitch() - getLastPitch());
+
+            if (getDeltaYaw() > 180.0F) {
+                setDeltaYaw(getDeltaYaw() - 360.0F);
+            } else if (getDeltaYaw() < -180.0F) {
+                setDeltaYaw(getDeltaYaw() + 360.0F);
+            }
+        }
+
+        rotating = getDeltaYaw() != 0.0F || getDeltaPitch() != 0.0F;
+
+        if (rotating) {
+            ticksSinceRotation = 0;
+            rotationSamples++;
+        } else {
+            ticksSinceRotation++;
+        }
+    }
+
+    public void updateMovement(MovementPacketData data) {
+        long now = System.nanoTime();
+
+        lastMovementPacket = now;
+        movementPacketCount++;
+        lastMovementTick = Bukkit.getCurrentTick();
+
+        if (data.hasPosition()) {
+
+            if (!positionInitialized) {
+                setLastX(data.x());
+                setLastY(data.y());
+                setLastZ(data.z());
+                positionInitialized = true;
+            } else {
+                setLastX(getX());
+                setLastY(getY());
+                setLastZ(getZ());
+            }
+
+            setX(data.x());
+            setY(data.y());
+            setZ(data.z());
+
+            setDeltaX(getX() - getLastX());
+            setDeltaY(getY() - getLastY());
+            setDeltaZ(getZ() - getLastZ());
+
+            verticalDelta = deltaY;
+            horizontalDelta = Math.sqrt(deltaX * deltaX + deltaZ * deltaZ);
+
+            lastPositionPacket = now;
+            positionPacketCount++;
+
+        } else {
+            setDeltaX(0.0);
+            setDeltaY(0.0);
+            setDeltaZ(0.0);
+
+            verticalDelta = 0.0;
+            horizontalDelta = 0.0;
+        }
+
+        moving = horizontalDelta > 0.0 || verticalDelta != 0.0;
+
+        setLastOnGround(isOnGround());
+        setOnGround(data.onGround());
+        setClientOnGround(data.onGround());
+
+        if (isOnGround()) {
+            groundTicks++;
+            airTicks = 0;
+
+            ticksSinceGround = 0;
+            ticksSinceAir++;
+        } else {
+            airTicks++;
+            groundTicks = 0;
+
+            ticksSinceAir = 0;
+            ticksSinceGround++;
+        }
+
+        if (moving) {
+            ticksSinceMove = 0;
+        } else {
+            ticksSinceMove++;
+        }
+
+        jumping = lastOnGround && !onGround && deltaY > 0.0;
+
+        if (!onGround && deltaY < 0.0) {
+            fallDistance += -deltaY;
+        } else if (onGround) {
+            fallDistance = 0.0;
+        }
+    }
+}
+

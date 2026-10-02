@@ -1,8 +1,8 @@
 package ch.mcserver.goliathPaperCore.module.anticheat.checks;
 
 import ch.mcserver.goliathPaperCore.module.anticheat.data.CheckState;
-import ch.mcserver.goliathPaperCore.module.anticheat.data.PacketData;
-import ch.mcserver.goliathPaperCore.module.anticheat.data.PlayerData;
+import ch.mcserver.goliathPaperCore.module.anticheat.data.player.PacketData.PacketData;
+import ch.mcserver.goliathPaperCore.module.anticheat.data.player.playerdata.PlayerData;
 import ch.mcserver.goliathPaperCore.module.anticheat.flag.FlagManager;
 
 import java.util.ArrayList;

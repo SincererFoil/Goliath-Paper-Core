@@ -1,6 +1,8 @@
-package ch.mcserver.goliathPaperCore.module.anticheat.data;
+package ch.mcserver.goliathPaperCore.module.anticheat.data.player;
 
+import ch.mcserver.goliathPaperCore.module.anticheat.data.player.playerdata.PlayerData;
 import ch.mcserver.goliathPaperCore.module.anticheat.flag.FlagManager;
+import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,4 +38,6 @@ public class PlayerDataManager {
     public List<PlayerData> getAll() {
         return new ArrayList<>(playerDataMap.values());
     }
+
+
 }

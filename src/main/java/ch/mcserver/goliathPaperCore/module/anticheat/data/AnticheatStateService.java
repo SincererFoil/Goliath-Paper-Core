@@ -1,6 +1,8 @@
 package ch.mcserver.goliathPaperCore.module.anticheat.data;
 
 import ch.mcserver.goliathPaperCore.common.database.mysql.AnticheatRepository;
+import ch.mcserver.goliathPaperCore.module.anticheat.data.player.playerdata.PlayerData;
+import ch.mcserver.goliathPaperCore.module.anticheat.data.player.PlayerDataManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 

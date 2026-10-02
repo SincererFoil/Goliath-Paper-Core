@@ -2,7 +2,7 @@ package ch.mcserver.goliathPaperCore.module.anticheat.flag;
 
 import ch.mcserver.goliathPaperCore.GoliathPaperCore;
 import ch.mcserver.goliathPaperCore.common.database.redis.RedisManager;
-import ch.mcserver.goliathPaperCore.module.anticheat.data.PlayerData;
+import ch.mcserver.goliathPaperCore.module.anticheat.data.player.playerdata.PlayerData;
 import ch.mcserver.goliathPaperCore.module.anticheat.flag.autopunish.AutopunishData;
 import ch.mcserver.goliathPaperCore.module.anticheat.flag.autopunish.PunishReason;
 import com.google.gson.Gson;

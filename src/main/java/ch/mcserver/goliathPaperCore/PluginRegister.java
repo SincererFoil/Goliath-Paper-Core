@@ -17,7 +17,8 @@ import ch.mcserver.goliathPaperCore.common.service.ShutdownService;
 import ch.mcserver.goliathPaperCore.common.service.SpawnerService;
 import ch.mcserver.goliathPaperCore.module.anticheat.AnticheatListener;
 import ch.mcserver.goliathPaperCore.module.anticheat.data.AnticheatStateService;
-import ch.mcserver.goliathPaperCore.module.anticheat.data.PlayerDataManager;
+import ch.mcserver.goliathPaperCore.module.anticheat.data.player.PlayerDataManager;
+import ch.mcserver.goliathPaperCore.module.anticheat.data.player.playerdata.PlayerData;
 import ch.mcserver.goliathPaperCore.module.anticheat.flag.FlagManager;
 import ch.mcserver.goliathPaperCore.module.chat.GoliathChat;
 import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestListener;
@@ -295,6 +296,12 @@ public class PluginRegister {
                 20L * 60 * 5,
                 20L * 60 * 5
         );
+
+        Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+            for (PlayerData playerData : playerDataManager.getAll()) {
+                playerData.updateTick();
+            }
+        }, 1L, 1L);
 
         Bukkit.getScheduler().runTaskTimer(plugin, () -> {
             anticheatStateService.saveAll();
