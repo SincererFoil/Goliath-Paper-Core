@@ -260,6 +260,22 @@ public class PluginRegister {
     }
 
     private void registerSchedulers() {
+        Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+            for (PlayerData data : playerDataManager.getAll()) {
+                Player player = Bukkit.getPlayer(data.getUuid());
+
+                if (player != null) {
+                    data.setGliding(player.isGliding());
+                    data.setHeldItem(player.getInventory().getItemInMainHand().clone());
+                    data.setOffHandItem(player.getInventory().getItemInOffHand().clone());
+                }
+
+
+
+                data.tick();
+            }
+        }, 1L, 1L);
+
         Bukkit.getScheduler().runTaskTimerAsynchronously(
                 plugin,
                 () -> {

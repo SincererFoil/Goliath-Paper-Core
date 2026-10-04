@@ -3,17 +3,18 @@ package ch.mcserver.goliathPaperCore.module.anticheat.data.player.playerdata;
 import ch.mcserver.goliathPaperCore.module.anticheat.checks.CheckManager;
 import ch.mcserver.goliathPaperCore.module.anticheat.data.player.PacketData.*;
 import ch.mcserver.goliathPaperCore.module.anticheat.flag.FlagManager;
+import com.github.retrooper.packetevents.protocol.player.InteractionHand;
 import com.github.retrooper.packetevents.util.Vector3i;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientClickWindow;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.event.inventory.ClickType;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class PlayerData {
 
@@ -133,6 +134,10 @@ public class PlayerData {
 
     private boolean velocityPending;
 
+    private int velocitySequence;
+
+    private final Map<Integer, Integer> pendingVelocityPings = new HashMap<>();
+
     private boolean teleporting;
 
     private long lastTeleportTime;
@@ -145,6 +150,7 @@ public class PlayerData {
 
     private Double teleportZ;
 
+    private int pendingTeleportId;
 
     private World world;
 
@@ -246,12 +252,15 @@ public class PlayerData {
 
     private DigAction lastDigAction;
 
+    private boolean windowOpenClient;
 
-    private boolean inventoryOpen;
+    private boolean windowOpenServer;
 
-    private boolean windowOpen;
+    private Component windowTitle;
 
-    private String windowTitle;
+    private int windowIdServer;
+
+    private int windowIdClient;
 
     private long lastWindowOpenTime;
 
@@ -269,9 +278,9 @@ public class PlayerData {
 
     private int lastClickedSlot;
 
-    private ClickType lastClickType;
+    private WrapperPlayClientClickWindow.WindowClickType lastClickType;
 
-    private ItemStack cursorItem;
+    private com.github.retrooper.packetevents.protocol.item.ItemStack cursorItem;
 
     private int heldSlot;
 
@@ -383,7 +392,6 @@ public class PlayerData {
     private boolean clickingInventory;
 
 
-    // Managers
     private final CheckManager checkManager;
 
     private boolean positionInitialized;
@@ -414,6 +422,26 @@ public class PlayerData {
 
     public UUID getUuid() {
         return uuid;
+    }
+
+    public Map<Integer, Integer> getPendingVelocityPings() {
+        return pendingVelocityPings;
+    }
+
+    public int getPendingTeleportId() {
+        return pendingTeleportId;
+    }
+
+    public void setPendingTeleportId(int pendingTeleportId) {
+        this.pendingTeleportId = pendingTeleportId;
+    }
+
+    public int getVelocitySequence() {
+        return velocitySequence;
+    }
+
+    public void setVelocitySequence(int velocitySequence) {
+        this.velocitySequence = velocitySequence;
     }
 
     public void setUuid(UUID uuid) {
@@ -1316,27 +1344,43 @@ public class PlayerData {
         this.lastDigAction = lastDigAction;
     }
 
-    public boolean isInventoryOpen() {
-        return inventoryOpen;
+    public boolean isClientWindowOpen() {
+        return windowOpenClient;
     }
 
-    public void setInventoryOpen(boolean inventoryOpen) {
-        this.inventoryOpen = inventoryOpen;
+    public void setClientWindowOpen(boolean clientWindowOpen) {
+        this.windowOpenClient = clientWindowOpen;
     }
 
-    public boolean isWindowOpen() {
-        return windowOpen;
+    public boolean isServerWindowOpen() {
+        return windowOpenServer;
     }
 
-    public void setWindowOpen(boolean windowOpen) {
-        this.windowOpen = windowOpen;
+    public void setServerWindowOpen(boolean serverWindowOpen) {
+        this.windowOpenServer = serverWindowOpen;
     }
 
-    public String getWindowTitle() {
+    public int getWindowIdClient() {
+        return windowIdClient;
+    }
+
+    public void setWindowIdClient(int windowIdClient) {
+        this.windowIdClient = windowIdClient;
+    }
+
+    public int getWindowIdServer() {
+        return windowIdServer;
+    }
+
+    public void setWindowIdServer(int windowIdServer) {
+        this.windowIdServer = windowIdServer;
+    }
+
+    public Component getWindowTitle() {
         return windowTitle;
     }
 
-    public void setWindowTitle(String windowTitle) {
+    public void setWindowTitle(Component windowTitle) {
         this.windowTitle = windowTitle;
     }
 
@@ -1404,19 +1448,19 @@ public class PlayerData {
         this.lastClickedSlot = lastClickedSlot;
     }
 
-    public ClickType getLastClickType() {
+    public WrapperPlayClientClickWindow.WindowClickType getLastClickType() {
         return lastClickType;
     }
 
-    public void setLastClickType(ClickType lastClickType) {
+    public void setLastClickType(WrapperPlayClientClickWindow.WindowClickType lastClickType) {
         this.lastClickType = lastClickType;
     }
 
-    public ItemStack getCursorItem() {
+    public com.github.retrooper.packetevents.protocol.item.ItemStack getCursorItem() {
         return cursorItem;
     }
 
-    public void setCursorItem(ItemStack cursorItem) {
+    public void setCursorItem(com.github.retrooper.packetevents.protocol.item.ItemStack cursorItem) {
         this.cursorItem = cursorItem;
     }
 
@@ -1864,6 +1908,140 @@ public class PlayerData {
         this.checkStateLoaded = checkStateLoaded;
     }
 
+    public void tick() {
+        ticksSinceTeleport++;
+        ticksSinceAttack++;
+        ticksSinceMove++;
+        ticksSinceRotation++;
+        ticksSinceWindowOpen++;
+        ticksSinceWindowClose++;
+        ticksSinceJoin++;
+
+        if (clientOnGround) {
+            groundTicks++;
+            airTicks = 0;
+            ticksSinceGround = 0;
+            ticksSinceAir++;
+        } else {
+            airTicks++;
+            groundTicks = 0;
+            ticksSinceAir = 0;
+            ticksSinceGround++;
+        }
+
+        if (usingItem != null) {
+            useItemTicks++;
+        }
+
+        if (digging) {
+            digTicks++;
+        }
+
+        if (hasVelocity) {
+            velocityTicks++;
+        }
+
+
+        interacting = false;
+        clickingInventory = false;
+
+    }
+
+
+    public void updateVelocity(VelocityPacketData data) {
+        lastVelocityX = velocityX;
+        lastVelocityY = velocityY;
+        lastVelocityZ = velocityZ;
+
+        velocityX = data.velocityX();
+        velocityY = data.velocityY();
+        velocityZ = data.velocityZ();
+
+        velocityTicks = 0;
+
+        velocitySequence++;
+
+        hasVelocity = true;
+        velocityPending = true;
+    }
+
+    public void acknowledgeVelocityPing(int pingId) {
+        Integer sequence = pendingVelocityPings.remove(pingId);
+
+        if (sequence == null) {
+            return;
+        }
+
+        if (sequence == velocitySequence) {
+            velocityPending = false;
+        }
+    }
+
+    public void registerVelocityPing(int pingId) {
+        pendingVelocityPings.put(pingId, velocitySequence);
+    }
+
+    public void updatePlayerAction(PlayerActionPacketData data) {
+        switch (data.action()) {
+            case START_SPRINTING:
+                sprinting = true;
+                break;
+
+            case STOP_SPRINTING:
+                sprinting = false;
+                break;
+
+            case START_SNEAKING:
+                sneaking = true;
+                break;
+
+            case STOP_SNEAKING:
+                sneaking = false;
+                break;
+
+            case START_FLYING_WITH_ELYTRA:
+                gliding = true;
+                break;
+        }
+        lastActionTime = data.receivedAt();
+    }
+
+    public void updateUseItem(UseItemPacketData data) {
+        lastUseItemTime = data.receivedAt();
+        lastActionTime = data.receivedAt();
+        useItemTicks = 0;
+        usingItem  = data.hand() == InteractionHand.MAIN_HAND ? heldItem : offHandItem;
+    }
+
+    public void releaseUseItem() {
+        usingItem = null;
+        useItemTicks = 0;
+        blocking = false;
+        eating = false;
+        drinking = false;
+        drawingBow = false;
+    }
+
+
+    public void acknowledgeClientTeleport(int teleportId) {
+        if (teleporting && pendingTeleportId == teleportId) {
+            positionInitialized = false;
+            rotationInitialized = false;
+            teleporting = false;
+        }
+    }
+
+    public void updateTeleport(TeleportPacketData data) {
+        teleporting = true;
+        teleportX = data.x();
+        teleportY = data.y();
+        teleportZ = data.z();
+        pendingTeleportId = data.teleportId();
+
+        lastTeleportTime = data.receivedAt();
+        ticksSinceTeleport= 0;
+    }
+
     public void updateRotation(RotationPacketData data) {
         rotationPacketCount++;
         lastRotationPacket = System.nanoTime();
@@ -2015,6 +2193,79 @@ public class PlayerData {
                 break;
         }
 
+    }
+
+    public void updateHeldSlot(HeldSlotPacketData data) {
+        lastHeldSlot = heldSlot;
+        heldSlot = data.slot();
+
+        lastSlotChangeTime = data.receivedAt();
+
+        lastHeldItemChangePacket = data.receivedAt();
+
+        hotbarSlotChanges.add(data.slot());
+        if (hotbarSlotChanges.size() > 300) {
+            hotbarSlotChanges.removeFirst();
+        }
+    }
+
+    public void updateBlockInteraction(BlockInteractPacketData data) {
+        interacting = true;
+
+        lastBlockInteractTime = data.receivedAt();
+        lastActionTime = data.receivedAt();
+
+        lastInteractedBlock = new Vector3i(data.blockX(), data.blockY(), data.blockZ());
+    }
+
+    public void updateInventoryClick(InventoryClickPacketData data) {
+        inventoryClicks++;
+        inventoryActionCount++;
+
+        lastInventoryClickTime = data.receivedAt();
+        lastClickedSlot = data.slot();
+        lastClickType = data.clickType();
+        cursorItem = data.cursorItem();
+
+        clickingInventory = true;
+
+        lastWindowClickPacket = data.receivedAt();
+
+        lastInventoryTick = Bukkit.getCurrentTick();
+
+        inventoryClickHistory.add(data.receivedAt());
+        if (inventoryClickHistory.size() > 1000) {
+            inventoryClickHistory.removeFirst();
+        }
+    }
+
+    public void updateWindowServer(WindowPacketData data) {
+        windowOpenServer = data.open();
+        windowTitle = data.windowTitle();
+        clickingInventory = false;
+        windowIdServer = data.windowId();
+
+        if (windowOpenServer) {
+            windowOpenClient = true;
+            windowIdClient = data.windowId();
+        }
+
+        if (data.open()) {
+            lastWindowOpenTime = data.receivedAt();
+            ticksSinceWindowOpen = 0;
+
+            inventoryActionCount = 0;
+            inventoryClicks = 0;
+        } else {
+            lastWindowCloseTime = data.receivedAt();
+            ticksSinceWindowClose = 0;
+        }
+    }
+
+    public void updateCloseWindowClient(WindowPacketData data) {
+        windowOpenClient = data.open();
+        clickingInventory = false;
+        windowIdClient = data.windowId();
     }
 
 
