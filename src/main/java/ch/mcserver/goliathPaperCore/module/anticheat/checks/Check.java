@@ -5,7 +5,7 @@ import ch.mcserver.goliathPaperCore.module.anticheat.data.player.PacketData.Pack
 import ch.mcserver.goliathPaperCore.module.anticheat.data.player.playerdata.PlayerData;
 import ch.mcserver.goliathPaperCore.module.anticheat.flag.FlagManager;
 import ch.mcserver.goliathPaperCore.module.anticheat.flag.FlagType;
-import com.comphenix.protocol.PacketType;
+import com.github.retrooper.packetevents.protocol.packettype.PacketTypeCommon;
 
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -30,7 +30,7 @@ public abstract class Check {
 
     public abstract void handle(PacketData event);
 
-    public abstract Set<PacketType> getPacketTypes();
+    public abstract Set<PacketTypeCommon> getPacketTypes();
 
     protected void flag(String details) {
         decayViolations();

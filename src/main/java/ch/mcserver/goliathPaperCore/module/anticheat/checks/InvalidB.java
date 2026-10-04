@@ -4,7 +4,7 @@ import ch.mcserver.goliathPaperCore.module.anticheat.data.player.PacketData.Pack
 import ch.mcserver.goliathPaperCore.module.anticheat.data.player.playerdata.PlayerData;
 import ch.mcserver.goliathPaperCore.module.anticheat.flag.FlagManager;
 import ch.mcserver.goliathPaperCore.module.anticheat.flag.FlagType;
-import com.comphenix.protocol.PacketType;
+import com.github.retrooper.packetevents.protocol.packettype.PacketTypeCommon;
 
 import java.util.Set;
 
@@ -19,7 +19,7 @@ public class InvalidB extends Check{
     }
 
     @Override
-    public Set<PacketType> getPacketTypes() {
+    public Set<PacketTypeCommon> getPacketTypes() {
         return Set.of();
     }
 }

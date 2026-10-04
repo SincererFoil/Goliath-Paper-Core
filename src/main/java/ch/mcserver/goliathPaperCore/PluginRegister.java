@@ -4,8 +4,6 @@ import ch.mcserver.goliathPaperCore.common.database.mongodb.ChatLogRepository;
 import ch.mcserver.goliathPaperCore.common.database.mongodb.HistoryRepository;
 import ch.mcserver.goliathPaperCore.common.database.mongodb.MongoDBManager;
 import ch.mcserver.goliathPaperCore.common.database.mysql.*;
-import ch.mcserver.goliathPaperCore.common.packet.GoliathPacket;
-import ch.mcserver.goliathPaperCore.common.packet.ProtocolLibHook;
 import ch.mcserver.goliathPaperCore.common.pluginmessage.CommandUpdateMessenger;
 import ch.mcserver.goliathPaperCore.common.pluginmessage.CreativeMessenger;
 import ch.mcserver.goliathPaperCore.common.pluginmessage.GmspMessenger;
@@ -38,7 +36,7 @@ import ch.mcserver.goliathPaperCore.module.spawn.DoubleJumpBoostListener;
 import ch.mcserver.goliathPaperCore.module.spawn.SpawnListener;
 import ch.mcserver.goliathPaperCore.module.spawnstash.SpawnStashCommand;
 import ch.mcserver.goliathPaperCore.module.spawnstash.SpawnStashTabCompleter;
-import com.comphenix.protocol.ProtocolLibrary;
+import com.github.retrooper.packetevents.PacketEvents;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 import org.bukkit.Bukkit;
@@ -77,8 +75,6 @@ public class PluginRegister {
 
     private ShutdownService shutdownService;
 
-    private ProtocolLibHook protocolLibHook;
-    private GoliathPacket goliathPacket;
     private FlagManager flagManager;
 
     public PluginRegister(GoliathPaperCore plugin, MongoDBManager mongoManager, MySQLManager mySQLManager) {
@@ -89,7 +85,6 @@ public class PluginRegister {
 
     public void registerAll() {
         registerManagers();
-        registerPacketSystems();
         registerCommands();
         registerListeners();
         registerPluginMessaging();
@@ -100,13 +95,6 @@ public class PluginRegister {
         return shutdownService;
     }
 
-    public ProtocolLibHook getProtocolLibHook() {
-        return protocolLibHook;
-    }
-
-    public GoliathPacket getGoliathPacket() {
-        return goliathPacket;
-    }
 
     private void registerManagers() {
         this.inventoryCollection = this.mongoManager.getMongoCollection("player_inventory");
@@ -174,19 +162,6 @@ public class PluginRegister {
         anticheatStateService.shutdown();
     }
 
-    private void registerPacketSystems() {
-        this.protocolLibHook = new ProtocolLibHook(plugin);
-        this.protocolLibHook.init();
-
-        this.goliathPacket = new GoliathPacket(protocolLibHook);
-
-        if (!this.goliathPacket.isEnabled()) {
-            plugin.getLogger().warning("Packet systems disabled because ProtocolLib is missing.");
-            return;
-        }
-
-        plugin.getLogger().info("Packet systems enabled.");
-    }
 
     private void registerCommands() {
         plugin.getCommand("spawnstash").setExecutor(new SpawnStashCommand());
@@ -245,8 +220,11 @@ public class PluginRegister {
         plugin.getServer().getPluginManager()
                 .registerEvents(anticheatListener, plugin);
 
-        ProtocolLibrary.getProtocolManager()
-                .addPacketListener(anticheatListener);
+
+
+        PacketEvents.getAPI().getEventManager()
+                .registerListener(anticheatListener);
+
 
     }
 
@@ -297,11 +275,6 @@ public class PluginRegister {
                 20L * 60 * 5
         );
 
-        Bukkit.getScheduler().runTaskTimer(plugin, () -> {
-            for (PlayerData playerData : playerDataManager.getAll()) {
-                playerData.updateTick();
-            }
-        }, 1L, 1L);
 
         Bukkit.getScheduler().runTaskTimer(plugin, () -> {
             anticheatStateService.saveAll();

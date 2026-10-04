@@ -1,9 +1,10 @@
 package ch.mcserver.goliathPaperCore.module.anticheat.data.player.PacketData;
 
-import com.comphenix.protocol.PacketType;
+import com.github.retrooper.packetevents.protocol.packettype.PacketTypeCommon;
+
 import java.util.UUID;
 
 public interface PacketData {
     UUID playerUuid();
-    PacketType packetType();
+    PacketTypeCommon packetType();
 }

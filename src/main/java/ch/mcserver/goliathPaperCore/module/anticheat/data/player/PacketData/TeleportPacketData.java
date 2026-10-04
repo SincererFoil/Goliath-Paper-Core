@@ -1,8 +1,9 @@
 package ch.mcserver.goliathPaperCore.module.anticheat.data.player.PacketData;
 
-import com.comphenix.protocol.PacketType;
+
+import com.github.retrooper.packetevents.protocol.packettype.PacketTypeCommon;
 
 import java.util.UUID;
 
-public record TeleportPacketData(UUID playerUuid, PacketType packetType, double x, double y, double z, long receivedAt) implements PacketData {
+public record TeleportPacketData(UUID playerUuid, PacketTypeCommon packetType, double x, double y, double z, long receivedAt) implements PacketData {
 }

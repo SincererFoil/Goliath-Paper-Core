@@ -8,6 +8,7 @@ repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://repo.dmulloy2.net/repository/public/")
+    maven("https://repo.codemc.io/repository/maven-releases/")
 }
 
 dependencies {
@@ -18,7 +19,7 @@ dependencies {
     implementation("redis.clients:jedis:5.2.0")
     implementation("org.spongepowered:configurate-yaml:4.2.0")
 
-    compileOnly("com.comphenix.protocol:ProtocolLib:5.3.0")
+    compileOnly("com.github.retrooper:packetevents-spigot:2.14.0")
 
     implementation("com.zaxxer:HikariCP:5.1.0")
     implementation("com.mysql:mysql-connector-j:9.3.0")

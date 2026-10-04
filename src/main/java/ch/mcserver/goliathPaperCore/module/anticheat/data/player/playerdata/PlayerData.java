@@ -3,13 +3,11 @@ package ch.mcserver.goliathPaperCore.module.anticheat.data.player.playerdata;
 import ch.mcserver.goliathPaperCore.module.anticheat.checks.CheckManager;
 import ch.mcserver.goliathPaperCore.module.anticheat.data.player.PacketData.*;
 import ch.mcserver.goliathPaperCore.module.anticheat.flag.FlagManager;
-import com.comphenix.protocol.wrappers.BlockPosition;
-import com.sun.tools.attach.AttachPermission;
+import com.github.retrooper.packetevents.util.Vector3i;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
@@ -19,7 +17,6 @@ import java.util.UUID;
 
 public class PlayerData {
 
-    // Player
     private UUID uuid;
 
     private String username;
@@ -32,8 +29,6 @@ public class PlayerData {
 
     private boolean isDead;
 
-
-    // Position
     private double x;
 
     private double y;
@@ -56,8 +51,6 @@ public class PlayerData {
 
     private double horizontalDelta;
 
-
-    // Rotation
     private float yaw;
 
     private float pitch;
@@ -82,8 +75,6 @@ public class PlayerData {
 
     private List<Double> deltaPitchHistory;
 
-
-    // Movement
     private boolean onGround;
 
     private boolean lastOnGround;
@@ -124,8 +115,6 @@ public class PlayerData {
 
     private Double fallDistance;
 
-
-    // Velocity
     private Double velocityX;
 
     private Double velocityY;
@@ -144,8 +133,6 @@ public class PlayerData {
 
     private boolean velocityPending;
 
-
-    // Teleport
     private boolean teleporting;
 
     private long lastTeleportTime;
@@ -158,8 +145,6 @@ public class PlayerData {
 
     private Double teleportZ;
 
-
-    // World / Environment
 
     private World world;
 
@@ -195,8 +180,6 @@ public class PlayerData {
 
     private boolean onVine;
 
-
-    // Combat
     private long lastAttackTime;
 
     private int ticksSinceAttack;
@@ -216,7 +199,6 @@ public class PlayerData {
     private int combatTicks;
 
 
-    // Aim / Rotation Analysis
     private int rotationSamples;
 
     private Double lastAimTarget;
@@ -236,24 +218,23 @@ public class PlayerData {
     private Double rotationConsistency;
 
 
-    // Block Interaction
     private long lastBlockBreakTime;
 
     private long lastBlockPlaceTime;
 
     private long lastBlockInteractTime;
 
-    private BlockPosition lastBrokenBlock;
+    private Vector3i lastBrokenBlock;
 
-    private BlockPosition lastPlacedBlock;
+    private Vector3i  lastPlacedBlock;
 
-    private BlockPosition lastInteractedBlock;
+    private Vector3i  lastInteractedBlock;
 
     private List<BlockBreakSample> blockBreakHistory;
 
     private List<Long> blockPlaceHistory;
 
-    private BlockPosition diggingBlockPosition;
+    private Vector3i  diggingBlockPosition;
 
     private boolean digging;
 
@@ -263,10 +244,9 @@ public class PlayerData {
 
     private int digTicks;
 
-    private Double lastDigAction;
+    private DigAction lastDigAction;
 
 
-    // Inventory / GUI
     private boolean inventoryOpen;
 
     private boolean windowOpen;
@@ -304,7 +284,6 @@ public class PlayerData {
     private int inventoryActionCount;
 
 
-    // Item / Hand State
     private ItemStack heldItem;
 
     private ItemStack offHandItem;
@@ -324,7 +303,6 @@ public class PlayerData {
     private boolean drawingBow;
 
 
-    // Network
     private int ping;
 
     private int lastPing;
@@ -352,7 +330,6 @@ public class PlayerData {
     private int pendingTransactions;
 
 
-    // Packet State
     private long lastMovementPacket;
 
     private long lastPositionPacket;
@@ -372,7 +349,6 @@ public class PlayerData {
     private long lastHeldItemChangePacket;
 
 
-    // Timing
     private int currentTick;
 
     private int joinTick;
@@ -390,7 +366,6 @@ public class PlayerData {
     private int lastInventoryTick;
 
 
-    // Action State
     private long lastAction;
 
     private long lastActionTime;
@@ -437,9 +412,12 @@ public class PlayerData {
         actionHistory = new ArrayList<>();
     }
 
-
     public UUID getUuid() {
         return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 
     public String getUsername() {
@@ -481,9 +459,6 @@ public class PlayerData {
     public void setDead(boolean dead) {
         isDead = dead;
     }
-
-
-// Position
 
     public double getX() {
         return x;
@@ -572,9 +547,6 @@ public class PlayerData {
     public void setHorizontalDelta(double horizontalDelta) {
         this.horizontalDelta = horizontalDelta;
     }
-
-
-// Rotation
 
     public float getYaw() {
         return yaw;
@@ -671,9 +643,6 @@ public class PlayerData {
     public void setDeltaPitchHistory(List<Double> deltaPitchHistory) {
         this.deltaPitchHistory = deltaPitchHistory;
     }
-
-
-// Movement
 
     public boolean isOnGround() {
         return onGround;
@@ -827,62 +796,59 @@ public class PlayerData {
         this.groundTicks = groundTicks;
     }
 
-    public double getFallDistance() {
+    public Double getFallDistance() {
         return fallDistance;
     }
 
-    public void setFallDistance(double fallDistance) {
+    public void setFallDistance(Double fallDistance) {
         this.fallDistance = fallDistance;
     }
 
-
-// Velocity
-
-    public double getVelocityX() {
+    public Double getVelocityX() {
         return velocityX;
     }
 
-    public void setVelocityX(double velocityX) {
+    public void setVelocityX(Double velocityX) {
         this.velocityX = velocityX;
     }
 
-    public double getVelocityY() {
+    public Double getVelocityY() {
         return velocityY;
     }
 
-    public void setVelocityY(double velocityY) {
+    public void setVelocityY(Double velocityY) {
         this.velocityY = velocityY;
     }
 
-    public double getVelocityZ() {
+    public Double getVelocityZ() {
         return velocityZ;
     }
 
-    public void setVelocityZ(double velocityZ) {
+    public void setVelocityZ(Double velocityZ) {
         this.velocityZ = velocityZ;
     }
 
-    public double getLastVelocityX() {
+    public Double getLastVelocityX() {
         return lastVelocityX;
     }
 
-    public void setLastVelocityX(double lastVelocityX) {
+    public void setLastVelocityX(Double lastVelocityX) {
         this.lastVelocityX = lastVelocityX;
     }
 
-    public double getLastVelocityY() {
+    public Double getLastVelocityY() {
         return lastVelocityY;
     }
 
-    public void setLastVelocityY(double lastVelocityY) {
+    public void setLastVelocityY(Double lastVelocityY) {
         this.lastVelocityY = lastVelocityY;
     }
 
-    public double getLastVelocityZ() {
+    public Double getLastVelocityZ() {
         return lastVelocityZ;
     }
 
-    public void setLastVelocityZ(double lastVelocityZ) {
+    public void setLastVelocityZ(Double lastVelocityZ) {
         this.lastVelocityZ = lastVelocityZ;
     }
 
@@ -910,9 +876,6 @@ public class PlayerData {
         this.velocityPending = velocityPending;
     }
 
-
-// Teleport
-
     public boolean isTeleporting() {
         return teleporting;
     }
@@ -937,32 +900,29 @@ public class PlayerData {
         this.ticksSinceTeleport = ticksSinceTeleport;
     }
 
-    public double getTeleportX() {
+    public Double getTeleportX() {
         return teleportX;
     }
 
-    public void setTeleportX(double teleportX) {
+    public void setTeleportX(Double teleportX) {
         this.teleportX = teleportX;
     }
 
-    public double getTeleportY() {
+    public Double getTeleportY() {
         return teleportY;
     }
 
-    public void setTeleportY(double teleportY) {
+    public void setTeleportY(Double teleportY) {
         this.teleportY = teleportY;
     }
 
-    public double getTeleportZ() {
+    public Double getTeleportZ() {
         return teleportZ;
     }
 
-    public void setTeleportZ(double teleportZ) {
+    public void setTeleportZ(Double teleportZ) {
         this.teleportZ = teleportZ;
     }
-
-
-// World
 
     public World getWorld() {
         return world;
@@ -1100,9 +1060,6 @@ public class PlayerData {
         this.onVine = onVine;
     }
 
-
-// Combat
-
     public long getLastAttackTime() {
         return lastAttackTime;
     }
@@ -1159,6 +1116,14 @@ public class PlayerData {
         this.lastUseEntityTime = lastUseEntityTime;
     }
 
+    public long getLastHitPosition() {
+        return lastHitPosition;
+    }
+
+    public void setLastHitPosition(long lastHitPosition) {
+        this.lastHitPosition = lastHitPosition;
+    }
+
     public int getCombatTicks() {
         return combatTicks;
     }
@@ -1166,9 +1131,6 @@ public class PlayerData {
     public void setCombatTicks(int combatTicks) {
         this.combatTicks = combatTicks;
     }
-
-
-// Aim
 
     public int getRotationSamples() {
         return rotationSamples;
@@ -1178,11 +1140,19 @@ public class PlayerData {
         this.rotationSamples = rotationSamples;
     }
 
-    public double getAimAngle() {
+    public Double getLastAimTarget() {
+        return lastAimTarget;
+    }
+
+    public void setLastAimTarget(Double lastAimTarget) {
+        this.lastAimTarget = lastAimTarget;
+    }
+
+    public Double getAimAngle() {
         return aimAngle;
     }
 
-    public void setAimAngle(double aimAngle) {
+    public void setAimAngle(Double aimAngle) {
         this.aimAngle = aimAngle;
     }
 
@@ -1202,40 +1172,37 @@ public class PlayerData {
         this.targetPitch = targetPitch;
     }
 
-    public double getAngleToTarget() {
+    public Double getAngleToTarget() {
         return angleToTarget;
     }
 
-    public void setAngleToTarget(double angleToTarget) {
+    public void setAngleToTarget(Double angleToTarget) {
         this.angleToTarget = angleToTarget;
     }
 
-    public double getSensitivityEstimate() {
+    public Double getSensitivityEstimate() {
         return sensitivityEstimate;
     }
 
-    public void setSensitivityEstimate(double sensitivityEstimate) {
+    public void setSensitivityEstimate(Double sensitivityEstimate) {
         this.sensitivityEstimate = sensitivityEstimate;
     }
 
-    public double getMouseGcd() {
+    public Double getMouseGcd() {
         return mouseGcd;
     }
 
-    public void setMouseGcd(double mouseGcd) {
+    public void setMouseGcd(Double mouseGcd) {
         this.mouseGcd = mouseGcd;
     }
 
-    public double getRotationConsistency() {
+    public Double getRotationConsistency() {
         return rotationConsistency;
     }
 
-    public void setRotationConsistency(double rotationConsistency) {
+    public void setRotationConsistency(Double rotationConsistency) {
         this.rotationConsistency = rotationConsistency;
     }
-
-
-// Block interaction
 
     public long getLastBlockBreakTime() {
         return lastBlockBreakTime;
@@ -1259,6 +1226,54 @@ public class PlayerData {
 
     public void setLastBlockInteractTime(long lastBlockInteractTime) {
         this.lastBlockInteractTime = lastBlockInteractTime;
+    }
+
+    public Vector3i getLastBrokenBlock() {
+        return lastBrokenBlock;
+    }
+
+    public void setLastBrokenBlock(Vector3i lastBrokenBlock) {
+        this.lastBrokenBlock = lastBrokenBlock;
+    }
+
+    public Vector3i getLastPlacedBlock() {
+        return lastPlacedBlock;
+    }
+
+    public void setLastPlacedBlock(Vector3i lastPlacedBlock) {
+        this.lastPlacedBlock = lastPlacedBlock;
+    }
+
+    public Vector3i getLastInteractedBlock() {
+        return lastInteractedBlock;
+    }
+
+    public void setLastInteractedBlock(Vector3i lastInteractedBlock) {
+        this.lastInteractedBlock = lastInteractedBlock;
+    }
+
+    public List<BlockBreakSample> getBlockBreakHistory() {
+        return blockBreakHistory;
+    }
+
+    public void setBlockBreakHistory(List<BlockBreakSample> blockBreakHistory) {
+        this.blockBreakHistory = blockBreakHistory;
+    }
+
+    public List<Long> getBlockPlaceHistory() {
+        return blockPlaceHistory;
+    }
+
+    public void setBlockPlaceHistory(List<Long> blockPlaceHistory) {
+        this.blockPlaceHistory = blockPlaceHistory;
+    }
+
+    public Vector3i getDiggingBlockPosition() {
+        return diggingBlockPosition;
+    }
+
+    public void setDiggingBlockPosition(Vector3i diggingBlockPosition) {
+        this.diggingBlockPosition = diggingBlockPosition;
     }
 
     public boolean isDigging() {
@@ -1293,8 +1308,13 @@ public class PlayerData {
         this.digTicks = digTicks;
     }
 
+    public DigAction getLastDigAction() {
+        return lastDigAction;
+    }
 
-// Inventory
+    public void setLastDigAction(DigAction lastDigAction) {
+        this.lastDigAction = lastDigAction;
+    }
 
     public boolean isInventoryOpen() {
         return inventoryOpen;
@@ -1392,6 +1412,14 @@ public class PlayerData {
         this.lastClickType = lastClickType;
     }
 
+    public ItemStack getCursorItem() {
+        return cursorItem;
+    }
+
+    public void setCursorItem(ItemStack cursorItem) {
+        this.cursorItem = cursorItem;
+    }
+
     public int getHeldSlot() {
         return heldSlot;
     }
@@ -1408,6 +1436,14 @@ public class PlayerData {
         this.lastHeldSlot = lastHeldSlot;
     }
 
+    public List<Integer> getHotbarSlotChanges() {
+        return hotbarSlotChanges;
+    }
+
+    public void setHotbarSlotChanges(List<Integer> hotbarSlotChanges) {
+        this.hotbarSlotChanges = hotbarSlotChanges;
+    }
+
     public long getLastSlotChangeTime() {
         return lastSlotChangeTime;
     }
@@ -1422,17 +1458,6 @@ public class PlayerData {
 
     public void setInventoryActionCount(int inventoryActionCount) {
         this.inventoryActionCount = inventoryActionCount;
-    }
-
-
-// Item / Hand
-
-    public ItemStack getCursorItem() {
-        return cursorItem;
-    }
-
-    public void setCursorItem(ItemStack cursorItem) {
-        this.cursorItem = cursorItem;
     }
 
     public ItemStack getHeldItem() {
@@ -1506,9 +1531,6 @@ public class PlayerData {
     public void setDrawingBow(boolean drawingBow) {
         this.drawingBow = drawingBow;
     }
-
-
-// Network
 
     public int getPing() {
         return ping;
@@ -1614,9 +1636,6 @@ public class PlayerData {
         this.pendingTransactions = pendingTransactions;
     }
 
-
-// Packet state
-
     public long getLastMovementPacket() {
         return lastMovementPacket;
     }
@@ -1689,9 +1708,6 @@ public class PlayerData {
         this.lastHeldItemChangePacket = lastHeldItemChangePacket;
     }
 
-
-// Timing
-
     public int getCurrentTick() {
         return currentTick;
     }
@@ -1756,8 +1772,13 @@ public class PlayerData {
         this.lastInventoryTick = lastInventoryTick;
     }
 
+    public long getLastAction() {
+        return lastAction;
+    }
 
-// Action
+    public void setLastAction(long lastAction) {
+        this.lastAction = lastAction;
+    }
 
     public long getLastActionTime() {
         return lastActionTime;
@@ -1765,6 +1786,14 @@ public class PlayerData {
 
     public void setLastActionTime(long lastActionTime) {
         this.lastActionTime = lastActionTime;
+    }
+
+    public List<Long> getActionHistory() {
+        return actionHistory;
+    }
+
+    public void setActionHistory(List<Long> actionHistory) {
+        this.actionHistory = actionHistory;
     }
 
     public boolean isInteracting() {
@@ -1807,9 +1836,6 @@ public class PlayerData {
         this.clickingInventory = clickingInventory;
     }
 
-
-// Internal state
-
     public CheckManager getCheckManager() {
         return checkManager;
     }
@@ -1836,6 +1862,159 @@ public class PlayerData {
 
     public void setCheckStateLoaded(boolean checkStateLoaded) {
         this.checkStateLoaded = checkStateLoaded;
+    }
+
+    public void updateRotation(RotationPacketData data) {
+        rotationPacketCount++;
+        lastRotationPacket = System.nanoTime();
+        lastRotationTick = Bukkit.getCurrentTick();
+
+        lastDeltaYaw = deltaYaw;
+        lastDeltaPitch = deltaPitch;
+
+        if (!rotationInitialized) {
+            yaw = lastYaw = data.yaw();
+            pitch = lastPitch = data.pitch();
+
+            deltaYaw = 0.0F;
+            deltaPitch = 0.0F;
+            rotationInitialized = true;
+        } else {
+            lastYaw = yaw;
+            lastPitch = pitch;
+
+            yaw = data.yaw();
+            pitch = data.pitch();
+
+            double difference = ((double) yaw - lastYaw) % 360.0;
+
+            if (difference >= 180.0) {
+                difference -= 360.0;
+            } else if (difference < -180.0) {
+                difference += 360.0;
+            }
+
+            deltaYaw = (float) difference;
+            deltaPitch = pitch - lastPitch;
+        }
+
+        rotating = deltaYaw != 0.0F || deltaPitch != 0.0F;
+
+        if (rotating) {
+            ticksSinceRotation = 0;
+            rotationSamples++;
+        }
+
+    }
+
+    public void updateMovement(MovementPacketData data) {
+        long now = System.nanoTime();
+
+        lastMovementPacket = now;
+        movementPacketCount++;
+        lastMovementTick = Bukkit.getCurrentTick();
+
+        deltaX = 0.0;
+        deltaY = 0.0;
+        deltaZ = 0.0;
+        horizontalDelta = 0.0;
+        verticalDelta = 0.0;
+
+        boolean hadPosition = positionInitialized;
+
+        if (data.hasPosition()) {
+            lastPositionPacket = now;
+            positionPacketCount++;
+
+            if (!positionInitialized) {
+                x = lastX = data.x();
+                y = lastY = data.y();
+                z = lastZ = data.z();
+
+                positionInitialized = true;
+            } else {
+                lastX = x;
+                lastY = y;
+                lastZ = z;
+
+                x = data.x();
+                y = data.y();
+                z = data.z();
+
+                deltaX = x - lastX;
+                deltaY = y - lastY;
+                deltaZ = z - lastZ;
+
+                verticalDelta = deltaY;
+                horizontalDelta = Math.hypot(deltaX, deltaZ);
+            }
+        }
+
+        moving = horizontalDelta > 0.0 || verticalDelta != 0.0;
+
+        lastOnGround = onGround;
+        clientOnGround = data.onGround();
+        onGround = clientOnGround;
+
+        jumping = hadPosition && data.hasPosition() && lastOnGround && !onGround && deltaY > 0.0;
+
+        if (fallDistance == null) {
+            fallDistance = 0.0;
+        }
+
+        if (onGround) {
+            fallDistance = 0.0;
+        } else if (data.hasPosition() && deltaY < 0.0) {
+            fallDistance += -deltaY;
+        }
+
+        if (moving) {
+            ticksSinceMove = 0;
+        }
+
+    }
+
+    public void updateAttack(AttackPacketData data) {
+        lastAttackTick = Bukkit.getCurrentTick();
+        attackCount++;
+        lastAttackTime = data.receivedAt();
+        ticksSinceAttack = 0;
+
+        lastTarget = data.targetName();
+
+        lastTargetEntityId = data.targetEntityId();
+
+
+        attackHistory.add(data.targetName());
+        if (attackHistory.size() > 200) {
+            attackHistory.removeFirst();
+        }
+    }
+
+    public void updateDig(DigPacketData data) {
+        lastDigAction = data.action();
+        lastDigPacket = data.receivedAt();
+
+        switch (data.action()) {
+            case START_DESTROY_BLOCK:
+                digging = true;
+                diggingBlock = true;
+                breaking = true;
+                digStartTime = data.receivedAt();
+                digTicks = 0;
+                lastDigTick = Bukkit.getCurrentTick();
+                lastActionTime = data.receivedAt();
+                diggingBlockPosition = new Vector3i(data.blockX(), data.blockY(), data.blockZ());
+                break;
+            case STOP_DESTROY_BLOCK, ABORT_DESTROY_BLOCK:
+                digging = false;
+                diggingBlock = false;
+                breaking = false;
+                lastDigTick = Bukkit.getCurrentTick();
+                lastActionTime = data.receivedAt();
+                break;
+        }
+
     }
 
 
