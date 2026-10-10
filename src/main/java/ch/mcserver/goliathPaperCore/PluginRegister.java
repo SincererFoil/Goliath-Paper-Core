@@ -98,7 +98,7 @@ public class PluginRegister {
 
     private void registerManagers() {
         this.inventoryCollection = this.mongoManager.getMongoCollection("player_inventory");
-        this.playerInventoryRepository = new PlayerInventoryRepository(inventoryCollection);
+        this.playerInventoryRepository = new PlayerInventoryRepository(inventoryCollection, plugin);
 
         this.chatLogCollection = this.mongoManager.getMongoCollection("chat_log");
         this.chatLogRepository = new ChatLogRepository(chatLogCollection);
@@ -276,9 +276,7 @@ public class PluginRegister {
             }
         }, 1L, 1L);
 
-        Bukkit.getScheduler().runTaskTimerAsynchronously(
-                plugin,
-                () -> {
+        Bukkit.getScheduler().runTaskTimer( plugin, () -> {
                     if (playerInventoryRepository == null) {
                         return;
                     }
@@ -286,9 +284,7 @@ public class PluginRegister {
                     for (Player player : Bukkit.getOnlinePlayers()) {
                         playerInventoryRepository.saveInventory(player.getUniqueId());
                     }
-                },
-                20L * 60 * 5,
-                20L * 60 * 5
+                }, 20L * 60 * 5, 20L * 60 * 5
         );
 
 

@@ -8,6 +8,7 @@ import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 
 import java.util.UUID;
 import java.util.logging.Level;
@@ -18,9 +19,11 @@ import static ch.mcserver.goliathPaperCore.module.enderchest.PlayerEnderchestRep
 public class PlayerInventoryRepository {
 
     private final MongoCollection<Document> collection;
+    private final Plugin plugin;
 
-    public PlayerInventoryRepository(MongoCollection<Document> collection) {
+    public PlayerInventoryRepository(MongoCollection<Document> collection, Plugin plugin) {
         this.collection = collection;
+        this.plugin = plugin;
     }
 
     public void saveInventory(UUID playerUUID) {
@@ -35,30 +38,44 @@ public class PlayerInventoryRepository {
                         player.getInventory().getItemInOffHand()
                 }));
 
-        collection.updateOne(
-                Filters.eq("uuid", playerUUID.toString()),
-                new Document("$set", update),
-                new UpdateOptions().upsert(true)
-        );
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            collection.updateOne(
+                    Filters.eq("uuid", playerUUID.toString()),
+                    new Document("$set", update),
+                    new UpdateOptions().upsert(true)
+            );
+        });
     }
 
     public void loadInventory(UUID playerUUID) {
         Player player = Bukkit.getPlayer(playerUUID);
         if (player == null) return;
-        Document document = collection.find(Filters.eq("uuid", playerUUID.toString())).first();
-        if (document == null) {
-            saveInventory(playerUUID);
-            document = collection.find(Filters.eq("uuid", playerUUID.toString())).first();
-        }
-        try {
-            player.getInventory().setContents(fromBase64(document.getString("inventory")));
-            player.getInventory().setArmorContents(fromBase64(document.getString("armor")));
-            ItemStack[] offhand = fromBase64(document.getString("offhand"));
-            if (offhand.length > 0) {
-                player.getInventory().setItemInOffHand(offhand[0]);
-            }
-        } catch (Exception e) {
-            GoliathPaperCore.getInstance().getLogger().log(Level.WARNING, "Could not load Inventory from " + player.getName() + ". Error message: ", e);
-        }
+
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            Document document = collection.find(Filters.eq("uuid", playerUUID.toString())).first();
+
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                if (!player.isOnline()) return;
+
+                if (document == null) {
+                    saveInventory(playerUUID);
+                    return;
+                }
+
+                try {
+                    player.getInventory().setContents(fromBase64(document.getString("inventory")));
+                    player.getInventory().setArmorContents(fromBase64(document.getString("armor")));
+                    ItemStack[] offhand = fromBase64(document.getString("offhand"));
+                    if (offhand.length > 0) {
+                        player.getInventory().setItemInOffHand(offhand[0]);
+                    }
+                } catch (Exception e) {
+                    GoliathPaperCore.getInstance().getLogger().log(Level.WARNING, "Could not load Inventory from " + player.getName() + ". Error message: ", e);
+                }
+            });
+        });
+
+
+
     }
 }
