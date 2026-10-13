@@ -73,7 +73,7 @@ public class PlayerInventoryRepository {
         writeSnapshot(playerUUID, update, disconnect);
     }
 
-    public void loadInventory(UUID playerUUID) {
+    public void loadInventory(UUID playerUUID, int attempts) {
         Player player = Bukkit.getPlayer(playerUUID);
         if (player == null) return;
 
@@ -85,7 +85,7 @@ public class PlayerInventoryRepository {
         if (states.get(playerUUID) == InventoryState.SAVING || lockTokens.containsKey(playerUUID)) {
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
                 if (player.isOnline() && Bukkit.getPlayer(playerUUID) == player) {
-                    loadInventory(playerUUID);
+                    loadInventory(playerUUID, attempts);
                 }
             }, 2L);
             return;
@@ -109,9 +109,23 @@ public class PlayerInventoryRepository {
                         lockTokens.remove(playerUUID);
                         states.remove(playerUUID);
 
-                        if (player.isOnline() && Bukkit.getPlayer(playerUUID) == player) {
-                            player.kick(Component.text("We dont know what happend here! Make a Ticket: #23dffd", NamedTextColor.RED));
+                        if (!player.isOnline()
+                                || Bukkit.getPlayer(playerUUID) != player) return;
+
+                        if (attempts >= 20) {
+                            player.kick(Component.text(
+                                    "Your previous inventory session is still active. Please reconnect.",
+                                    NamedTextColor.RED
+                            ));
+                            return;
                         }
+
+                        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                            if (player.isOnline()
+                                    && Bukkit.getPlayer(playerUUID) == player) {
+                                loadInventory(playerUUID, attempts + 1);
+                            }
+                        }, 10L);
                     });
                     return;
                 }
@@ -121,9 +135,11 @@ public class PlayerInventoryRepository {
                 plugin.getLogger().log(Level.SEVERE, "Inventory load failed: " + playerUUID, e);
 
                 Bukkit.getScheduler().runTask(plugin, () -> {
+                    if (!ownerToken.equals(lockTokens.get(playerUUID))) return;
+
+                    states.put(playerUUID, InventoryState.SAVE_FAILED);
 
                     if (player.isOnline() && Bukkit.getPlayer(playerUUID) == player) {
-
                         player.kick(Component.text("We dont know what happend here! Make a Ticket: #23dff", NamedTextColor.RED));
                     }
                 });

@@ -24,7 +24,7 @@ public class InventoryListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         player.getInventory().clear();
-        repository.loadInventory(player.getUniqueId());
+        repository.loadInventory(player.getUniqueId(), 0);
     }
 
     @EventHandler
@@ -37,6 +37,13 @@ public class InventoryListener implements Listener {
         if (event.getWhoClicked() instanceof Player player && !repository.isLoaded(player)) {
             player.sendActionBar(Component.text("Your data hasn't loaded yet", NamedTextColor.RED));
             player.playSound(player, Sound.ENTITY_VILLAGER_AMBIENT, 1f, 1f);
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onInteractEntity(PlayerInteractEntityEvent event) {
+        if (!repository.isLoaded(event.getPlayer())) {
             event.setCancelled(true);
         }
     }
