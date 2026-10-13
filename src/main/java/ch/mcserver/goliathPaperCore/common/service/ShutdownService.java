@@ -37,7 +37,7 @@ public class ShutdownService {
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             try {
-                playerInventoryRepository.saveInventory(player.getUniqueId());
+                playerInventoryRepository.saveInventory(player.getUniqueId(), false);
             } catch (Exception e) {
                 logger.log(Level.WARNING, "Could not save inventory from " + player.getName(), e);
             }

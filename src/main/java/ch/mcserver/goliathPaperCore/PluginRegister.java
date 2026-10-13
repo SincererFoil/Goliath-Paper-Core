@@ -98,7 +98,7 @@ public class PluginRegister {
 
     private void registerManagers() {
         this.inventoryCollection = this.mongoManager.getMongoCollection("player_inventory");
-        this.playerInventoryRepository = new PlayerInventoryRepository(inventoryCollection, plugin);
+        this.playerInventoryRepository = new PlayerInventoryRepository(inventoryCollection, plugin, plugin.getRedisManager());
 
         this.chatLogCollection = this.mongoManager.getMongoCollection("chat_log");
         this.chatLogRepository = new ChatLogRepository(chatLogCollection);
@@ -282,7 +282,7 @@ public class PluginRegister {
                     }
 
                     for (Player player : Bukkit.getOnlinePlayers()) {
-                        playerInventoryRepository.saveInventory(player.getUniqueId());
+                        playerInventoryRepository.saveInventory(player.getUniqueId(), false);
                     }
                 }, 20L * 60 * 5, 20L * 60 * 5
         );
