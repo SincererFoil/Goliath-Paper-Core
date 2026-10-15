@@ -47,6 +47,10 @@ public class GoliathTeleportMessenger implements PluginMessageListener {
         if (staff == null) {
             return;
         }
+
+        if (gmspEnabled && staff.getGameMode() != GameMode.SPECTATOR) {
+            staff.setGameMode(GameMode.SPECTATOR);
+        }
         if (target == null || !target.isOnline()) {
             PlayerLocationObject targetLocation = playerLocationRepository.loadPlayer(targetUuid);
             if (targetLocation == null) {

@@ -43,11 +43,8 @@ public class CreativeMessenger implements PluginMessageListener, Listener {
     }
 
     @Override
-    public void onPluginMessageReceived(
-            @NotNull String channel,
-            @NotNull Player receiver,
-            byte @NotNull [] message
-    ) {
+    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player receiver, byte @NotNull [] message) {
+
         if (!CHANNEL.equals(channel)) {
             return;
         }
@@ -75,9 +72,14 @@ public class CreativeMessenger implements PluginMessageListener, Listener {
                 return;
             }
 
-            serverTriggered.add(uuid);
 
             PlayerObject playerObject = PlayerObjectManager.getPlayer(uuid);
+
+            if (enabled && playerObject != null && playerObject.isGmsp()) {
+                return;
+            }
+
+            serverTriggered.add(uuid);
 
             if (playerObject != null) {
                 playerObject.setCreative(enabled);
@@ -96,12 +98,14 @@ public class CreativeMessenger implements PluginMessageListener, Listener {
             Bukkit.getScheduler().runTaskLater(
                     plugin, () -> serverTriggered.remove(uuid), 2L);
 
+
         } catch (RuntimeException exception) {
             plugin.getLogger().warning(
                     "Rejected malformed goliath:creative payload: " + exception.getMessage()
             );
         }
     }
+
 
     @EventHandler
     public void onGameModeChange(PlayerGameModeChangeEvent event) {
@@ -115,25 +119,23 @@ public class CreativeMessenger implements PluginMessageListener, Listener {
         GameMode current = player.getGameMode();
         GameMode next = event.getNewGameMode();
 
-        boolean toCreative = next == GameMode.CREATIVE;
+        if (next == GameMode.SPECTATOR) {
+            return;
+        }
 
+        boolean toCreative = next == GameMode.CREATIVE;
         boolean fromCreative = current == GameMode.CREATIVE && next != GameMode.CREATIVE;
 
         if (!toCreative && !fromCreative) {
             return;
         }
 
-        boolean enabled = toCreative;
-
-        PlayerObject playerObject = PlayerObjectManager.getPlayer(uuid);
-
-        if (playerObject != null) {
-            playerObject.setCreative(enabled);
-        }
-
-        sendCreativeState(player, enabled);
-
+        Bukkit.getScheduler().runTask(plugin, () ->
+                sendCreativeState(player, toCreative)
+        );
     }
+
+
 
     private void sendCreativeState(Player player, boolean enabled) {
         if (!player.isOnline()) {
@@ -146,10 +148,6 @@ public class CreativeMessenger implements PluginMessageListener, Listener {
 
         output.writeBoolean(enabled);
 
-        player.sendPluginMessage(
-                plugin,
-                CHANNEL,
-                output.toByteArray()
-        );
+        player.sendPluginMessage(plugin, CHANNEL, output.toByteArray());
     }
 }

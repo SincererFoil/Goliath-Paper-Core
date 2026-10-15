@@ -137,7 +137,7 @@ public class PlayerRepository {
                      """
                      UPDATE players
                      SET name = ?, prefix = ?, sfmode = ?, debug_mode = ?,
-                         fly_speed = ?, current_server = ?, last_join = ?, creative = ?
+                         fly_speed = ?, current_server = ?, last_join = ?
                      WHERE uuid = ?
                      """
              )) {
@@ -149,24 +149,25 @@ public class PlayerRepository {
             statement.setFloat(5, playerObject.getFlySpeed());
             statement.setString(6, playerObject.getCurrentServer());
             statement.setLong(7, playerObject.getLastJoin());
-            statement.setBoolean(8, playerObject.isCreative());
-            statement.setString(9, playerObject.getUuid().toString());
+            statement.setString(8, playerObject.getUuid().toString());
 
             statement.executeUpdate();
 
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
+
     }
 
 
     public void savePlayerDataOnly(PlayerObject playerObject) {
+
         try (Connection connection = mySQLManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(
                      """
                      UPDATE players
                      SET name = ?, prefix = ?, sfmode = ?, debug_mode = ?,
-                         fly_speed = ?, current_server = ?, last_join = ?, creative = ?
+                         fly_speed = ?, current_server = ?, last_join = ?
                      WHERE uuid = ?
                      """
              )) {
@@ -178,14 +179,14 @@ public class PlayerRepository {
             statement.setFloat(5, playerObject.getFlySpeed());
             statement.setString(6, playerObject.getCurrentServer());
             statement.setLong(7, playerObject.getLastJoin());
-            statement.setBoolean(8, playerObject.isCreative());
-            statement.setString(9, playerObject.getUuid().toString());
+            statement.setString(8, playerObject.getUuid().toString());
 
             statement.executeUpdate();
 
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
+
     }
 
 

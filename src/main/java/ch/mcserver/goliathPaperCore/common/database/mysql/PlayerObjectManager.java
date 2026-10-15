@@ -3,6 +3,7 @@ package ch.mcserver.goliathPaperCore.common.database.mysql;
 import ch.mcserver.goliathPaperCore.GoliathPaperCore;
 import ch.mcserver.goliathPaperCore.module.history.snapshot.HistorySnapshot;
 import net.kyori.adventure.text.Component;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -50,6 +51,20 @@ public class PlayerObjectManager implements Listener {
             player.kick(Component.text("Your player data could not be loaded."));
             return;
         }
+
+
+
+
+        if (playerObject.isGmsp()) {
+            player.setGameMode(GameMode.SPECTATOR);
+        } else if (playerObject.isCreative()) {
+            player.setGameMode(GameMode.CREATIVE);
+        } else {
+            player.setGameMode(GameMode.SURVIVAL);
+        }
+
+
+
 
         playerObject.setSfmode(false);
 
