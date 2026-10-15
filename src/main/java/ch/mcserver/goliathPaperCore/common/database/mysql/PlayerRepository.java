@@ -130,12 +130,13 @@ public class PlayerRepository {
         return null;
     }
 
+
     public void save(PlayerObject playerObject) {
         try (Connection connection = mySQLManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(
                      """
                      UPDATE players
-                     SET name = ?, prefix = ?, sfmode = ?, debug_mode = ?, gmsp = ?,
+                     SET name = ?, prefix = ?, sfmode = ?, debug_mode = ?,
                          fly_speed = ?, current_server = ?, last_join = ?, creative = ?
                      WHERE uuid = ?
                      """
@@ -145,12 +146,11 @@ public class PlayerRepository {
             statement.setString(2, playerObject.getPrefix());
             statement.setBoolean(3, playerObject.isSfmode());
             statement.setBoolean(4, playerObject.isDebugMode());
-            statement.setBoolean(5, playerObject.isGmsp());
-            statement.setFloat(6, playerObject.getFlySpeed());
-            statement.setString(7, playerObject.getCurrentServer());
-            statement.setLong(8, playerObject.getLastJoin());
-            statement.setBoolean(9, playerObject.isCreative());
-            statement.setString(10, playerObject.getUuid().toString());
+            statement.setFloat(5, playerObject.getFlySpeed());
+            statement.setString(6, playerObject.getCurrentServer());
+            statement.setLong(7, playerObject.getLastJoin());
+            statement.setBoolean(8, playerObject.isCreative());
+            statement.setString(9, playerObject.getUuid().toString());
 
             statement.executeUpdate();
 
@@ -158,13 +158,14 @@ public class PlayerRepository {
             exception.printStackTrace();
         }
     }
+
 
     public void savePlayerDataOnly(PlayerObject playerObject) {
         try (Connection connection = mySQLManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(
                      """
                      UPDATE players
-                     SET name = ?, prefix = ?, sfmode = ?, debug_mode = ?, gmsp = ?,
+                     SET name = ?, prefix = ?, sfmode = ?, debug_mode = ?,
                          fly_speed = ?, current_server = ?, last_join = ?, creative = ?
                      WHERE uuid = ?
                      """
@@ -174,12 +175,11 @@ public class PlayerRepository {
             statement.setString(2, playerObject.getPrefix());
             statement.setBoolean(3, playerObject.isSfmode());
             statement.setBoolean(4, playerObject.isDebugMode());
-            statement.setBoolean(5, playerObject.isGmsp());
-            statement.setFloat(6, playerObject.getFlySpeed());
-            statement.setString(7, playerObject.getCurrentServer());
-            statement.setLong(8, playerObject.getLastJoin());
-            statement.setBoolean(9, playerObject.isCreative());
-            statement.setString(10, playerObject.getUuid().toString());
+            statement.setFloat(5, playerObject.getFlySpeed());
+            statement.setString(6, playerObject.getCurrentServer());
+            statement.setLong(7, playerObject.getLastJoin());
+            statement.setBoolean(8, playerObject.isCreative());
+            statement.setString(9, playerObject.getUuid().toString());
 
             statement.executeUpdate();
 
@@ -187,6 +187,7 @@ public class PlayerRepository {
             exception.printStackTrace();
         }
     }
+
 
     public List<String> getAllUsernames() {
         List<String> usernames = new ArrayList<>();

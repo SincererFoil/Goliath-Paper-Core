@@ -52,7 +52,6 @@ public class PlayerObjectManager implements Listener {
         }
 
         playerObject.setSfmode(false);
-        playerObject.setGmsp(false);
 
         addPlayer(playerObject);
     }
@@ -69,7 +68,6 @@ public class PlayerObjectManager implements Listener {
         }
 
         playerObject.setSfmode(false);
-        playerObject.setGmsp(false);
 
         GoliathPaperCore.playerRepository.savePlayerDataOnly(playerObject);
 
