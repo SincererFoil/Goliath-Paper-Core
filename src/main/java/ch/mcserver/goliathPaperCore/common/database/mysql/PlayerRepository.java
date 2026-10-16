@@ -136,20 +136,18 @@ public class PlayerRepository {
              PreparedStatement statement = connection.prepareStatement(
                      """
                      UPDATE players
-                     SET name = ?, prefix = ?, sfmode = ?, debug_mode = ?,
-                         fly_speed = ?, current_server = ?, last_join = ?
+                     SET name = ?, prefix = ?, debug_mode = ?, fly_speed = ?, current_server = ?, last_join = ?
                      WHERE uuid = ?
                      """
              )) {
 
             statement.setString(1, playerObject.getName());
             statement.setString(2, playerObject.getPrefix());
-            statement.setBoolean(3, playerObject.isSfmode());
-            statement.setBoolean(4, playerObject.isDebugMode());
-            statement.setFloat(5, playerObject.getFlySpeed());
-            statement.setString(6, playerObject.getCurrentServer());
-            statement.setLong(7, playerObject.getLastJoin());
-            statement.setString(8, playerObject.getUuid().toString());
+            statement.setBoolean(3, playerObject.isDebugMode());
+            statement.setFloat(4, playerObject.getFlySpeed());
+            statement.setString(5, playerObject.getCurrentServer());
+            statement.setLong(6, playerObject.getLastJoin());
+            statement.setString(7, playerObject.getUuid().toString());
 
             statement.executeUpdate();
 
@@ -158,6 +156,7 @@ public class PlayerRepository {
         }
 
     }
+
 
 
     public void savePlayerDataOnly(PlayerObject playerObject) {
@@ -166,28 +165,26 @@ public class PlayerRepository {
              PreparedStatement statement = connection.prepareStatement(
                      """
                      UPDATE players
-                     SET name = ?, prefix = ?, sfmode = ?, debug_mode = ?,
-                         fly_speed = ?, current_server = ?, last_join = ?
+                     SET name = ?, prefix = ?, debug_mode = ?, fly_speed = ?, current_server = ?, last_join = ?
                      WHERE uuid = ?
                      """
              )) {
 
             statement.setString(1, playerObject.getName());
             statement.setString(2, playerObject.getPrefix());
-            statement.setBoolean(3, playerObject.isSfmode());
-            statement.setBoolean(4, playerObject.isDebugMode());
-            statement.setFloat(5, playerObject.getFlySpeed());
-            statement.setString(6, playerObject.getCurrentServer());
-            statement.setLong(7, playerObject.getLastJoin());
-            statement.setString(8, playerObject.getUuid().toString());
+            statement.setBoolean(3, playerObject.isDebugMode());
+            statement.setFloat(4, playerObject.getFlySpeed());
+            statement.setString(5, playerObject.getCurrentServer());
+            statement.setLong(6, playerObject.getLastJoin());
+            statement.setString(7, playerObject.getUuid().toString());
 
             statement.executeUpdate();
 
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
-
     }
+
 
 
     public List<String> getAllUsernames() {
