@@ -4,6 +4,8 @@ import ch.mcserver.goliathPaperCore.common.database.mongodb.ChatLogRepository;
 import ch.mcserver.goliathPaperCore.common.database.mongodb.HistoryRepository;
 import ch.mcserver.goliathPaperCore.common.database.mongodb.MongoDBManager;
 import ch.mcserver.goliathPaperCore.common.database.mysql.*;
+import ch.mcserver.goliathPaperCore.common.network.RedisHeartbeatService;
+import ch.mcserver.goliathPaperCore.common.network.ServerStatus;
 import ch.mcserver.goliathPaperCore.common.pluginmessage.CommandUpdateMessenger;
 import ch.mcserver.goliathPaperCore.common.pluginmessage.CreativeMessenger;
 import ch.mcserver.goliathPaperCore.common.pluginmessage.GmspMessenger;
@@ -73,6 +75,8 @@ public class PluginRegister {
     private AnticheatStateService anticheatStateService;
     private AnticheatListener anticheatListener;
 
+    private RedisHeartbeatService redisHeartbeatService;
+
     private ShutdownService shutdownService;
 
     private FlagManager flagManager;
@@ -97,6 +101,8 @@ public class PluginRegister {
 
 
     private void registerManagers() {
+        this.redisHeartbeatService = new RedisHeartbeatService(plugin.getRedisManager(), plugin);
+        this.redisHeartbeatService.start();
         this.inventoryCollection = this.mongoManager.getMongoCollection("player_inventory");
         this.playerInventoryRepository = new PlayerInventoryRepository(inventoryCollection, plugin, plugin.getRedisManager());
 
@@ -156,6 +162,7 @@ public class PluginRegister {
                 playerDataManager,
                 anticheatStateService
         );
+        this.redisHeartbeatService.setServerStatus(ServerStatus.ONLINE);
     }
 
     public void onDisable() {
@@ -292,5 +299,9 @@ public class PluginRegister {
             anticheatStateService.saveAll();
         }, 20L * 60, 20L * 60
         );
+    }
+
+    public RedisHeartbeatService getRedisHeartbeatService() {
+        return redisHeartbeatService;
     }
 }
