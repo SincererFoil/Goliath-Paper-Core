@@ -23,7 +23,8 @@ public class HistoryInventoryGuiListener implements Listener {
 
         Player player = (Player) humanEntity;
 
-        if (!player.hasPermission("goliath.*")) {
+
+        if (!player.hasPermission("goliath.staff.history.admin"))  {
             event.setCancelled(true);
         }
     }
@@ -42,6 +43,10 @@ public class HistoryInventoryGuiListener implements Listener {
         if (!(humanEntity instanceof Player)) return;
 
         Player player = (Player) humanEntity;
+
+        if (!player.hasPermission("goliath.staff.history.admin") && event.getRawSlot() != 36)  {
+            event.setCancelled(true);
+        }
 
         if (event.getRawSlot() == 36) {
             event.getInventory().close();

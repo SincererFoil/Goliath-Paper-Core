@@ -3,12 +3,9 @@ package ch.mcserver.goliathPaperCore;
 import ch.mcserver.goliathPaperCore.common.database.mongodb.ChatLogRepository;
 import ch.mcserver.goliathPaperCore.common.database.mongodb.HistoryRepository;
 import ch.mcserver.goliathPaperCore.common.database.mongodb.MongoDBManager;
-import ch.mcserver.goliathPaperCore.common.database.mysql.MySQLManager;
-import ch.mcserver.goliathPaperCore.common.database.mysql.PlayerLocationManager;
-import ch.mcserver.goliathPaperCore.common.database.mysql.PlayerLocationRepository;
-import ch.mcserver.goliathPaperCore.common.database.mysql.PlayerObjectManager;
-import ch.mcserver.goliathPaperCore.common.packet.GoliathPacket;
-import ch.mcserver.goliathPaperCore.common.packet.ProtocolLibHook;
+import ch.mcserver.goliathPaperCore.common.database.mysql.*;
+import ch.mcserver.goliathPaperCore.common.network.RedisHeartbeatService;
+import ch.mcserver.goliathPaperCore.common.network.ServerStatus;
 import ch.mcserver.goliathPaperCore.common.pluginmessage.CommandUpdateMessenger;
 import ch.mcserver.goliathPaperCore.common.pluginmessage.CreativeMessenger;
 import ch.mcserver.goliathPaperCore.common.pluginmessage.GmspMessenger;
@@ -18,6 +15,11 @@ import ch.mcserver.goliathPaperCore.common.pluginmessage.LocationMessenger;
 import ch.mcserver.goliathPaperCore.common.service.CommandErrorService;
 import ch.mcserver.goliathPaperCore.common.service.ShutdownService;
 import ch.mcserver.goliathPaperCore.common.service.SpawnerService;
+import ch.mcserver.goliathPaperCore.module.anticheat.AnticheatListener;
+import ch.mcserver.goliathPaperCore.module.anticheat.data.AnticheatStateService;
+import ch.mcserver.goliathPaperCore.module.anticheat.data.player.PlayerDataManager;
+import ch.mcserver.goliathPaperCore.module.anticheat.data.player.playerdata.PlayerData;
+import ch.mcserver.goliathPaperCore.module.anticheat.flag.FlagManager;
 import ch.mcserver.goliathPaperCore.module.chat.GoliathChat;
 import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestListener;
 import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestService;
@@ -36,6 +38,7 @@ import ch.mcserver.goliathPaperCore.module.spawn.DoubleJumpBoostListener;
 import ch.mcserver.goliathPaperCore.module.spawn.SpawnListener;
 import ch.mcserver.goliathPaperCore.module.spawnstash.SpawnStashCommand;
 import ch.mcserver.goliathPaperCore.module.spawnstash.SpawnStashTabCompleter;
+import com.github.retrooper.packetevents.PacketEvents;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 import org.bukkit.Bukkit;
@@ -67,10 +70,16 @@ public class PluginRegister {
 
     private GoliathChat goliathChat;
 
+    private PlayerDataManager playerDataManager;
+    private AnticheatRepository anticheatRepository;
+    private AnticheatStateService anticheatStateService;
+    private AnticheatListener anticheatListener;
+
+    private RedisHeartbeatService redisHeartbeatService;
+
     private ShutdownService shutdownService;
 
-    private ProtocolLibHook protocolLibHook;
-    private GoliathPacket goliathPacket;
+    private FlagManager flagManager;
 
     public PluginRegister(GoliathPaperCore plugin, MongoDBManager mongoManager, MySQLManager mySQLManager) {
         this.plugin = plugin;
@@ -80,7 +89,6 @@ public class PluginRegister {
 
     public void registerAll() {
         registerManagers();
-        registerPacketSystems();
         registerCommands();
         registerListeners();
         registerPluginMessaging();
@@ -91,17 +99,12 @@ public class PluginRegister {
         return shutdownService;
     }
 
-    public ProtocolLibHook getProtocolLibHook() {
-        return protocolLibHook;
-    }
-
-    public GoliathPacket getGoliathPacket() {
-        return goliathPacket;
-    }
 
     private void registerManagers() {
+        this.redisHeartbeatService = new RedisHeartbeatService(plugin.getRedisManager(), plugin);
+        this.redisHeartbeatService.start();
         this.inventoryCollection = this.mongoManager.getMongoCollection("player_inventory");
-        this.playerInventoryRepository = new PlayerInventoryRepository(inventoryCollection);
+        this.playerInventoryRepository = new PlayerInventoryRepository(inventoryCollection, plugin, plugin.getRedisManager());
 
         this.chatLogCollection = this.mongoManager.getMongoCollection("chat_log");
         this.chatLogRepository = new ChatLogRepository(chatLogCollection);
@@ -114,6 +117,7 @@ public class PluginRegister {
         this.historyCollection = this.mongoManager.getMongoCollection("history_events");
         this.historyRepository = new HistoryRepository(historyCollection);
         GoliathPaperCore.historyRepository = this.historyRepository;
+
 
         this.historyPlayerInventoryCollection = this.mongoManager.getMongoCollection("history_player_inventory_snapshot");
         this.playerInventorySnapshotRepository = new PlayerInventorySnapshotRepository(historyPlayerInventoryCollection);
@@ -137,21 +141,34 @@ public class PluginRegister {
                 this.enderchestService,
                 this.playerInventoryRepository
         );
+
+        this.flagManager = new FlagManager(
+                plugin,
+                plugin.getRedisManager()
+        );
+
+        this.playerDataManager = new PlayerDataManager(flagManager);
+
+        this.anticheatRepository = new AnticheatRepository(mySQLManager);
+
+        this.anticheatStateService = new AnticheatStateService(
+                plugin,
+                anticheatRepository,
+                playerDataManager
+        );
+
+        this.anticheatListener = new AnticheatListener(
+                plugin,
+                playerDataManager,
+                anticheatStateService
+        );
+        this.redisHeartbeatService.setServerStatus(ServerStatus.ONLINE);
     }
 
-    private void registerPacketSystems() {
-        this.protocolLibHook = new ProtocolLibHook(plugin);
-        this.protocolLibHook.init();
-
-        this.goliathPacket = new GoliathPacket(protocolLibHook);
-
-        if (!this.goliathPacket.isEnabled()) {
-            plugin.getLogger().warning("Packet systems disabled because ProtocolLib is missing.");
-            return;
-        }
-
-        plugin.getLogger().info("Packet systems enabled.");
+    public void onDisable() {
+        anticheatStateService.shutdown();
     }
+
 
     private void registerCommands() {
         plugin.getCommand("spawnstash").setExecutor(new SpawnStashCommand());
@@ -206,6 +223,16 @@ public class PluginRegister {
 
         plugin.getServer().getPluginManager()
                 .registerEvents(new HistoryInventoryGuiListener(), plugin);
+
+        plugin.getServer().getPluginManager()
+                .registerEvents(anticheatListener, plugin);
+
+
+
+        PacketEvents.getAPI().getEventManager()
+                .registerListener(anticheatListener);
+
+
     }
 
     private void registerPluginMessaging() {
@@ -240,19 +267,41 @@ public class PluginRegister {
     }
 
     private void registerSchedulers() {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(
-                plugin,
-                () -> {
+        Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+            for (PlayerData data : playerDataManager.getAll()) {
+                Player player = Bukkit.getPlayer(data.getUuid());
+
+                if (player != null) {
+                    data.setGliding(player.isGliding());
+                    data.setHeldItem(player.getInventory().getItemInMainHand().clone());
+                    data.setOffHandItem(player.getInventory().getItemInOffHand().clone());
+                }
+
+
+
+                data.tick();
+            }
+        }, 1L, 1L);
+
+        Bukkit.getScheduler().runTaskTimer( plugin, () -> {
                     if (playerInventoryRepository == null) {
                         return;
                     }
 
                     for (Player player : Bukkit.getOnlinePlayers()) {
-                        playerInventoryRepository.saveInventory(player.getUniqueId());
+                        playerInventoryRepository.saveInventory(player.getUniqueId(), false);
                     }
-                },
-                20L * 60 * 5,
-                20L * 60 * 5
+                }, 20L * 60 * 5, 20L * 60 * 5
         );
+
+
+        Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+            anticheatStateService.saveAll();
+        }, 20L * 60, 20L * 60
+        );
+    }
+
+    public RedisHeartbeatService getRedisHeartbeatService() {
+        return redisHeartbeatService;
     }
 }

@@ -1,6 +1,7 @@
 package ch.mcserver.goliathPaperCore.common.service;
 
 import ch.mcserver.goliathPaperCore.common.database.mongodb.MongoDBManager;
+import ch.mcserver.goliathPaperCore.common.network.ServerStatus;
 import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestService;
 import ch.mcserver.goliathPaperCore.module.inventory.PlayerInventoryRepository;
 import org.bukkit.Bukkit;
@@ -37,7 +38,7 @@ public class ShutdownService {
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             try {
-                playerInventoryRepository.saveInventory(player.getUniqueId());
+                playerInventoryRepository.saveInventory(player.getUniqueId(), false);
             } catch (Exception e) {
                 logger.log(Level.WARNING, "Could not save inventory from " + player.getName(), e);
             }

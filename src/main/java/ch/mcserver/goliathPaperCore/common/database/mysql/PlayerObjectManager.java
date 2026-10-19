@@ -2,7 +2,9 @@ package ch.mcserver.goliathPaperCore.common.database.mysql;
 
 import ch.mcserver.goliathPaperCore.GoliathPaperCore;
 import ch.mcserver.goliathPaperCore.module.history.snapshot.HistorySnapshot;
+import ch.mcserver.goliathPaperCore.module.nametag.PlayerNametagManager;
 import net.kyori.adventure.text.Component;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -20,6 +22,8 @@ public class PlayerObjectManager implements Listener {
     public static void addPlayer(PlayerObject playerObject) {
         players.put(playerObject.getUuid(), playerObject);
     }
+
+    private static PlayerNametagManager playerNametagManager = new PlayerNametagManager();
 
     public static PlayerObject getPlayer(UUID uuid) {
         return players.get(uuid);
@@ -51,10 +55,21 @@ public class PlayerObjectManager implements Listener {
             return;
         }
 
-        playerObject.setSfmode(false);
-        playerObject.setGmsp(false);
+
+
+
+        if (playerObject.isGmsp()) {
+            player.setGameMode(GameMode.SPECTATOR);
+        } else if (playerObject.isCreative()) {
+            player.setGameMode(GameMode.CREATIVE);
+        } else {
+            player.setGameMode(GameMode.SURVIVAL);
+        }
+
+
 
         addPlayer(playerObject);
+        playerNametagManager.updateNametag(player);
     }
 
     @EventHandler
@@ -68,8 +83,6 @@ public class PlayerObjectManager implements Listener {
             return;
         }
 
-        playerObject.setSfmode(false);
-        playerObject.setGmsp(false);
 
         GoliathPaperCore.playerRepository.savePlayerDataOnly(playerObject);
 

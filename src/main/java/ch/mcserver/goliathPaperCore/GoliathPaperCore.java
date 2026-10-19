@@ -6,6 +6,8 @@ import ch.mcserver.goliathPaperCore.common.database.mongodb.MongoDBManager;
 import ch.mcserver.goliathPaperCore.common.database.mysql.MySQLManager;
 import ch.mcserver.goliathPaperCore.common.database.mysql.PlayerRepository;
 import ch.mcserver.goliathPaperCore.common.database.redis.RedisManager;
+import ch.mcserver.goliathPaperCore.common.network.ServerStatus;
+import ch.mcserver.goliathPaperCore.module.anticheat.data.AnticheatStateService;
 import ch.mcserver.goliathPaperCore.module.history.snapshot.PlayerInventorySnapshotRepository;
 import ch.mcserver.goliathPaperCore.module.inventory.PlayerInventoryRepository;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -62,6 +64,9 @@ public final class GoliathPaperCore extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        pluginRegister.getRedisHeartbeatService().setServerStatus(ServerStatus.STOPPING);
+        pluginRegister.onDisable();
+
         if (pluginRegister != null && pluginRegister.getShutdownService() != null) {
             pluginRegister.getShutdownService().shutdown();
         }
@@ -74,11 +79,17 @@ public final class GoliathPaperCore extends JavaPlugin {
             mySQLManager.disconnect();
         }
 
+        assert pluginRegister != null;
+        pluginRegister.getRedisHeartbeatService().setServerStatus(ServerStatus.OFFLINE);
+        pluginRegister.getRedisHeartbeatService().stop();
+
         if (redisManager != null) {
             redisManager.close();
         }
 
+
         logger.info("Plugin Disabled!");
+
     }
 
     public static GoliathPaperCore getInstance() {

@@ -33,21 +33,25 @@ public class GmspMessenger implements PluginMessageListener {
 
         UUID uuid = UUID.fromString(input.readUTF());
 
-        boolean enabled = input.readBoolean();
+        boolean gmspEnabled = input.readBoolean();
 
-        Player player = Bukkit.getPlayer(uuid);
+        Player staff = Bukkit.getPlayer(uuid);
 
-        if (player == null) {
+        if (staff == null) {
             return;
         }
 
-        if (enabled) {
-            player.setGameMode(GameMode.SPECTATOR);
-        } else {
-            if (player.getSpectatorTarget() != null) {
-                player.teleport(player.getWorld().getSpawnLocation());
+
+        if (gmspEnabled) {
+            if (staff.getGameMode() != GameMode.SPECTATOR) {
+                staff.setGameMode(GameMode.SPECTATOR);
             }
-            player.setGameMode(GameMode.SURVIVAL);
+        } else {
+            staff.setSpectatorTarget(null);
+
+            if (staff.getGameMode() != GameMode.SURVIVAL) {
+                staff.setGameMode(GameMode.SURVIVAL);
+            }
         }
     }
 }

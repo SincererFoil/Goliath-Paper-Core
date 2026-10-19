@@ -17,3 +17,6 @@ commands:
   history:
     permission: goliath.staff.history
     description: Opens Player History for Staff
+
+depend:
+  - packetevents

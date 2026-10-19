@@ -31,8 +31,7 @@ public class GoliathChat implements Listener {
         event.setCancelled(true);
 
         Player player = event.getPlayer();
-        String plainMessage = PlainTextComponentSerializer.plainText()
-                .serialize(event.message());
+        String plainMessage = PlainTextComponentSerializer.plainText().serialize(event.message());
 
         sendChatMessage(player, plainMessage);
 
@@ -47,7 +46,7 @@ public class GoliathChat implements Listener {
                 System.currentTimeMillis()
         );
 
-
+        // TODO Filter for bad words.
         GoliathPaperCore.getChatLogRepository().createEvent(player.getUniqueId(), serverName, message, player.getName());
 
         String json = gson.toJson(chatMessage);

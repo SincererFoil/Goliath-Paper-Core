@@ -1,5 +1,7 @@
 package ch.mcserver.goliathPaperCore.common.pluginmessage;
 
+import ch.mcserver.goliathPaperCore.common.database.mysql.PlayerObject;
+import ch.mcserver.goliathPaperCore.common.database.mysql.PlayerObjectManager;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -22,57 +24,130 @@ public class CreativeMessenger implements PluginMessageListener, Listener {
     private static final String CHANNEL = "goliath:creative";
 
     private final Plugin plugin;
-    private final Set<UUID> serverTriggered = ConcurrentHashMap.newKeySet();
+    private final Set<UUID> serverTriggered =
+            ConcurrentHashMap.newKeySet();
 
     public CreativeMessenger(Plugin plugin) {
         this.plugin = plugin;
-        Bukkit.getMessenger().registerIncomingPluginChannel(plugin, CHANNEL, this);
-        Bukkit.getMessenger().registerOutgoingPluginChannel(plugin, CHANNEL);
+
+        Bukkit.getMessenger().registerIncomingPluginChannel(
+                plugin,
+                CHANNEL,
+                this
+        );
+
+        Bukkit.getMessenger().registerOutgoingPluginChannel(
+                plugin,
+                CHANNEL
+        );
     }
 
     @Override
-    public void onPluginMessageReceived(
-            @NotNull String channel,
-            @NotNull Player receiver,
-            byte @NotNull [] message
-    ) {
-        if (!channel.equals(CHANNEL)) return;
+    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player receiver, byte @NotNull [] message) {
 
-        ByteArrayDataInput input = ByteStreams.newDataInput(message);
-        UUID uuid = UUID.fromString(input.readUTF());
-        boolean enabled = input.readBoolean();
+        if (!CHANNEL.equals(channel)) {
+            return;
+        }
 
-        Player player = Bukkit.getPlayer(uuid);
-        if (player == null) return;
+        try {
+            ByteArrayDataInput input =
+                    ByteStreams.newDataInput(message);
 
-        serverTriggered.add(uuid);
-        player.setGameMode(enabled ? GameMode.CREATIVE : GameMode.SURVIVAL);
-        player.setFlying(true);
-        Bukkit.getScheduler().runTaskLater(plugin, () -> serverTriggered.remove(uuid), 2L);
+            UUID uuid = UUID.fromString(input.readUTF());
+            boolean enabled = input.readBoolean();
+
+            if (!receiver.getUniqueId().equals(uuid)) {
+                plugin.getLogger().warning(
+                        "Rejected goliath:creative UUID mismatch. Receiver="
+                                + receiver.getUniqueId()
+                                + ", payload="
+                                + uuid
+                );
+                return;
+            }
+
+            Player player = Bukkit.getPlayer(uuid);
+
+            if (player == null || !player.isOnline()) {
+                return;
+            }
+
+
+            PlayerObject playerObject = PlayerObjectManager.getPlayer(uuid);
+
+            if (enabled && playerObject != null && playerObject.isGmsp()) {
+                return;
+            }
+
+            serverTriggered.add(uuid);
+
+            if (playerObject != null) {
+                playerObject.setCreative(enabled);
+            }
+
+            if (enabled) {
+                player.setGameMode(GameMode.CREATIVE);
+                player.setAllowFlight(true);
+                player.setFlying(true);
+            } else {
+                player.setFlying(false);
+                player.setAllowFlight(false);
+                player.setGameMode(GameMode.SURVIVAL);
+            }
+
+            Bukkit.getScheduler().runTaskLater(
+                    plugin, () -> serverTriggered.remove(uuid), 2L);
+
+
+        } catch (RuntimeException exception) {
+            plugin.getLogger().warning(
+                    "Rejected malformed goliath:creative payload: " + exception.getMessage()
+            );
+        }
     }
+
 
     @EventHandler
     public void onGameModeChange(PlayerGameModeChangeEvent event) {
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
 
-        if (serverTriggered.contains(uuid)) return;
+        if (serverTriggered.contains(uuid)) {
+            return;
+        }
 
         GameMode current = player.getGameMode();
         GameMode next = event.getNewGameMode();
 
+        if (next == GameMode.SPECTATOR) {
+            return;
+        }
+
         boolean toCreative = next == GameMode.CREATIVE;
         boolean fromCreative = current == GameMode.CREATIVE && next != GameMode.CREATIVE;
 
-        if (!toCreative && !fromCreative) return;
+        if (!toCreative && !fromCreative) {
+            return;
+        }
 
-        boolean enabled = toCreative;
+        Bukkit.getScheduler().runTask(plugin, () ->
+                sendCreativeState(player, toCreative)
+        );
+    }
 
-        Bukkit.getScheduler().runTask(plugin, () -> {
-            ByteArrayDataOutput out = ByteStreams.newDataOutput();
-            out.writeUTF(uuid.toString());
-            out.writeBoolean(enabled);
-            player.sendPluginMessage(plugin, CHANNEL, out.toByteArray());
-        });
+
+
+    private void sendCreativeState(Player player, boolean enabled) {
+        if (!player.isOnline()) {
+            return;
+        }
+
+        ByteArrayDataOutput output = ByteStreams.newDataOutput();
+
+        output.writeUTF(player.getUniqueId().toString());
+
+        output.writeBoolean(enabled);
+
+        player.sendPluginMessage(plugin, CHANNEL, output.toByteArray());
     }
 }

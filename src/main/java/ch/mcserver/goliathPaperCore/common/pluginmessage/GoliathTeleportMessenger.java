@@ -23,11 +23,7 @@ public class GoliathTeleportMessenger implements PluginMessageListener {
     }
 
     @Override
-    public void onPluginMessageReceived(
-            @NotNull String channel,
-            @NotNull Player receiver,
-            byte @NotNull [] message
-    ) {
+    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player receiver, byte @NotNull [] message) {
 
         if (!channel.equalsIgnoreCase("goliath:gtp")) {
             return;
@@ -50,6 +46,10 @@ public class GoliathTeleportMessenger implements PluginMessageListener {
 
         if (staff == null) {
             return;
+        }
+
+        if (gmspEnabled && staff.getGameMode() != GameMode.SPECTATOR) {
+            staff.setGameMode(GameMode.SPECTATOR);
         }
         if (target == null || !target.isOnline()) {
             PlayerLocationObject targetLocation = playerLocationRepository.loadPlayer(targetUuid);
