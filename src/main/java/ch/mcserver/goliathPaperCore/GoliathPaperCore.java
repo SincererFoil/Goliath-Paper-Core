@@ -79,14 +79,17 @@ public final class GoliathPaperCore extends JavaPlugin {
             mySQLManager.disconnect();
         }
 
+        assert pluginRegister != null;
+        pluginRegister.getRedisHeartbeatService().setServerStatus(ServerStatus.OFFLINE);
+        pluginRegister.getRedisHeartbeatService().stop();
+
         if (redisManager != null) {
             redisManager.close();
         }
 
 
         logger.info("Plugin Disabled!");
-        pluginRegister.getRedisHeartbeatService().setServerStatus(ServerStatus.OFFLINE);
-        pluginRegister.getRedisHeartbeatService().stop();
+
     }
 
     public static GoliathPaperCore getInstance() {

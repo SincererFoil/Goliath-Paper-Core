@@ -24,7 +24,7 @@ public class RedisHeartbeatService {
 
     private final String instanceId = UUID.randomUUID().toString().substring(0, 8);
 
-    private ServerStatus serverStatus = ServerStatus.STARTING;
+    private volatile ServerStatus serverStatus = ServerStatus.STARTING;
 
     public RedisHeartbeatService(RedisManager redisManager, Plugin plugin) {
         this.plugin = plugin;
@@ -34,23 +34,39 @@ public class RedisHeartbeatService {
 
     public void start() {
         task = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
-            try (Jedis jedis = redisManager.getConnection()) {
-                jedis.hset(HEARTBEAT_KEY_PREFIX + GoliathPaperCore.serverName, Map.of(
-                        "instance_id", instanceId,
-                        "players", String.valueOf(Bukkit.getOnlinePlayers().size()),
-                        "status", serverStatus.toString(),
-                        "tps", String.valueOf(Bukkit.getTPS()[0]),
-                        "mspt", String.valueOf(Bukkit.getAverageTickTime()),
-                        "timestamp", String.valueOf(System.currentTimeMillis())
-                ));
-            } catch (Exception e) {
-                plugin.getLogger().log(Level.WARNING, "Wasn't able to connect to Redis", e);
-            }
+
+                String players = String.valueOf(Bukkit.getOnlinePlayers().size());
+                String tps = String.valueOf(Bukkit.getTPS()[0]);
+                String mspt = String.valueOf(Bukkit.getAverageTickTime());
+                String status = serverStatus.name();
+                String timestamp = String.valueOf(System.currentTimeMillis());
+
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                try (Jedis jedis = redisManager.getConnection()) {
+
+                    String key = HEARTBEAT_KEY_PREFIX + GoliathPaperCore.serverName;
+
+                    jedis.hset(key, Map.of(
+                            "instance_id", instanceId,
+                            "players", players,
+                            "status", status,
+                            "tps", tps,
+                            "mspt", mspt,
+                            "timestamp", timestamp
+                    ));
+                    jedis.expire(key, 15);
+
+                } catch (Exception e) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to send Paper heartbeat", e);
+                }
+            });
         }, 0L, 20L * 2);
     }
 
     public void stop() {
-        task.cancel();
+        if (task != null) {
+            task.cancel();
+        }
     }
 
     public ServerStatus getServerStatus() {
