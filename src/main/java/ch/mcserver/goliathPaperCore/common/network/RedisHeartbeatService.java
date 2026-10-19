@@ -10,6 +10,7 @@ import redis.clients.jedis.Jedis;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 
 public class RedisHeartbeatService {
@@ -19,6 +20,8 @@ public class RedisHeartbeatService {
     private RedisManager redisManager;
 
     private Plugin plugin;
+
+    private final AtomicBoolean heartbeatRunning = new AtomicBoolean(false);
 
     private static final String HEARTBEAT_KEY_PREFIX = "goliath:network:heartbeat:paper:";
 
@@ -35,15 +38,18 @@ public class RedisHeartbeatService {
     public void start() {
         task = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
 
-                String players = String.valueOf(Bukkit.getOnlinePlayers().size());
-                String tps = String.valueOf(Bukkit.getTPS()[0]);
-                String mspt = String.valueOf(Bukkit.getAverageTickTime());
-                String status = serverStatus.name();
-                String timestamp = String.valueOf(System.currentTimeMillis());
+            if (!heartbeatRunning.compareAndSet(false, true)) {
+                return;
+            }
+
+            String players = String.valueOf(Bukkit.getOnlinePlayers().size());
+            String tps = String.valueOf(Bukkit.getTPS()[0]);
+            String mspt = String.valueOf(Bukkit.getAverageTickTime());
+            String status = serverStatus.name();
+            String timestamp = String.valueOf(System.currentTimeMillis());
 
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                 try (Jedis jedis = redisManager.getConnection()) {
-
                     String key = HEARTBEAT_KEY_PREFIX + GoliathPaperCore.serverName;
 
                     jedis.hset(key, Map.of(
@@ -54,13 +60,18 @@ public class RedisHeartbeatService {
                             "mspt", mspt,
                             "timestamp", timestamp
                     ));
+
                     jedis.expire(key, 15);
 
                 } catch (Exception e) {
-                    plugin.getLogger().log(Level.WARNING, "Failed to send Paper heartbeat", e);
+                    plugin.getLogger().log(Level.WARNING,
+                            "Failed to send Paper heartbeat", e);
+                } finally {
+                    heartbeatRunning.set(false);
                 }
             });
-        }, 0L, 20L * 2);
+
+        }, 0L, 20L * 5);
     }
 
     public void stop() {
