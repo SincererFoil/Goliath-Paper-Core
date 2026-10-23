@@ -20,6 +20,8 @@ import ch.mcserver.goliathPaperCore.module.anticheat.data.AnticheatStateService;
 import ch.mcserver.goliathPaperCore.module.anticheat.data.player.PlayerDataManager;
 import ch.mcserver.goliathPaperCore.module.anticheat.data.player.playerdata.PlayerData;
 import ch.mcserver.goliathPaperCore.module.anticheat.flag.FlagManager;
+import ch.mcserver.goliathPaperCore.module.anticheat.modguard.ModGuardPacketListener;
+import ch.mcserver.goliathPaperCore.module.anticheat.modguard.ModGuardScanService;
 import ch.mcserver.goliathPaperCore.module.chat.GoliathChat;
 import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestListener;
 import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestService;
@@ -68,12 +70,16 @@ public class PluginRegister {
     private PlayerLocationRepository playerLocationRepository;
     private PlayerLocationManager playerLocationManager;
 
+    private ModGuardScanService modGuardScanService;
+
     private GoliathChat goliathChat;
 
     private PlayerDataManager playerDataManager;
     private AnticheatRepository anticheatRepository;
     private AnticheatStateService anticheatStateService;
     private AnticheatListener anticheatListener;
+
+    private ModGuardPacketListener modGuardPacketListener;
 
     private RedisHeartbeatService redisHeartbeatService;
 
@@ -162,6 +168,9 @@ public class PluginRegister {
                 playerDataManager,
                 anticheatStateService
         );
+
+        this.modGuardScanService = new ModGuardScanService(plugin, plugin.getRedisManager());
+        this.modGuardPacketListener = new ModGuardPacketListener(modGuardScanService, plugin);
         this.redisHeartbeatService.setServerStatus(ServerStatus.ONLINE);
     }
 
@@ -227,10 +236,15 @@ public class PluginRegister {
         plugin.getServer().getPluginManager()
                 .registerEvents(anticheatListener, plugin);
 
-
+        plugin.getServer().getPluginManager()
+                        .registerEvents(modGuardPacketListener, plugin);
 
         PacketEvents.getAPI().getEventManager()
                 .registerListener(anticheatListener);
+
+        PacketEvents.getAPI().getEventManager()
+                .registerListener(modGuardPacketListener);
+
 
 
     }

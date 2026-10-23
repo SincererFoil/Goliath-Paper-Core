@@ -13,11 +13,7 @@ import java.util.UUID;
 public class GmspMessenger implements PluginMessageListener {
 
     @Override
-    public void onPluginMessageReceived(
-            @NotNull String channel,
-            @NotNull Player receiver,
-            byte @NotNull [] message
-    ) {
+    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player receiver, byte @NotNull [] message) {
 
         if (!channel.equalsIgnoreCase("goliath:gmsp")) {
             return;
@@ -47,7 +43,6 @@ public class GmspMessenger implements PluginMessageListener {
                 staff.setGameMode(GameMode.SPECTATOR);
             }
         } else {
-            staff.setSpectatorTarget(null);
 
             if (staff.getGameMode() != GameMode.SURVIVAL) {
                 staff.setGameMode(GameMode.SURVIVAL);
