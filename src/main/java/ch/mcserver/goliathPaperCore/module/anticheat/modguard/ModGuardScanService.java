@@ -1,6 +1,7 @@
 package ch.mcserver.goliathPaperCore.module.anticheat.modguard;
 
 import ch.mcserver.goliathPaperCore.common.database.redis.RedisManager;
+import ch.mcserver.goliathPaperCore.module.anticheat.flag.FlagManager;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.protocol.nbt.NBTCompound;
 import com.github.retrooper.packetevents.protocol.nbt.NBTList;
@@ -125,7 +126,6 @@ public class ModGuardScanService {
             currentBatch.remove(player.getUniqueId());
             playerBatches.remove(player.getUniqueId());
 
-            //TODO Kick Player with reason: Make A Ticket #(Generated Ticket Id)
 
         }, 100L);
 
@@ -237,6 +237,7 @@ signPositions.put(player.getUniqueId(), position);
 
 
                 System.out.println("POSSIBLE MOD FLAGGED: " + modName);
+
             } else {
                 System.out.println("NO DETECTION FOR: " + modName);
             }
@@ -246,6 +247,5 @@ signPositions.put(player.getUniqueId(), position);
         currentBatch.put(player.getUniqueId(), newBatch);
         executeNextBatch(player);
     }
-
 
 }

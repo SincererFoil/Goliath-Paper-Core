@@ -20,7 +20,7 @@ public class FlagManager {
 
     private final Gson gson = new Gson();
 
-    private static final Map<FlagType, Integer> autoPunishFlagTypes = new HashMap<>(Map.of(FlagType.INVALID_A, 100));
+    private static final Map<FlagType, Integer> autoPunishFlagTypes = new HashMap<>(Map.of(FlagType.INVALID_A, 30));
     private static final Map<FlagType, PunishReason> autoPunishReasons = new HashMap<>(Map.of(FlagType.INVALID_A, PunishReason.CHEATING));
 
 

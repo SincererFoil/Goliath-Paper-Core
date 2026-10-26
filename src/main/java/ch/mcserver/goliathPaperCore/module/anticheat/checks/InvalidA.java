@@ -19,15 +19,7 @@ public class InvalidA extends Check{
     public void handle(PacketData data) {
         float pitch = playerData.getPitch();
         if (pitch < -90 || pitch > 90) {
-            buffer += 0.5;
-
-            if (buffer >= 10) {
-                flag(String.valueOf(buffer));
-                buffer -= 10;
-            }
-
-        } else  {
-            buffer = Math.max(0, buffer - 0.15);
+            flag("1.0");
         }
 
     }
