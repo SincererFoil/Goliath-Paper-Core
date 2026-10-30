@@ -1,5 +1,6 @@
 package ch.mcserver.goliathPaperCore.module.inventory;
 
+import ch.mcserver.goliathPaperCore.GoliathPaperCore;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Sound;

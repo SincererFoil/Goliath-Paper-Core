@@ -1,16 +1,13 @@
 package ch.mcserver.goliathPaperCore.module.sector;
 
 import ch.mcserver.goliathPaperCore.GoliathPaperCore;
-import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.plugin.Plugin;
 
-import java.sql.SQLException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -60,8 +57,6 @@ public class SectorMoveListener implements Listener {
         if (event.getFrom().getWorld().getEnvironment() != event.getTo().getWorld().getEnvironment()) return;
         if (sectorRegistry.isOwnSector(event.getTo().getWorld().getEnvironment(), event.getTo().getChunk().getX(), event.getTo().getChunk().getZ())) return;
 
-
-        event.setCancelled(true);
 
         handleSectorChange(event.getPlayer(), event.getTo().clone());
     }

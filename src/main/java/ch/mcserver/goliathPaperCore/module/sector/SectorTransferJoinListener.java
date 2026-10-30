@@ -12,9 +12,7 @@ import org.bukkit.event.Listener;
 import redis.clients.jedis.Jedis;
 
 import java.util.EnumMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.logging.Level;
 
 
@@ -48,9 +46,11 @@ public class SectorTransferJoinListener implements Listener {
     @EventHandler
     public void onAsyncPlayerSpawnLocation(AsyncPlayerSpawnLocationEvent event) {
         try (Jedis jedis = redisManager.getConnection()) {
+
             String json = jedis.get(
                     CHANNEL + event.getConnection().getProfile().getId()
             );
+
 
 
             if (json == null) return;

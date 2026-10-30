@@ -5,7 +5,6 @@ import org.bukkit.Location;
 import org.bukkit.World;
 
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Optional;
 
 public class SectorResolver {
@@ -18,7 +17,8 @@ public class SectorResolver {
 
     public Optional<SectorData> resolveByChunk(World.Environment dimension, int chunkX, int chunkZ) throws SQLException {
 
-        return sectorRepository.findByChunk(dimension.name(), chunkX, chunkZ);
+        Optional<SectorData> data = sectorRepository.findByChunk(dimension.name(), chunkX, chunkZ);
+        return data;
     }
 
     public Optional<SectorData> resolveByBlock(World.Environment dimension, int blockX, int blockZ) throws SQLException {

@@ -62,41 +62,18 @@ public class SectorRegistry {
         };
 
         try {
-            SectorRepository.RegistrationResult result = sectorRepository.register(
-                    serverName,
-                    databaseDimension,
-                    minChunkX,
-                    maxChunkX,
-                    minChunkZ,
-                    maxChunkZ
-            );
+            SectorRepository.RegistrationResult result = sectorRepository.register(serverName, databaseDimension, minChunkX, maxChunkX, minChunkZ, maxChunkZ);
 
             switch (result) {
                 case CREATED -> {
-                    sectorData = new SectorData(
-                            0,
-                            serverName,
-                            databaseDimension,
-                            minChunkX,
-                            maxChunkX,
-                            minChunkZ,
-                            maxChunkZ
-                    );
+                    sectorData = new SectorData(0, serverName, databaseDimension, minChunkX, maxChunkX, minChunkZ, maxChunkZ);
 
                     initialized = true;
                     GoliathPaperCore.getInstance().getLogger().info("Sector registered successfully: " + serverName);
                 }
 
                 case ALREADY_REGISTERED -> {
-                    sectorData = new SectorData(
-                            0,
-                            serverName,
-                            databaseDimension,
-                            minChunkX,
-                            maxChunkX,
-                            minChunkZ,
-                            maxChunkZ
-                    );
+                    sectorData = new SectorData(0, serverName, databaseDimension, minChunkX, maxChunkX, minChunkZ, maxChunkZ);
 
                     initialized = true;
                     GoliathPaperCore.getInstance().getLogger().info("Existing sector registration verified: " + serverName);
@@ -122,13 +99,7 @@ public class SectorRegistry {
     }
 
     public boolean isOwnSector(World.Environment dimension, int chunkX, int chunkZ) {
-        return isInitialized()
-                && sectorData != null
-                && dimension.name().equals(sectorData.dimension())
-                && chunkX <= sectorData.maxChunkX()
-                && chunkZ <= sectorData.maxChunkZ()
-                && chunkX >= sectorData.minChunkX()
-                && chunkZ >= sectorData.minChunkZ();
+        return isInitialized() && sectorData != null && dimension.name().equals(sectorData.dimension()) && chunkX <= sectorData.maxChunkX() && chunkZ <= sectorData.maxChunkZ() && chunkX >= sectorData.minChunkX() && chunkZ >= sectorData.minChunkZ();
     }
 
     public SectorData getOwnSector() {

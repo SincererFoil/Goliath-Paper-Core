@@ -18,10 +18,12 @@ public class SectorTransferService {
 
 
     public boolean publish(SectorTransferData data) {
+
         String json = gson.toJson(data);
 
         try (Jedis jedis = redisManager.getConnection()) {
-            return jedis.publish(CHANNEL, json) > 0;
+            boolean success = jedis.publish(CHANNEL, json) > 0;
+            return success;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
