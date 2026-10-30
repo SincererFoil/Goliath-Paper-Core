@@ -123,15 +123,15 @@ public class SectorMoveListener implements Listener {
         double distanceX = Math.abs(x - nearestX);
         double distanceZ = Math.abs(z - nearestZ);
 
-        if (Math.min(distanceX, distanceZ) > 12) return;
+        if (Math.min(distanceX, distanceZ) > 48) return;
 
         boolean xBorder = distanceX <= distanceZ;
         double border = xBorder ? nearestX : nearestZ;
 
         Particle.DustOptions dust = new Particle.DustOptions(Color.fromRGB(65, 190, 255), 1.3f);
 
-        for (double horizontal = -8; horizontal <= 8; horizontal += 0.8) {
-            for (double vertical = -2; vertical <= 3; vertical += 0.8) {
+        for (double horizontal = -30; horizontal <= 30; horizontal += 0.8) {
+            for (double vertical = -8; vertical <= 16; vertical += 0.8) {
 
                 Location particle = xBorder ? new Location(location.getWorld(), border, location.getY() + vertical, z + horizontal) : new Location(location.getWorld(), x + horizontal, location.getY() + vertical, border);
 

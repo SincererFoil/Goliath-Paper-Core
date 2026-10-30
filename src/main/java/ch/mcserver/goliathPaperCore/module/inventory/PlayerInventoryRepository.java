@@ -125,7 +125,7 @@ public class PlayerInventoryRepository {
                                     && Bukkit.getPlayer(playerUUID) == player) {
                                 loadInventory(playerUUID, attempts + 1);
                             }
-                        }, 10L);
+                        }, 2L);
                     });
                     return;
                 }
@@ -188,37 +188,59 @@ public class PlayerInventoryRepository {
 
     private void writeSnapshot(UUID uuid, Document snapshot, boolean disconnect) {
         String ownerToken = lockTokens.get(uuid);
+
+        if (ownerToken == null) {
+            plugin.getLogger().severe("Inventory save without lock token: " + uuid);
+            return;
+        }
+
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
-                var result = collection.updateOne(Filters.eq("uuid", uuid.toString()),
+                var result = collection.updateOne(
+                        Filters.eq("uuid", uuid.toString()),
                         new Document("$set", snapshot),
                         new UpdateOptions().upsert(true)
                 );
 
                 if (!result.wasAcknowledged()) {
-                    throw new IllegalStateException("Save not acknowledged!");
+                    throw new IllegalStateException("Inventory save not acknowledged");
                 }
 
                 Bukkit.getScheduler().runTask(plugin, () -> {
+                    if (!ownerToken.equals(lockTokens.get(uuid))) {
+                        return;
+                    }
+
                     Document pending = pendingQuitSaves.remove(uuid);
 
                     if (pending != null) {
                         writeSnapshot(uuid, pending, true);
-                    } else if (disconnect) {
-                        finishSession(uuid, ownerToken);
-                    } else {
-                        states.put(uuid, InventoryState.READY);
+                        return;
                     }
+
+                    if (disconnect) {
+                        finishSession(uuid, ownerToken);
+                        return;
+                    }
+
+                    states.put(uuid, InventoryState.READY);
                 });
-            } catch (Exception exception) {
-                plugin.getLogger().log(Level.WARNING, "Inventory save failed: " + uuid, exception);
+
+            } catch (Exception e) {
+                plugin.getLogger().log(Level.SEVERE, "Inventory save failed: " + uuid, e);
+
                 Bukkit.getScheduler().runTask(plugin, () -> {
+                    if (!ownerToken.equals(lockTokens.get(uuid))) {
+                        return;
+                    }
+
                     pendingQuitSaves.putIfAbsent(uuid, snapshot);
                     states.put(uuid, InventoryState.SAVE_FAILED);
 
-                    Player current = Bukkit.getPlayer(uuid);
-                    if (current != null) {
-                        current.kick(Component.text("We dont know what happend here! Make a Ticket: #23dff", NamedTextColor.RED));
+                    Player player = Bukkit.getPlayer(uuid);
+
+                    if (player != null && player.isOnline()) {
+                        player.kick(Component.text("Inventory save failed. Please contact staff.", NamedTextColor.RED));
                     }
                 });
             }
@@ -226,23 +248,33 @@ public class PlayerInventoryRepository {
     }
 
     private void finishSession(UUID uuid, String token) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+        Runnable releaseTask = () -> {
             try {
                 if (!releaseLock(uuid, token)) {
-                    throw new IllegalStateException("Inventory lock owner mismatch");
+                    throw new IllegalStateException("Inventory lock owner mismatch: " + uuid);
                 }
 
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    if (!token.equals(lockTokens.get(uuid))) return;
+                    if (!token.equals(lockTokens.get(uuid))) {
+                        return;
+                    }
 
                     lockTokens.remove(uuid);
                     states.remove(uuid);
                     loadedPlayers.remove(uuid);
+                    pendingQuitSaves.remove(uuid);
                 });
+
             } catch (Exception e) {
-                plugin.getLogger().log(Level.SEVERE, "Inventory unlock failed: " + uuid, e);
+                plugin.getLogger().log(Level.SEVERE, "Inventory lock release failed: " + uuid, e);
             }
-        });
+        };
+
+        if (Bukkit.isPrimaryThread()) {
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, releaseTask);
+        } else {
+            releaseTask.run();
+        }
     }
 
 
