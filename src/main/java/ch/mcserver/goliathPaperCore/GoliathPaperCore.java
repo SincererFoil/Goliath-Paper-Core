@@ -146,6 +146,23 @@ public final class GoliathPaperCore extends JavaPlugin {
                 config.node("server", "isSpawn").set(false);
                 config.node("server", "name").set("goliath-unknown");
 
+                config.node("world-system", "enabled").set(false);
+                config.node("world-system", "dimension").set("OVERWORLD");
+                config.node("world-system", "sector-x").set(0);
+                config.node("world-system", "sector-z").set(0);
+                config.node("world-system", "sector-size").set(4096);
+
+
+                config.node("world-system", "portals", "enabled").set(false);
+
+                config.node("world-system", "transfer", "cooldown-ms").set(3000);
+                config.node("world-system", "transfer", "timeout-ms").set(10000);
+
+
+
+
+
+
                 loader.save(config);
                 logger.info("Config file has been created");
             }
