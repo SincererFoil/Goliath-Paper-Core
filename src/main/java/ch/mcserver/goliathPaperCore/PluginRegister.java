@@ -36,7 +36,7 @@ import ch.mcserver.goliathPaperCore.module.history.gui.specific.SpecificHistoryG
 import ch.mcserver.goliathPaperCore.module.history.snapshot.PlayerInventorySnapshotRepository;
 import ch.mcserver.goliathPaperCore.module.inventory.InventoryListener;
 import ch.mcserver.goliathPaperCore.module.inventory.PlayerInventoryRepository;
-import ch.mcserver.goliathPaperCore.module.sector.SectorRegistry;
+import ch.mcserver.goliathPaperCore.module.sector.*;
 import ch.mcserver.goliathPaperCore.module.spawn.DoubleJumpBoostListener;
 import ch.mcserver.goliathPaperCore.module.spawn.SpawnListener;
 import ch.mcserver.goliathPaperCore.module.spawnstash.SpawnStashCommand;
@@ -84,9 +84,17 @@ public class PluginRegister {
 
     private ModGuardPacketListener modGuardPacketListener;
 
+    private SectorMoveListener sectorMoveListener;
+
+    private SectorTransferJoinListener sectorTransferJoinListener;
+
     private RedisHeartbeatService redisHeartbeatService;
 
     private SectorRegistry sectorRegistry;
+
+    private SectorResolver sectorResolver;
+
+    private SectorTransferService sectorTransferService;
 
     private ShutdownService shutdownService;
 
@@ -136,7 +144,12 @@ public class PluginRegister {
 
         this.sectorRepository = new SectorRepository(mySQLManager);
         this.sectorRegistry = new SectorRegistry(sectorRepository);
-        sectorRegistry.initialize();
+        if (plugin.config.node("sector", "enabled").getBoolean(false)) {
+            sectorRegistry.initialize();
+        }
+
+        this.sectorResolver = new SectorResolver(sectorRepository);
+        this.sectorTransferService = new SectorTransferService(plugin.getRedisManager());
 
 
         this.playerLocationRepository = new PlayerLocationRepository(mySQLManager);
@@ -182,6 +195,14 @@ public class PluginRegister {
         this.modGuardScanService = new ModGuardScanService(plugin, plugin.getRedisManager());
         this.modGuardPacketListener = new ModGuardPacketListener(modGuardScanService, plugin);
         this.redisHeartbeatService.setServerStatus(ServerStatus.ONLINE);
+
+
+
+        if (plugin.config.node("sector", "enabled").getBoolean(false)) {
+            this.sectorMoveListener = new SectorMoveListener(sectorRegistry, sectorResolver, sectorTransferService, plugin);
+            this.sectorTransferJoinListener = new SectorTransferJoinListener(plugin, plugin.getRedisManager());
+        }
+
     }
 
     public void onDisable() {
@@ -254,6 +275,14 @@ public class PluginRegister {
 
         PacketEvents.getAPI().getEventManager()
                 .registerListener(modGuardPacketListener);
+
+        if (sectorMoveListener != null && sectorTransferJoinListener != null) {
+            plugin.getServer().getPluginManager()
+                    .registerEvents(sectorMoveListener, plugin);
+
+            plugin.getServer().getPluginManager().
+                    registerEvents(sectorTransferJoinListener, plugin);
+        }
 
 
 

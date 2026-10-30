@@ -102,5 +102,9 @@ public class SectorRegistry {
         return isInitialized() && dimension.name().equals(sectorData.dimension()) && chunkX <= sectorData.maxChunkX() && chunkZ <= sectorData.maxChunkZ() && chunkX >= sectorData.minChunkX() && chunkZ >= sectorData.minChunkZ();
     }
 
+    public SectorData getOwnSector() {
+        return sectorData;
+    }
+
 
 }
