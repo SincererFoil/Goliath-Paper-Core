@@ -1,3 +1,4 @@
+
 package ch.mcserver.goliathPaperCore.module.sector;
 
 import ch.mcserver.goliathPaperCore.GoliathPaperCore;
@@ -14,7 +15,6 @@ import org.bukkit.util.Vector;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -29,7 +29,9 @@ public class SectorMoveListener implements Listener {
 
     private final GoliathPaperCore plugin;
 
-    private final Set<UUID> pendingTransfers = ConcurrentHashMap.newKeySet();
+    private final Map<UUID, UUID> pendingTransfers = new ConcurrentHashMap<>();
+
+    private final Map<UUID, Integer> lastParticleTick = new HashMap<>();
 
     private final Map<UUID, Long> maintenanceCooldown = new HashMap<>();
 
@@ -53,18 +55,24 @@ public class SectorMoveListener implements Listener {
 
         if (from.getWorld() != to.getWorld()) return;
 
+        UUID playerUuid = player.getUniqueId();
+
         int toChunkX = to.getBlockX() >> 4;
         int toChunkZ = to.getBlockZ() >> 4;
 
         World.Environment dimension = to.getWorld().getEnvironment();
 
-        if (player.getTicksLived() % 5 == 0) {
+        int currentTick = player.getTicksLived();
+
+        if (currentTick % 5 == 0 && lastParticleTick.getOrDefault(playerUuid, -1) != currentTick) {
+            lastParticleTick.put(playerUuid, currentTick);
+
             SectorData sector = sectorRegistry.getOwnSector();
 
-            showSectorBorder(player, to, sector.minChunkX(), sector.maxChunkX(), sector.minChunkZ(), sector.maxChunkZ());
+            if (sector != null) {
+                showSectorBorder(player, to, sector.minChunkX(), sector.maxChunkX(), sector.minChunkZ(), sector.maxChunkZ());
+            }
         }
-
-        UUID playerUuid = player.getUniqueId();
 
         if (sectorRegistry.isOwnSector(dimension, toChunkX, toChunkZ)) {
             if (sectorRegistry.isOwnSector(from.getWorld().getEnvironment(), from.getBlockX() >> 4, from.getBlockZ() >> 4)) {
@@ -74,7 +82,7 @@ public class SectorMoveListener implements Listener {
             return;
         }
 
-        if (pendingTransfers.contains(playerUuid)) {
+        if (pendingTransfers.containsKey(playerUuid)) {
             return;
         }
 
@@ -87,6 +95,7 @@ public class SectorMoveListener implements Listener {
         UUID playerUuid = event.getPlayer().getUniqueId();
 
         pendingTransfers.remove(playerUuid);
+        lastParticleTick.remove(playerUuid);
         maintenanceCooldown.remove(playerUuid);
         lastValidLocations.remove(playerUuid);
     }
@@ -94,6 +103,7 @@ public class SectorMoveListener implements Listener {
 
     private void handleSectorChange(Player player, Location location) {
         World.Environment dimension = location.getWorld().getEnvironment();
+
         int chunkX = location.getBlockX() >> 4;
         int chunkZ = location.getBlockZ() >> 4;
 
@@ -105,17 +115,31 @@ public class SectorMoveListener implements Listener {
         float pitch = location.getPitch();
 
         UUID playerUuid = player.getUniqueId();
+        UUID transferUuid = UUID.randomUUID();
 
-        if (!pendingTransfers.add(playerUuid)) return;
+        if (pendingTransfers.putIfAbsent(playerUuid, transferUuid) != null) return;
+
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            if (!pendingTransfers.remove(playerUuid, transferUuid)) return;
+
+            if (player.isOnline() && Bukkit.getPlayer(playerUuid) == player) {
+                if (!isInsideOwnSector(player.getLocation())) {
+                    dashBack(player);
+                }
+
+                player.sendActionBar(Component.text("Sector transfer timed out. Please try again.", NamedTextColor.RED));
+            }
+        }, 200L);
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
-                Optional<SectorData> sectorData =
-                        sectorResolver.resolveByChunk(dimension, chunkX, chunkZ);
+                Optional<SectorData> sectorData = sectorResolver.resolveByChunk(dimension, chunkX, chunkZ);
+
+                if (!transferUuid.equals(pendingTransfers.get(playerUuid))) return;
 
                 if (sectorData.isEmpty()) {
                     Bukkit.getScheduler().runTask(plugin, () -> {
-                        pendingTransfers.remove(playerUuid);
+                        if (!pendingTransfers.remove(playerUuid, transferUuid)) return;
 
                         if (player.isOnline() && Bukkit.getPlayer(playerUuid) == player) {
                             dashBack(player);
@@ -131,10 +155,9 @@ public class SectorMoveListener implements Listener {
 
                 if (!sectorRegistry.isSectorOnline(targetServer)) {
                     Bukkit.getScheduler().runTask(plugin, () -> {
-                        if (!player.isOnline() || Bukkit.getPlayer(playerUuid) != player) {
-                            pendingTransfers.remove(playerUuid);
-                            return;
-                        }
+                        if (!pendingTransfers.remove(playerUuid, transferUuid)) return;
+
+                        if (!player.isOnline() || Bukkit.getPlayer(playerUuid) != player) return;
 
                         dashBack(player);
 
@@ -146,28 +169,27 @@ public class SectorMoveListener implements Listener {
 
                             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
 
-                            Component message = Component.text("It seems that you are connection to an area in maintenance, try again i a few minutes.", NamedTextColor.RED);
+                            Component message = Component.text("This area is currently under maintenance. Please try again later.", NamedTextColor.RED);
 
                             player.sendActionBar(message);
                             player.sendMessage(message);
                         }
-
-                        pendingTransfers.remove(playerUuid);
                     });
 
                     return;
                 }
 
-                SectorTransferData transferData = new SectorTransferData(UUID.randomUUID(), playerUuid, GoliathPaperCore.serverName, targetServer, sectorData.get().dimension(), positionX, positionY, positionZ, yaw, pitch);
+                if (!transferUuid.equals(pendingTransfers.get(playerUuid))) return;
 
+                SectorTransferData transferData = new SectorTransferData(transferUuid, playerUuid, GoliathPaperCore.serverName, targetServer, sectorData.get().dimension(), positionX, positionY, positionZ, yaw, pitch);
 
                 if (!sectorTransferService.publish(transferData)) {
                     Bukkit.getScheduler().runTask(plugin, () -> {
+                        if (!pendingTransfers.remove(playerUuid, transferUuid)) return;
+
                         if (player.isOnline() && Bukkit.getPlayer(playerUuid) == player) {
                             dashBack(player);
                         }
-
-                        pendingTransfers.remove(playerUuid);
                     });
 
                     return;
@@ -177,11 +199,11 @@ public class SectorMoveListener implements Listener {
                 plugin.getLogger().log(Level.SEVERE, "Failed to resolve sector", e);
 
                 Bukkit.getScheduler().runTask(plugin, () -> {
+                    if (!pendingTransfers.remove(playerUuid, transferUuid)) return;
+
                     if (player.isOnline() && Bukkit.getPlayer(playerUuid) == player) {
                         dashBack(player);
                     }
-
-                    pendingTransfers.remove(playerUuid);
                 });
             }
         });
@@ -190,6 +212,8 @@ public class SectorMoveListener implements Listener {
 
     private void dashBack(Player player) {
         SectorData sector = sectorRegistry.getOwnSector();
+
+        if (sector == null) return;
 
         Location location = player.getLocation();
 
@@ -206,7 +230,7 @@ public class SectorMoveListener implements Listener {
         Location lastValid = lastValidLocations.get(player.getUniqueId());
 
         if (direction.lengthSquared() < 0.001) {
-            if (lastValid != null && lastValid.getWorld() == location.getWorld()) {
+            if (lastValid != null && lastValid.getWorld() == location.getWorld() && isInsideOwnSector(lastValid)) {
                 player.teleport(lastValid);
             }
 
@@ -264,8 +288,8 @@ public class SectorMoveListener implements Listener {
 
         Particle.DustOptions dust = new Particle.DustOptions(Color.fromRGB(65, 190, 255), 1.3f);
 
-        for (double horizontal = -30; horizontal <= 30; horizontal += 0.8) {
-            for (double vertical = -8; vertical <= 16; vertical += 0.8) {
+        for (double horizontal = -30; horizontal <= 30; horizontal += 1.6) {
+            for (double vertical = -8; vertical <= 16; vertical += 1.6) {
 
                 Location particle = xBorder ? new Location(location.getWorld(), border, location.getY() + vertical, z + horizontal) : new Location(location.getWorld(), x + horizontal, location.getY() + vertical, border);
 
