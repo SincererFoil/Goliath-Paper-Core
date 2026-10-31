@@ -143,7 +143,7 @@ public class PluginRegister {
         GoliathPaperCore.playerInventorySnapshotRepository = this.playerInventorySnapshotRepository;
 
         this.sectorRepository = new SectorRepository(mySQLManager);
-        this.sectorRegistry = new SectorRegistry(sectorRepository);
+        this.sectorRegistry = new SectorRegistry(sectorRepository, plugin.getRedisManager());
         if (plugin.config.node("sector", "enabled").getBoolean(false)) {
             sectorRegistry.initialize();
         }

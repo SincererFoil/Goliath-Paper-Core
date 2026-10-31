@@ -2,6 +2,7 @@ package ch.mcserver.goliathPaperCore.module.sector;
 
 import ch.mcserver.goliathPaperCore.GoliathPaperCore;
 import ch.mcserver.goliathPaperCore.common.database.mysql.SectorRepository;
+import ch.mcserver.goliathPaperCore.common.database.redis.RedisManager;
 import org.bukkit.World;
 
 import java.sql.SQLException;
@@ -10,12 +11,15 @@ public class SectorRegistry {
 
     private SectorRepository sectorRepository;
 
+    private RedisManager redisManager;
+
     private boolean initialized = false;
 
     private SectorData sectorData;
 
-    public SectorRegistry(SectorRepository sectorRepository) {
+    public SectorRegistry(SectorRepository sectorRepository, RedisManager redisManager) {
         this.sectorRepository = sectorRepository;
+        this.redisManager = redisManager;
     }
 
     public void initialize() {
@@ -104,5 +108,17 @@ public class SectorRegistry {
 
     public SectorData getOwnSector() {
         return sectorData;
+    }
+
+    public boolean isSectorOnline(String serverName) {
+        try (var jedis = redisManager.getConnection()) {
+            return jedis.exists("goliath:network:heartbeat:paper:" + serverName);
+
+        } catch (Exception e) {
+            GoliathPaperCore.getInstance().getLogger().warning(
+                    "Could not check sector heartbeat: " + serverName
+            );
+            return false;
+        }
     }
 }

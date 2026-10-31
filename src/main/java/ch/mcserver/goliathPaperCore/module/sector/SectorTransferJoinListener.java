@@ -40,9 +40,6 @@ public class SectorTransferJoinListener implements Listener {
     }
 
 
-
-
-
     @EventHandler
     public void onAsyncPlayerSpawnLocation(AsyncPlayerSpawnLocationEvent event) {
         try (Jedis jedis = redisManager.getConnection()) {
