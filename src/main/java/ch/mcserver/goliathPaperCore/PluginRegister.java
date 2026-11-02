@@ -36,6 +36,7 @@ import ch.mcserver.goliathPaperCore.module.history.gui.specific.SpecificHistoryG
 import ch.mcserver.goliathPaperCore.module.history.snapshot.PlayerInventorySnapshotRepository;
 import ch.mcserver.goliathPaperCore.module.inventory.InventoryListener;
 import ch.mcserver.goliathPaperCore.module.inventory.PlayerInventoryRepository;
+import ch.mcserver.goliathPaperCore.module.randomteleport.RandomTeleportCommand;
 import ch.mcserver.goliathPaperCore.module.sector.*;
 import ch.mcserver.goliathPaperCore.module.spawn.DoubleJumpBoostListener;
 import ch.mcserver.goliathPaperCore.module.spawn.SpawnListener;
@@ -217,6 +218,8 @@ public class PluginRegister {
         ShowGoliathEnderchest showGoliathEnderchest = new ShowGoliathEnderchest(enderchestRepository);
         plugin.getCommand("echest").setExecutor(new GoliathEnderchestCommand(showGoliathEnderchest));
         plugin.getCommand("history").setExecutor(new ShowHistory());
+
+        plugin.getCommand("rtp").setExecutor(new RandomTeleportCommand());
     }
 
     private void registerListeners() {

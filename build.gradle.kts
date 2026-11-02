@@ -9,10 +9,13 @@ repositories {
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://repo.dmulloy2.net/repository/public/")
     maven("https://repo.codemc.io/repository/maven-releases/")
+    maven("https://repo.helpch.at/releases")
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
+
+    compileOnly("me.clip:placeholderapi:2.11.7")
 
     implementation(platform("org.mongodb:mongodb-driver-bom:5.8.0"))
     implementation("org.mongodb:mongodb-driver-sync")
