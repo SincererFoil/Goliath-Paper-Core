@@ -37,6 +37,7 @@ import ch.mcserver.goliathPaperCore.module.history.snapshot.PlayerInventorySnaps
 import ch.mcserver.goliathPaperCore.module.inventory.InventoryListener;
 import ch.mcserver.goliathPaperCore.module.inventory.PlayerInventoryRepository;
 import ch.mcserver.goliathPaperCore.module.randomteleport.RandomTeleportCommand;
+import ch.mcserver.goliathPaperCore.module.randomteleport.RandomTeleportGUIListener;
 import ch.mcserver.goliathPaperCore.module.sector.*;
 import ch.mcserver.goliathPaperCore.module.spawn.DoubleJumpBoostListener;
 import ch.mcserver.goliathPaperCore.module.spawn.SpawnListener;
@@ -56,6 +57,7 @@ public class PluginRegister {
 
     private MongoCollection<Document> enderchestCollection;
     private PlayerEnderchestRepository enderchestRepository;
+
     private EnderchestService enderchestService;
 
     private MongoCollection<Document> inventoryCollection;
@@ -272,6 +274,9 @@ public class PluginRegister {
 
         plugin.getServer().getPluginManager()
                         .registerEvents(modGuardPacketListener, plugin);
+
+        plugin.getServer().getPluginManager()
+                        .registerEvents(new RandomTeleportGUIListener(plugin), plugin);
 
         PacketEvents.getAPI().getEventManager()
                 .registerListener(anticheatListener);

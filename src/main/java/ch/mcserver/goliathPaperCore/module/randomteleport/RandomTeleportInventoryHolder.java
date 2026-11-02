@@ -12,9 +12,12 @@ public class RandomTeleportInventoryHolder implements InventoryHolder {
 
     private final UUID targetUUID;
 
+    private final boolean isGeneralGUI;
 
-    public RandomTeleportInventoryHolder(UUID targetUUID) {
+
+    public RandomTeleportInventoryHolder(UUID targetUUID, boolean isGeneralGUI) {
         this.targetUUID = targetUUID;
+        this.isGeneralGUI = isGeneralGUI;
     }
 
     @Override
@@ -24,6 +27,10 @@ public class RandomTeleportInventoryHolder implements InventoryHolder {
 
     public void setInventory(Inventory inventory) {
         this.inventory = inventory;
+    }
+
+    public boolean isGeneralGUI() {
+        return isGeneralGUI;
     }
 
 }

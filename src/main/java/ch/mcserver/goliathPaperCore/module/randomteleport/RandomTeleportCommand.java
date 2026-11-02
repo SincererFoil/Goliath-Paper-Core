@@ -22,7 +22,5 @@ public class RandomTeleportCommand implements CommandExecutor {
         randomTeleportGUI.openMainGUI(player);
         return true;
 
-
-
     }
 }

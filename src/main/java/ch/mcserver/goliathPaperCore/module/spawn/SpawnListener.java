@@ -16,11 +16,7 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.player.PlayerBucketEmptyEvent;
-import org.bukkit.event.player.PlayerBucketFillEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.event.weather.WeatherChangeEvent;
 
 public class SpawnListener implements Listener {
@@ -40,6 +36,11 @@ public class SpawnListener implements Listener {
         if (world.getName().equals("DonutSpawn_")) {
             event.setCancelled(true);
         }
+    }
+
+    @EventHandler
+    public void onPlayerPortal(PlayerPortalEvent event) {
+        event.setCancelled(true);
     }
 
     @EventHandler
