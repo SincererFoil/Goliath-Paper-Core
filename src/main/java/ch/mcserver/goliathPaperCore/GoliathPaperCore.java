@@ -1,5 +1,6 @@
 package ch.mcserver.goliathPaperCore;
 
+import ch.mcserver.goliathPaperCore.common.TimerUtil;
 import ch.mcserver.goliathPaperCore.common.database.mongodb.ChatLogRepository;
 import ch.mcserver.goliathPaperCore.common.database.mongodb.HistoryRepository;
 import ch.mcserver.goliathPaperCore.common.database.mongodb.MongoDBManager;
@@ -38,6 +39,9 @@ public final class GoliathPaperCore extends JavaPlugin {
     private PluginRegister pluginRegister;
     public static String serverName;
 
+    private TimerUtil timerUtil;
+
+
     @Override
     public void onEnable() {
         instance = this;
@@ -58,6 +62,8 @@ public final class GoliathPaperCore extends JavaPlugin {
 
         pluginRegister = new PluginRegister(this, mongoManager, mySQLManager);
         pluginRegister.registerAll();
+        this.timerUtil = new TimerUtil(this);
+
 
         logger.info("Plugin Enabled!");
     }
@@ -120,6 +126,10 @@ public final class GoliathPaperCore extends JavaPlugin {
         return playerInventoryRepository;
     }
 
+
+    public TimerUtil getTimerUtil() {
+        return timerUtil;
+    }
     private void loadConfig() {
         try {
             Path dataDirectory = getDataFolder().toPath();
