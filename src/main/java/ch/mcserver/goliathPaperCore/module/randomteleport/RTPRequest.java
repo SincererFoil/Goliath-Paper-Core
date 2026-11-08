@@ -1,5 +1,6 @@
 package ch.mcserver.goliathPaperCore.module.randomteleport;
 
+import ch.mcserver.goliathPaperCore.GoliathPaperCore;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
@@ -7,23 +8,22 @@ import java.util.UUID;
 
 public class RTPRequest {
 
-    private Player player;
-
-    private Region region;
-
-    private World.Environment dimension;
-
-    private UUID requestUuid;
+    private final UUID playerUuid;
+    private final Region region;
+    private final String sourceServer;
+    private final World.Environment dimension;
+    private final UUID requestUuid;
 
     public RTPRequest(Player player, Region region, World.Environment dimension) {
-        this.player = player;
+        this.playerUuid = player.getUniqueId();
         this.region = region;
         this.dimension = dimension;
         this.requestUuid = UUID.randomUUID();
+        this.sourceServer = GoliathPaperCore.serverName;
     }
 
-    public Player getPlayer() {
-        return player;
+    public UUID getPlayerUuid() {
+        return playerUuid;
     }
 
     public Region getRegion() {

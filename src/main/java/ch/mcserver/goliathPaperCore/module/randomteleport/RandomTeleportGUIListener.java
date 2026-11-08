@@ -2,6 +2,7 @@ package ch.mcserver.goliathPaperCore.module.randomteleport;
 
 import ch.mcserver.goliathPaperCore.GoliathPaperCore;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,8 +18,11 @@ public class RandomTeleportGUIListener implements Listener {
 
     private GoliathPaperCore plugin;
 
-    public RandomTeleportGUIListener(GoliathPaperCore plugin) {
+    private final RandomTeleportService randomTeleportService;
+
+    public RandomTeleportGUIListener(GoliathPaperCore plugin, RandomTeleportService randomTeleportService) {
         this.plugin = plugin;
+        this.randomTeleportService = randomTeleportService;
     }
 
     @EventHandler
@@ -42,19 +46,22 @@ public class RandomTeleportGUIListener implements Listener {
         if (holder.isGeneralGUI()) {
             switch (event.getRawSlot()) {
                 case 11 -> openOverworldGUI(player);
-                case 13 -> player.sendMessage("Random Teleport to Nether");
-                case 15 -> player.sendMessage("Random Teleport to End");
+                case 13 -> randomTeleportService.requestRandomTeleport(new RTPRequest(player, Region.NA_EAST, World.Environment.NETHER));
+                case 15 -> randomTeleportService.requestRandomTeleport(new RTPRequest(player, Region.NA_EAST, World.Environment.THE_END));
             }
         } else {
             switch (event.getRawSlot()) {
-                case 10 -> player.sendMessage("Random Teleport to Na West");
-                case 11 -> player.sendMessage("Random Teleport to Na East");
-                case 12 -> player.sendMessage("Random Teleport to Eu West");
-                case 13 -> player.sendMessage("Random Teleport to Eu Central");
-                case 14 -> player.sendMessage("Random Teleport to Asia");
-                case 15 -> player.sendMessage("Random Teleport to Oceania");
+                case 10 -> randomTeleportService.requestRandomTeleport(new RTPRequest(player, Region.NA_WEST, World.Environment.NORMAL));
+                case 11 -> randomTeleportService.requestRandomTeleport(new RTPRequest(player, Region.NA_EAST, World.Environment.NORMAL));
+                case 12 -> randomTeleportService.requestRandomTeleport(new RTPRequest(player, Region.EU_WEST, World.Environment.NORMAL));
+                case 13 -> randomTeleportService.requestRandomTeleport(new RTPRequest(player, Region.EU_CENTRAL, World.Environment.NORMAL));
+                case 14 -> randomTeleportService.requestRandomTeleport(new RTPRequest(player, Region.ASIA, World.Environment.NORMAL));
+                case 15 -> randomTeleportService.requestRandomTeleport(new RTPRequest(player, Region.OCEANIA, World.Environment.NORMAL));
             }
         }
+        player.closeInventory();
+
+
     }
 
     @EventHandler

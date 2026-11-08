@@ -1,6 +1,6 @@
 package ch.mcserver.goliathPaperCore;
 
-import ch.mcserver.goliathPaperCore.common.TimerUtil;
+import ch.mcserver.goliathPaperCore.common.service.TimerUtil;
 import ch.mcserver.goliathPaperCore.common.database.mongodb.ChatLogRepository;
 import ch.mcserver.goliathPaperCore.common.database.mongodb.HistoryRepository;
 import ch.mcserver.goliathPaperCore.common.database.mongodb.MongoDBManager;
@@ -39,6 +39,7 @@ import ch.mcserver.goliathPaperCore.module.inventory.InventoryListener;
 import ch.mcserver.goliathPaperCore.module.inventory.PlayerInventoryRepository;
 import ch.mcserver.goliathPaperCore.module.randomteleport.RandomTeleportCommand;
 import ch.mcserver.goliathPaperCore.module.randomteleport.RandomTeleportGUIListener;
+import ch.mcserver.goliathPaperCore.module.randomteleport.RandomTeleportService;
 import ch.mcserver.goliathPaperCore.module.sector.*;
 import ch.mcserver.goliathPaperCore.module.spawn.DoubleJumpBoostListener;
 import ch.mcserver.goliathPaperCore.module.spawn.SpawnListener;
@@ -104,6 +105,10 @@ public class PluginRegister {
 
     private FlagManager flagManager;
 
+    private TimerUtil timerUtil;
+
+    private RandomTeleportService randomTeleportService;
+
     public PluginRegister(GoliathPaperCore plugin, MongoDBManager mongoManager, MySQLManager mySQLManager) {
         this.plugin = plugin;
         this.mongoManager = mongoManager;
@@ -152,15 +157,21 @@ public class PluginRegister {
             sectorRegistry.initialize();
         }
 
+        this.timerUtil = new TimerUtil(plugin);
+        this.randomTeleportService = new RandomTeleportService(
+                plugin.getRedisManager(),
+                plugin,
+                timerUtil
+        );
+
         this.sectorResolver = new SectorResolver(sectorRepository);
         this.sectorTransferService = new SectorTransferService(plugin.getRedisManager());
 
 
         this.playerLocationRepository = new PlayerLocationRepository(mySQLManager);
+        this.randomTeleportService = new RandomTeleportService(plugin.getRedisManager(), plugin, timerUtil);
         this.goliathChat = new GoliathChat(plugin);
-        String serverName = GoliathPaperCore.config
-                .node("server", "name")
-                .getString("unknown");
+        String serverName = GoliathPaperCore.config.node("server", "name").getString("unknown");
 
         this.playerLocationManager = new PlayerLocationManager(
                 plugin,
@@ -277,7 +288,10 @@ public class PluginRegister {
                         .registerEvents(modGuardPacketListener, plugin);
 
         plugin.getServer().getPluginManager()
-                        .registerEvents(new RandomTeleportGUIListener(plugin), plugin);
+                        .registerEvents(new RandomTeleportGUIListener(plugin, randomTeleportService), plugin);
+
+        plugin.getServer().getPluginManager()
+                .registerEvents(timerUtil, plugin);
 
         PacketEvents.getAPI().getEventManager()
                 .registerListener(anticheatListener);

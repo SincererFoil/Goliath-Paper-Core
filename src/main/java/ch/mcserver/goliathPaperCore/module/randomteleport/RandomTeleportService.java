@@ -2,6 +2,7 @@ package ch.mcserver.goliathPaperCore.module.randomteleport;
 
 import ch.mcserver.goliathPaperCore.GoliathPaperCore;
 import ch.mcserver.goliathPaperCore.common.database.redis.RedisManager;
+import ch.mcserver.goliathPaperCore.common.service.TimerUtil;
 import com.google.gson.Gson;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -20,10 +21,13 @@ public class RandomTeleportService {
 
     private final Gson gson = new Gson();
 
+    private TimerUtil timerUtil;
 
-    public RandomTeleportService(RedisManager redisManager, GoliathPaperCore plugin) {
+
+    public RandomTeleportService(RedisManager redisManager, GoliathPaperCore plugin, TimerUtil timerUtil) {
         this.redisManager = redisManager;
         this.plugin = plugin;
+        this.timerUtil = timerUtil;
     }
 
     public void requestRandomTeleport(RTPRequest request) {
@@ -34,19 +38,23 @@ public class RandomTeleportService {
                 executeRandomTeleport(request);
             }
         };
-        GoliathPaperCore.getInstance().getTimerUtil().executeWithTimer(5, runnable, request.getPlayer(), "Teleporting in");
+        timerUtil.executeWithTimer(5, runnable, request.getPlayerUuid(), "Teleporting in");
     }
 
     private void executeRandomTeleport(RTPRequest request) {
-        Player player = request.getPlayer();
-        player.sendActionBar(Component.text("#1 in Queue", NamedTextColor.GRAY));
-        String json = gson.toJson(request);
+        Player player = Bukkit.getPlayer(request.getPlayerUuid());
+
+        if (player == null) {
+            return;
+        }
 
         try {
-            redisManager.publish("goliath:network:rtp:request", json);
+            String json = gson.toJson(request);
+            redisManager.publish("goliath:rtp:request", json);
+            player.sendActionBar(Component.text("Teleporting ...", NamedTextColor.GRAY));
         } catch (Exception e) {
             player.playSound(player, Sound.ENTITY_VILLAGER_AMBIENT, 1.0f, 1.0f);
-            player.sendMessage(Component.text("The RTP is currently restarting, Please wait a few minutes and try again.", NamedTextColor.RED));
+            player.sendMessage(Component.text("The RTP is currently in maintenance, Please wait a few minutes and try again.", NamedTextColor.RED));
         }
     }
 

@@ -101,7 +101,7 @@ public class RandomTeleportGUI {
 
         RandomTeleportInventoryHolder holder = new RandomTeleportInventoryHolder(player.getUniqueId(), false);
 
-        Inventory randomTeleportInventory = Bukkit.createInventory(holder, 27);
+        Inventory randomTeleportInventory = Bukkit.createInventory(holder, 27, Component.text("ʀᴀɴᴅᴏᴍ ᴛᴇʟᴇᴘᴏʀᴛ", NamedTextColor.DARK_GRAY));
 
         String rawEuCentralPlayerCount = PlaceholderAPI.setPlaceholders(null, "%overworld_eu_central_players%");
         String rawEuWestPlayerCount = PlaceholderAPI.setPlaceholders(null, "%overworld_eu_west_players%");
