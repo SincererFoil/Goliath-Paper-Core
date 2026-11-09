@@ -46,22 +46,31 @@ public class RandomTeleportGUIListener implements Listener {
         if (holder.isGeneralGUI()) {
             switch (event.getRawSlot()) {
                 case 11 -> openOverworldGUI(player);
-                case 13 -> randomTeleportService.requestRandomTeleport(new RTPRequest(player, Region.NA_EAST, World.Environment.NETHER));
-                case 15 -> randomTeleportService.requestRandomTeleport(new RTPRequest(player, Region.NA_EAST, World.Environment.THE_END));
+                case 13 -> {
+                    randomTeleportService.requestRandomTeleport(new RTPRequest(player, Region.NA_EAST, World.Environment.NETHER));
+                    player.closeInventory();
+                }
+                case 15 -> {
+                    randomTeleportService.requestRandomTeleport(new RTPRequest(player, Region.NA_EAST, World.Environment.THE_END));
+                    player.closeInventory();
+                }
             }
         } else {
-            switch (event.getRawSlot()) {
-                case 10 -> randomTeleportService.requestRandomTeleport(new RTPRequest(player, Region.NA_WEST, World.Environment.NORMAL));
-                case 11 -> randomTeleportService.requestRandomTeleport(new RTPRequest(player, Region.NA_EAST, World.Environment.NORMAL));
-                case 12 -> randomTeleportService.requestRandomTeleport(new RTPRequest(player, Region.EU_WEST, World.Environment.NORMAL));
-                case 13 -> randomTeleportService.requestRandomTeleport(new RTPRequest(player, Region.EU_CENTRAL, World.Environment.NORMAL));
-                case 14 -> randomTeleportService.requestRandomTeleport(new RTPRequest(player, Region.ASIA, World.Environment.NORMAL));
-                case 15 -> randomTeleportService.requestRandomTeleport(new RTPRequest(player, Region.OCEANIA, World.Environment.NORMAL));
-            }
+            Region region = switch (event.getRawSlot()) {
+                case 10 -> Region.NA_WEST;
+                case 11 -> Region.NA_EAST;
+                case 12 -> Region.EU_WEST;
+                case 13 -> Region.EU_CENTRAL;
+                case 14 -> Region.ASIA;
+                case 15 -> Region.OCEANIA;
+                default -> null;
+            };
+
+            if (region == null) return;
+
+            randomTeleportService.requestRandomTeleport(new RTPRequest(player, region, World.Environment.NORMAL));
+            player.closeInventory();
         }
-        player.closeInventory();
-
-
     }
 
     @EventHandler

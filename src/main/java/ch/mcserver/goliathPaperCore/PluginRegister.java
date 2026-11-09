@@ -51,6 +51,8 @@ import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.Objects;
+
 public class PluginRegister {
 
     private final GoliathPaperCore plugin;
@@ -107,6 +109,10 @@ public class PluginRegister {
 
     private TimerUtil timerUtil;
 
+    private final String region = GoliathPaperCore.config.node("world-system", "region").getString("NA_EAST");
+
+    private final String dimension = GoliathPaperCore.config.node("world-system", "dimension").getString("OVERWORLD");
+
     private RandomTeleportService randomTeleportService;
 
     public PluginRegister(GoliathPaperCore plugin, MongoDBManager mongoManager, MySQLManager mySQLManager) {
@@ -129,7 +135,7 @@ public class PluginRegister {
 
 
     private void registerManagers() {
-        this.redisHeartbeatService = new RedisHeartbeatService(plugin.getRedisManager(), plugin);
+        this.redisHeartbeatService = new RedisHeartbeatService(plugin.getRedisManager(), plugin, region, dimension);
         this.redisHeartbeatService.start();
         this.inventoryCollection = this.mongoManager.getMongoCollection("player_inventory");
         this.playerInventoryRepository = new PlayerInventoryRepository(inventoryCollection, plugin, plugin.getRedisManager());
@@ -160,16 +166,18 @@ public class PluginRegister {
         this.timerUtil = new TimerUtil(plugin);
         this.randomTeleportService = new RandomTeleportService(
                 plugin.getRedisManager(),
+                sectorRepository,
                 plugin,
                 timerUtil
         );
+
+        this.randomTeleportService.startSubscriber();
 
         this.sectorResolver = new SectorResolver(sectorRepository);
         this.sectorTransferService = new SectorTransferService(plugin.getRedisManager());
 
 
         this.playerLocationRepository = new PlayerLocationRepository(mySQLManager);
-        this.randomTeleportService = new RandomTeleportService(plugin.getRedisManager(), plugin, timerUtil);
         this.goliathChat = new GoliathChat(plugin);
         String serverName = GoliathPaperCore.config.node("server", "name").getString("unknown");
 

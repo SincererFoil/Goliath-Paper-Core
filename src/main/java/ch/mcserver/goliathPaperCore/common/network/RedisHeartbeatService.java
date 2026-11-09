@@ -2,6 +2,7 @@ package ch.mcserver.goliathPaperCore.common.network;
 
 import ch.mcserver.goliathPaperCore.GoliathPaperCore;
 import ch.mcserver.goliathPaperCore.common.database.redis.RedisManager;
+import ch.mcserver.goliathPaperCore.module.randomteleport.Region;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
@@ -27,11 +28,17 @@ public class RedisHeartbeatService {
 
     private final String instanceId = UUID.randomUUID().toString().substring(0, 8);
 
+    private final String region;
+
+    private final String dimension;
+
     private volatile ServerStatus serverStatus = ServerStatus.STARTING;
 
-    public RedisHeartbeatService(RedisManager redisManager, Plugin plugin) {
+    public RedisHeartbeatService(RedisManager redisManager, Plugin plugin, String region, String dimension) {
         this.plugin = plugin;
         this.redisManager = redisManager;
+        this.region = region;
+        this.dimension = dimension;
     }
 
 
@@ -58,6 +65,8 @@ public class RedisHeartbeatService {
                             "status", status,
                             "tps", tps,
                             "mspt", mspt,
+                            "region", region,
+                            "dimension", dimension,
                             "timestamp", timestamp
                     ));
 

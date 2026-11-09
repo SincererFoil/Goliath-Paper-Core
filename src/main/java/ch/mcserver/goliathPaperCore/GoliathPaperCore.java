@@ -37,6 +37,7 @@ public final class GoliathPaperCore extends JavaPlugin {
     private MySQLManager mySQLManager;
     private PluginRegister pluginRegister;
     public static String serverName;
+    public static boolean hasSectorEnabled = false;
 
     private TimerUtil timerUtil;
 
@@ -157,6 +158,7 @@ public final class GoliathPaperCore extends JavaPlugin {
 
                 config.node("world-system", "enabled").set(false);
                 config.node("world-system", "dimension").set("OVERWORLD");
+                config.node("world-system", "region").set("NA_EAST");
                 config.node("world-system", "sector-x").set(0);
                 config.node("world-system", "sector-z").set(0);
 
@@ -181,6 +183,8 @@ public final class GoliathPaperCore extends JavaPlugin {
             if ("goliath-unknown".equals(serverName)) {
                 logger.warning("The Servername in the config.yml is not set or couldn't load");
             }
+
+            hasSectorEnabled = config.node("sector", "enabled").getBoolean(false);
 
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to load config.yml!", e);
