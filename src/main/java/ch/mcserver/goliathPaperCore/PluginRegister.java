@@ -40,6 +40,7 @@ import ch.mcserver.goliathPaperCore.module.inventory.PlayerInventoryRepository;
 import ch.mcserver.goliathPaperCore.module.randomteleport.RandomTeleportCommand;
 import ch.mcserver.goliathPaperCore.module.randomteleport.RandomTeleportGUIListener;
 import ch.mcserver.goliathPaperCore.module.randomteleport.RandomTeleportService;
+import ch.mcserver.goliathPaperCore.module.randomteleport.RandomTeleportTabCompleter;
 import ch.mcserver.goliathPaperCore.module.sector.*;
 import ch.mcserver.goliathPaperCore.module.spawn.DoubleJumpBoostListener;
 import ch.mcserver.goliathPaperCore.module.spawn.SpawnListener;
@@ -52,6 +53,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.Objects;
+import java.util.Random;
 
 public class PluginRegister {
 
@@ -241,7 +243,8 @@ public class PluginRegister {
         plugin.getCommand("echest").setExecutor(new GoliathEnderchestCommand(showGoliathEnderchest));
         plugin.getCommand("history").setExecutor(new ShowHistory());
 
-        plugin.getCommand("rtp").setExecutor(new RandomTeleportCommand());
+        plugin.getCommand("rtp").setExecutor(new RandomTeleportCommand(randomTeleportService));
+        plugin.getCommand("rtp").setTabCompleter(new RandomTeleportTabCompleter());
     }
 
     private void registerListeners() {

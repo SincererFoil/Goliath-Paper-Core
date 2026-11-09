@@ -59,6 +59,16 @@ public class RandomTeleportService implements Listener {
     }
 
     public void requestRandomTeleport(RTPRequest request) {
+
+        Player player = Bukkit.getPlayer(request.getPlayerUuid());
+
+        if (player == null) return;
+
+        if (player.hasPermission("goliath.timer.bypass")) {
+            executeRandomTeleport(request);
+            return;
+        }
+
         BukkitRunnable runnable = new BukkitRunnable() {
             @Override
             public void run() {

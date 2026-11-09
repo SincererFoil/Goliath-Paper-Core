@@ -7,6 +7,7 @@ api-version: '1.21.11'
 load: POSTWORLD
 
 commands:
+
   spawnstash:
     permission: goliath.staff.spawnstash
     description: Spawns a Fake Base
@@ -18,7 +19,7 @@ commands:
     permission: goliath.staff.history
     description: Opens Player History for Staff
   rtp:
-    description: test123
+    description: Teleport's the player to a random location
 
 
 depend:

@@ -157,7 +157,7 @@ public final class GoliathPaperCore extends JavaPlugin {
                 config.node("server", "name").set("goliath-unknown");
 
                 config.node("world-system", "enabled").set(false);
-                config.node("world-system", "dimension").set("OVERWORLD");
+                config.node("world-system", "dimension").set("UNKNOWN");
                 config.node("world-system", "region").set("NA_EAST");
                 config.node("world-system", "sector-x").set(0);
                 config.node("world-system", "sector-z").set(0);
