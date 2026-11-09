@@ -265,8 +265,6 @@ public class RandomTeleportService implements Listener {
             return;
         }
 
-        configureSectorWorldBorder(world, sector);
-
         int attempts = switch (environment) {
             case NETHER -> 40;
             case THE_END -> 60;
@@ -288,28 +286,6 @@ public class RandomTeleportService implements Listener {
                     publishError(requestData);
                     return null;
                 });
-    }
-
-    private void configureSectorWorldBorder(World world, SectorData sector) {
-        double minX = (long) sector.minChunkX() * 16.0;
-        double maxX = ((long) sector.maxChunkX() + 1L) * 16.0;
-        double minZ = (long) sector.minChunkZ() * 16.0;
-        double maxZ = ((long) sector.maxChunkZ() + 1L) * 16.0;
-
-        double centerX = (minX + maxX) / 2.0;
-        double centerZ = (minZ + maxZ) / 2.0;
-
-        double sizeX = maxX - minX;
-        double sizeZ = maxZ - minZ;
-
-        WorldBorder border = world.getWorldBorder();
-
-        border.setCenter(centerX, centerZ);
-        border.setSize(Math.max(sizeX, sizeZ));
-
-        plugin.getLogger().info("RTP WorldBorder configured: " + sector.serverName()
-                + " center=" + centerX + "," + centerZ
-                + " size=" + Math.max(sizeX, sizeZ));
     }
 
     private CompletableFuture<Location> searchSafeLocation(World world, int minX, int maxX, int minZ, int maxZ, int attempts) {

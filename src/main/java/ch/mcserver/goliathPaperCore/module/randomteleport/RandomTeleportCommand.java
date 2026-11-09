@@ -49,7 +49,6 @@ public class RandomTeleportCommand implements CommandExecutor {
                 }
                 default -> {
                     region = Region.NA_EAST;
-                    return true;
                 }
             }
 
