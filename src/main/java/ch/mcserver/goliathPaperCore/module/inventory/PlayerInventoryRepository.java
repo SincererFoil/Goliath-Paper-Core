@@ -12,10 +12,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import redis.clients.jedis.params.SetParams;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 
 import static ch.mcserver.goliathPaperCore.module.enderchest.PlayerEnderchestRepository.fromBase64;
@@ -32,11 +35,15 @@ public class PlayerInventoryRepository {
     private final Map<UUID, Document> pendingQuitSaves = new HashMap<>();
 
     private final RedisManager redisManager;
+    private final Map<UUID, String> activeLocks = new ConcurrentHashMap<>();
+    private final AtomicBoolean heartbeatRunning = new AtomicBoolean(false);
+    private static final long LOCK_TTL_MS = 60000;
 
     public PlayerInventoryRepository(MongoCollection<Document> collection, Plugin plugin, RedisManager redisManager) {
         this.collection = collection;
         this.plugin = plugin;
         this.redisManager = redisManager;
+        startLockHeartbeat();
     }
 
     public void saveInventory(UUID playerUUID, boolean disconnect) {
@@ -113,10 +120,7 @@ public class PlayerInventoryRepository {
                                 || Bukkit.getPlayer(playerUUID) != player) return;
 
                         if (attempts >= 20) {
-                            player.kick(Component.text(
-                                    "Your previous inventory session is still active. Please reconnect.",
-                                    NamedTextColor.RED
-                            ));
+                            player.kick(Component.text("Your previous inventory session is still active. Please reconnect.", NamedTextColor.RED));
                             return;
                         }
 
@@ -196,6 +200,7 @@ public class PlayerInventoryRepository {
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
+                if (!ownsLock(uuid, ownerToken)) throw new IllegalStateException("Inventory lock lost before save: " + uuid);
                 var result = collection.updateOne(
                         Filters.eq("uuid", uuid.toString()),
                         new Document("$set", snapshot),
@@ -248,6 +253,7 @@ public class PlayerInventoryRepository {
     }
 
     private void finishSession(UUID uuid, String token) {
+        activeLocks.remove(uuid, token);
         Runnable releaseTask = () -> {
             try {
                 if (!releaseLock(uuid, token)) {
@@ -283,9 +289,60 @@ public class PlayerInventoryRepository {
     }
 
 
+    private void startLockHeartbeat() {
+        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+            if (!heartbeatRunning.compareAndSet(false, true)) return;
+
+            try {
+                for (var entry : activeLocks.entrySet()) {
+                    UUID uuid = entry.getKey();
+                    String token = entry.getValue();
+                    if (!token.equals(activeLocks.get(uuid))) continue;
+
+                    try {
+                        if (renewLock(uuid, token)) continue;
+                        activeLocks.remove(uuid, token);
+                        invalidateLock(uuid, token);
+                    } catch (Exception e) {
+                        plugin.getLogger().log(Level.SEVERE, "Inventory lock heartbeat failed: " + uuid, e);
+                        activeLocks.remove(uuid, token);
+                        invalidateLock(uuid, token);
+                    }
+                }
+            } finally {
+                heartbeatRunning.set(false);
+            }
+        }, 100L, 100L);
+    }
+
+    private void invalidateLock(UUID uuid, String token) {
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            if (!token.equals(lockTokens.get(uuid))) return;
+            states.put(uuid, InventoryState.SAVE_FAILED);
+            Player player = Bukkit.getPlayer(uuid);
+            if (player != null && player.isOnline()) player.kick(Component.text("Inventory session lost. Please reconnect.", NamedTextColor.RED));
+        });
+    }
+
     private boolean acquireLock(UUID uuid, String ownerToken) {
         try (var jedis = redisManager.getConnection()) {
-            return jedis.setnx("goliath:inventory:lock:" + uuid, ownerToken) == 1L;
+            String result = jedis.set("goliath:inventory:lock:" + uuid, ownerToken, SetParams.setParams().nx().px(LOCK_TTL_MS));
+            if (!"OK".equals(result)) return false;
+            activeLocks.put(uuid, ownerToken);
+            return true;
+        }
+    }
+
+    private boolean renewLock(UUID uuid, String token) {
+        String script = "if redis.call('get',KEYS[1]) == ARGV[1] then return redis.call('pexpire',KEYS[1],ARGV[2]) end return 0";
+        try (var jedis = redisManager.getConnection()) {
+            return Long.valueOf(1).equals(jedis.eval(script, java.util.List.of("goliath:inventory:lock:" + uuid), java.util.List.of(token, String.valueOf(LOCK_TTL_MS))));
+        }
+    }
+
+    private boolean ownsLock(UUID uuid, String token) {
+        try (var jedis = redisManager.getConnection()) {
+            return token.equals(jedis.get("goliath:inventory:lock:" + uuid));
         }
     }
 

@@ -112,12 +112,15 @@ public class SectorRegistry {
 
     public boolean isSectorOnline(String serverName) {
         try (var jedis = redisManager.getConnection()) {
-            return jedis.exists("goliath:network:heartbeat:paper:" + serverName);
+            String key = "goliath:network:heartbeat:paper:" + serverName;
+
+            String status = jedis.hget(key, "status");
+
+            return "ONLINE".equals(status);
 
         } catch (Exception e) {
-            GoliathPaperCore.getInstance().getLogger().warning(
-                    "Could not check sector heartbeat: " + serverName
-            );
+            GoliathPaperCore.getInstance().getLogger()
+                    .warning("Could not check sector heartbeat: " + serverName);
             return false;
         }
     }
