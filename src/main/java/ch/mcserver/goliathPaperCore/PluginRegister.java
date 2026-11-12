@@ -24,6 +24,7 @@ import ch.mcserver.goliathPaperCore.module.anticheat.flag.FlagManager;
 import ch.mcserver.goliathPaperCore.module.anticheat.modguard.ModGuardPacketListener;
 import ch.mcserver.goliathPaperCore.module.anticheat.modguard.ModGuardScanService;
 import ch.mcserver.goliathPaperCore.module.chat.GoliathChat;
+import ch.mcserver.goliathPaperCore.module.death.DeathManager;
 import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestListener;
 import ch.mcserver.goliathPaperCore.module.enderchest.EnderchestService;
 import ch.mcserver.goliathPaperCore.module.enderchest.PlayerEnderchestRepository;
@@ -95,7 +96,7 @@ public class PluginRegister {
 
     private SectorMoveListener sectorMoveListener;
 
-    private SectorTransferJoinListener sectorTransferJoinListener;
+    private SectorTransferListener sectorTransferListener;
 
     private RedisHeartbeatService redisHeartbeatService;
 
@@ -108,6 +109,8 @@ public class PluginRegister {
     private ShutdownService shutdownService;
 
     private FlagManager flagManager;
+
+    private DeathManager deathManager;
 
     private TimerUtil timerUtil;
 
@@ -225,7 +228,7 @@ public class PluginRegister {
 
         if (plugin.config.node("sector", "enabled").getBoolean(false)) {
             this.sectorMoveListener = new SectorMoveListener(sectorRegistry, sectorResolver, sectorTransferService, plugin);
-            this.sectorTransferJoinListener = new SectorTransferJoinListener(plugin, plugin.getRedisManager());
+            this.sectorTransferListener = new SectorTransferListener(plugin, plugin.getRedisManager());
         }
 
     }
@@ -310,13 +313,18 @@ public class PluginRegister {
         PacketEvents.getAPI().getEventManager()
                 .registerListener(modGuardPacketListener);
 
-        if (sectorMoveListener != null && sectorTransferJoinListener != null) {
+        if (sectorMoveListener != null && sectorTransferListener != null) {
             plugin.getServer().getPluginManager()
                     .registerEvents(sectorMoveListener, plugin);
 
             plugin.getServer().getPluginManager().
-                    registerEvents(sectorTransferJoinListener, plugin);
+                    registerEvents(sectorTransferListener, plugin);
         }
+
+        deathManager = new DeathManager(randomTeleportService);
+
+        plugin.getServer().getPluginManager()
+                .registerEvents(deathManager, plugin);
 
 
 

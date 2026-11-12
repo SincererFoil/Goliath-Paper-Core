@@ -79,7 +79,7 @@ public class RandomTeleportService implements Listener {
         timerUtil.executeWithTimer(5, runnable, request.getPlayerUuid(), "Teleporting in");
     }
 
-    private void executeRandomTeleport(RTPRequest request) {
+    public void executeRandomTeleport(RTPRequest request) {
         Player player = Bukkit.getPlayer(request.getPlayerUuid());
 
         if (player == null) {
@@ -88,7 +88,6 @@ public class RandomTeleportService implements Listener {
 
         try {
             redisManager.publish("goliath:rtp:request", gson.toJson(request));
-            player.sendActionBar(Component.text("Teleporting ...", NamedTextColor.GRAY));
         } catch (Exception exception) {
             plugin.getLogger().warning("RTP request failed: " + exception.getMessage());
             player.playSound(player, Sound.ENTITY_VILLAGER_AMBIENT, 1.0f, 1.0f);

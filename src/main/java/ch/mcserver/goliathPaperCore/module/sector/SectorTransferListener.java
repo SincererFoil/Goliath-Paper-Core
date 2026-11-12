@@ -10,6 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerPortalEvent;
 import redis.clients.jedis.Jedis;
 
 import java.util.EnumMap;
@@ -18,7 +19,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 
-public class SectorTransferJoinListener implements Listener {
+public class SectorTransferListener implements Listener {
 
     private static final String CHANNEL = "goliath:sector:transfer:pending:";
 
@@ -38,7 +39,7 @@ public class SectorTransferJoinListener implements Listener {
     private final Map<World.Environment, World> worlds = new EnumMap<>(World.Environment.class);
 
 
-    public SectorTransferJoinListener(GoliathPaperCore plugin, RedisManager redisManager) {
+    public SectorTransferListener(GoliathPaperCore plugin, RedisManager redisManager) {
         this.plugin = plugin;
         this.redisManager = redisManager;
 
@@ -87,5 +88,10 @@ public class SectorTransferJoinListener implements Listener {
         } catch (Exception e) {
             plugin.getLogger().log(Level.SEVERE, "Failed to load sector transfer", e);
         }
+    }
+
+    @EventHandler
+    public void onPlayerPortalEvent(PlayerPortalEvent event) {
+        event.setCancelled(true);
     }
 }

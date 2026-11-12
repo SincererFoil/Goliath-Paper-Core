@@ -54,6 +54,7 @@ public class PlayerEnderchestRepository {
         return fromBase64(document.getString("enderchest"));
     }
 
+
     public boolean playerEnderchestExists(UUID playerUUID) {
         return collection.find(Filters.eq("uuid", playerUUID.toString())).first() != null;
     }
